@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Identidade Oculta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face { font-family:'Brunson Rough'; src:url('Brunson Rough.ttf') format('truetype'); }
+
+:root {
+  --bg:       #0D0D0D;
+  --s1:       #181818;
+  --s2:       #222222;
+  --s3:       #2C2626;
+  --txt:      #F2EAE0;
+  --muted:    #9A9590;
+  --red:      #D94040;
+  --red-dim:  #3A1010;
+  --teal:     #7DD5D8;
+  --paper:    #E8DFC8;
+  --border:   #303030;
+  --bv:       #222222;
+  --ok:       #4CAF50;
+  --err:      #E57373;
+  --amb:      #FFB74D;
+  --nav-h:    64px;
+  --hdr-h:    60px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:16px; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg); color:var(--txt); font-family:'Barlow',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+@keyframes blink  { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+@keyframes reel   { to{transform:rotate(360deg)} }
+@keyframes bar    { from{transform:scaleY(.25)} to{transform:scaleY(1)} }
+@keyframes fadeup { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
+
+/* ── HEADER ── */
+#hdr {
+  position:sticky; top:0; z-index:100;
+  height:var(--hdr-h); background:var(--s1);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 18px; gap:14px;
+}
+.hdr-brand { flex:1; min-width:0; }
+.hdr-tag {
+  font-family:'Courier New',monospace; font-size:10px; letter-spacing:.12em;
+  color:var(--muted); display:flex; align-items:center; gap:6px; text-transform:uppercase;
+}
+.rec-dot {
+  width:7px; height:7px; border-radius:50%; background:var(--red);
+  flex-shrink:0; animation:blink 1.4s step-end infinite; display:inline-block;
+}
+.hdr-title {
+  font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal;
+  font-size:26px; letter-spacing:.05em; text-transform:uppercase; line-height:1; color:var(--txt);
+}
+.hdr-info {
+  display:flex; flex-direction:column; align-items:flex-end; gap:2px;
+  font-family:'Courier New',monospace; font-size:10px; color:var(--muted); text-align:right;
+}
+
+/* ── TABS ── */
+#content { padding-bottom:var(--nav-h); }
+.tab { display:none; padding:18px 16px; }
+.tab.on { display:block; }
+
+/* ── EVIDENCE GRID ── */
+.sec-label {
+  font-family:'Courier New',monospace; font-size:9px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+#ev-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(140px,1fr));
+  gap:10px;
+}
+.ev-card {
+  border-radius:10px; overflow:hidden;
+  background:var(--s2); border:2px solid transparent;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+  cursor:pointer; text-align:left; padding:0; font:inherit;
+  display:flex; flex-direction:column; color:var(--txt);
+  transition:transform .15s, border-color .15s, box-shadow .15s;
+  animation:fadeup .18s ease-out both;
+}
+.ev-card:hover  { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.5); }
+.ev-card.sel    { border-color:var(--teal); box-shadow:0 0 0 1px var(--teal); }
+.ev-card.seen   { opacity:.55; }
+.ev-card:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+
+.ev-photo {
+  position:relative; overflow:hidden; background:var(--s1); line-height:0; min-height:80px;
+}
+.ev-photo svg { display:block; width:100%; height:auto; }
+.ev-ph { font-family:'Courier New',monospace; font-size:9px; color:var(--border); letter-spacing:.1em; }
+.badge-status {
+  position:absolute; top:5px; right:5px; z-index:2;
+  font-family:'Courier New',monospace; font-size:8px; letter-spacing:.04em; padding:2px 5px; border-radius:3px;
+}
+.badge-status.nova  { background:var(--red); color:#fff; }
+.badge-status.vista { background:rgba(13,13,13,.85); color:var(--muted); border:1px solid var(--border); }
+.badge-seq {
+  position:absolute; top:5px; left:5px; z-index:2;
+  font-family:'Courier New',monospace; font-size:8px; font-weight:bold;
+  background:var(--teal); color:#0D0D0D; padding:2px 6px; border-radius:8px;
+}
+.ev-foot { padding:9px 11px 11px; background:var(--s2); flex:1; display:flex; flex-direction:column; gap:2px; }
+.ev-eid  { font-family:'Courier New',monospace; font-size:9px; color:var(--muted); letter-spacing:.06em; }
+.ev-tipo { font-size:12px; font-weight:600; color:var(--txt); line-height:1.3; }
+
+/* ── EXAM BOTTOM SHEET ── */
+#backdrop {
+  position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0); pointer-events:none;
+  transition:background .3s cubic-bezier(.4,0,.2,1);
+}
+#backdrop.on { background:rgba(0,0,0,.7); pointer-events:auto; }
+
+#sheet {
+  position:fixed; bottom:0; left:0; right:0; z-index:300;
+  background:var(--s2); border-radius:20px 20px 0 0;
+  max-height:92vh; overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  padding-bottom:calc(var(--nav-h) + 4px);
+}
+#sheet.on { transform:translateY(0); }
+
+@media (min-width:640px) {
+  #sheet { left:50%; transform:translateX(-50%) translateY(100%); max-width:600px; box-shadow:0 -8px 40px rgba(0,0,0,.7); }
+  #sheet.on { transform:translateX(-50%) translateY(0); }
+}
+
+.sheet-top {
+  position:sticky; top:0; z-index:2; background:var(--s2);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px 10px; border-bottom:1px solid var(--bv);
+}
+.sheet-handle { width:34px; height:4px; border-radius:2px; background:var(--border); position:absolute; top:10px; left:50%; transform:translateX(-50%); }
+.sheet-titles { text-align:center; flex:1; }
+.sheet-eid  { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; }
+.sheet-tipo { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:24px; text-transform:uppercase; letter-spacing:.04em; line-height:1; color:var(--txt); }
+.sheet-close {
+  width:38px; height:38px; border-radius:19px;
+  background:var(--s3); border:1px solid var(--border);
+  color:var(--txt); font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s; flex-shrink:0; line-height:1;
+}
+.sheet-close:hover { background:var(--red-dim); }
+.sheet-close:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+
+.sheet-photo { position:relative; overflow:hidden; background:var(--bg); border-bottom:1px solid var(--bv); }
+.sheet-photo svg { display:block; width:100%; height:auto; }
+.sheet-photo-ph { height:180px; display:flex; align-items:center; justify-content:center; font-family:'Courier New',monospace; font-size:12px; color:var(--border); }
+.rec-tag {
+  position:absolute; top:9px; left:9px; z-index:2;
+  font-family:'Courier New',monospace; font-size:9px; color:var(--txt);
+  background:rgba(13,13,13,.8); padding:3px 8px; border-radius:4px;
+  display:flex; align-items:center; gap:5px; letter-spacing:.05em;
+}
+.rec-tag .rec-dot { width:6px; height:6px; }
+
+.sheet-body { padding:16px 18px; display:flex; flex-direction:column; gap:12px; }
+
+/* audio */
+.audio-row { display:flex; align-items:center; gap:10px; }
+#btn-audio {
+  height:42px; padding:0 18px; border-radius:21px; flex-shrink:0;
+  background:var(--teal); color:#0D0D0D; border:none;
+  font-family:'Barlow',sans-serif; font-size:13px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.07em; cursor:pointer;
+  transition:background .15s; min-width:104px; white-space:nowrap;
+}
+#btn-audio:hover { background:#9DE0E3; }
+#btn-audio.playing { background:var(--txt); }
+#btn-audio:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+.audio-wave { display:flex; align-items:flex-end; gap:2px; height:26px; flex:1; }
+.wave-bar { flex:1; border-radius:2px; height:100%; transform-origin:bottom; transform:scaleY(.2); transition:background .3s; }
+.wave-bar.rem { background:#604848; }
+.wave-bar.played { background:var(--teal); transform:scaleY(.7); }
+.audio-playing .wave-bar.rem { animation:bar .8s ease-in-out var(--d,0s) infinite alternate; }
+.audio-meta { display:flex; align-items:center; justify-content:space-between; font-family:'Courier New',monospace; font-size:10px; color:var(--muted); }
+.reel.spin svg { animation:reel 1.4s linear infinite; }
+
+.exam-desc {
+  background:var(--paper); border-radius:10px; padding:14px 16px;
+  font-family:'Courier New',monospace; font-size:13px; color:#1A1008;
+  line-height:1.65; font-style:italic;
+}
+
+/* seq controls in sheet */
+.seq-box {
+  background:var(--s3); border:1px solid var(--border); border-radius:10px;
+  padding:10px 14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:50px;
+}
+.seq-box-lbl { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); flex-shrink:0; }
+.seq-box-lbl .hi { color:var(--teal); font-size:14px; font-weight:bold; }
+.btn-add-seq {
+  flex:1; min-width:120px; height:34px; border-radius:8px;
+  background:var(--red); color:#fff; border:none;
+  font-family:'Barlow',sans-serif; font-size:12px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.07em; cursor:pointer; transition:background .15s;
+}
+.btn-add-seq:hover { background:#c03434; }
+.btn-add-seq:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+.seq-nav { display:flex; gap:5px; align-items:center; flex:1; justify-content:flex-end; flex-wrap:wrap; }
+.seq-nav-btn {
+  width:30px; height:30px; border-radius:7px;
+  background:transparent; border:1px solid var(--border);
+  color:var(--txt); cursor:pointer; font-size:14px;
+  display:flex; align-items:center; justify-content:center; transition:background .12s;
+}
+.seq-nav-btn:disabled { opacity:.25; cursor:default; }
+.seq-nav-btn:not(:disabled):hover { background:var(--s1); }
+.seq-nav-btn:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+.seq-rm-btn {
+  height:30px; padding:0 10px; border-radius:7px;
+  background:transparent; border:1px solid var(--border);
+  color:var(--muted); cursor:pointer; font-size:11px; font-family:'Courier New',monospace; transition:all .12s;
+}
+.seq-rm-btn:hover { border-color:var(--err); color:var(--err); }
+
+/* ── SEQUÊNCIA TAB ── */
+#tab-seq .seq-title { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:34px; text-transform:uppercase; letter-spacing:.04em; line-height:.9; color:var(--txt); margin-bottom:4px; }
+#tab-seq .seq-sub { font-family:'Courier New',monospace; font-size:11px; color:var(--muted); margin-bottom:18px; }
+.seq-empty {
+  background:var(--s1); border:1px dashed var(--border); border-radius:12px;
+  padding:28px 20px; text-align:center;
+  font-family:'Courier New',monospace; font-size:11px; color:var(--muted); line-height:1.8;
+}
+.seq-list { display:flex; flex-direction:column; gap:6px; }
+.seq-row {
+  display:flex; align-items:center; gap:10px;
+  background:var(--s1); border:1px solid var(--border); border-radius:10px; overflow:hidden;
+  transition:border-color .15s;
+}
+.seq-row.cur { border-color:var(--teal); }
+.seq-row-num { width:36px; flex-shrink:0; text-align:center; font-family:'Courier New',monospace; font-size:11px; font-weight:bold; color:var(--teal); }
+.seq-row-thumb { width:60px; height:45px; flex-shrink:0; position:relative; overflow:hidden; background:var(--bg); cursor:pointer; }
+.seq-row-thumb svg { position:absolute; top:0; left:0; width:100%; height:100%; }
+.seq-row-info { flex:1; min-width:0; cursor:pointer; padding:10px 0; }
+.seq-row-id { font-family:'Courier New',monospace; font-size:9px; color:var(--muted); }
+.seq-row-type { font-size:13px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.seq-row-btns { display:flex; align-items:center; gap:3px; padding:0 8px; flex-shrink:0; }
+.seq-row-btn {
+  width:28px; height:28px; border-radius:6px;
+  background:transparent; border:1px solid var(--bv);
+  color:var(--muted); cursor:pointer; font-size:13px;
+  display:flex; align-items:center; justify-content:center; transition:all .12s;
+}
+.seq-row-btn:disabled { opacity:.2; cursor:default; }
+.seq-row-btn:not(:disabled):hover { border-color:var(--muted); color:var(--txt); }
+.seq-row-btn.rm:not(:disabled):hover { border-color:var(--err); color:var(--err); }
+.seq-row-btn:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+
+/* ── FICHAS TAB ── */
+.fichas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:10px; margin-bottom:20px; }
+.ficha { background:var(--s1); border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+.ficha-bar { height:4px; }
+.ficha-body { padding:14px 16px; display:flex; flex-direction:column; gap:9px; }
+.ficha-head { display:flex; align-items:center; gap:9px; }
+.ficha-dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+.ficha-info { flex:1; min-width:0; }
+.ficha-nome { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:22px; text-transform:uppercase; letter-spacing:.03em; line-height:.95; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ficha-age  { font-family:'Courier New',monospace; font-size:10px; color:var(--muted); margin-top:2px; }
+.ficha-cnt  { font-family:'Courier New',monospace; font-size:11px; color:var(--muted); flex-shrink:0; }
+.ficha-row  { display:flex; align-items:center; gap:7px; }
+.ficha-lbl  { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); width:48px; flex-shrink:0; }
+.ficha-sel  {
+  flex:1; height:40px; padding:0 24px 0 9px;
+  background:var(--s2); border:1px solid var(--border); border-radius:8px;
+  color:var(--txt); font-family:'Barlow',sans-serif; font-size:12px;
+  cursor:pointer; appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239A9590' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 9px center;
+  transition:border-color .15s;
+}
+.ficha-sel:focus-visible { outline:2px solid var(--teal); outline-offset:2px; border-color:var(--teal); }
+.ficha-sel.ok  { border-color:var(--ok); color:var(--ok); }
+.ficha-sel.err { border-color:var(--err); color:var(--err); }
+.ficha-sel.amb { border-color:var(--amb); color:var(--amb); }
+
+.conclude-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:14px 0 0; border-top:1px solid var(--border); }
+.conclude-row > span { font-family:'Courier New',monospace; font-size:11px; color:var(--muted); }
+.btn-conclude {
+  font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal;
+  font-size:22px; text-transform:uppercase; letter-spacing:.04em;
+  background:var(--red); color:#fff; border:none; border-radius:10px;
+  padding:0 26px; min-height:50px; cursor:pointer; transition:background .15s;
+}
+.btn-conclude:hover { background:#c03434; }
+.btn-conclude:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+
+/* ── BOTTOM NAV ── */
+#nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:150;
+  height:var(--nav-h); background:var(--s1); border-top:1px solid var(--border);
+  display:flex; align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.nav-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  background:transparent; border:none; cursor:pointer;
+  color:var(--muted); transition:color .15s;
+  border-top:2px solid transparent; position:relative; padding:6px 4px;
+}
+.nav-btn.on { color:var(--teal); border-top-color:var(--teal); }
+.nav-btn:focus-visible { outline:2px solid var(--teal); outline-offset:-2px; }
+.nav-icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+.nav-icon svg { display:block; }
+.nav-lbl { font-family:'Courier New',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
+.nav-badge {
+  position:absolute; top:5px; right:calc(50% - 18px);
+  background:var(--red); color:#fff;
+  font-family:'Courier New',monospace; font-size:8px; font-weight:bold;
+  padding:1px 4px; border-radius:8px; line-height:1.4;
+  display:none;
+}
+.nav-badge.on { display:block; }
+
+/* ── RESULT ── */
+#result { position:fixed; inset:0; z-index:600; background:rgba(13,13,13,.97); overflow-y:auto; padding:28px 16px; display:flex; align-items:flex-start; justify-content:center; }
+#result[hidden] { display:none; }
+#result-box { max-width:660px; width:100%; padding-top:12px; }
+.res-title { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:48px; text-transform:uppercase; letter-spacing:.04em; line-height:.88; margin-bottom:8px; }
+.res-stamp { display:inline-block; margin-bottom:20px; font-family:'Courier New',monospace; font-size:10px; letter-spacing:.3em; text-transform:uppercase; border:1px solid; padding:3px 14px; transform:rotate(-1.5deg); transform-origin:left; }
+.score-block { background:var(--s1); border:1px solid var(--border); border-left:3px solid var(--teal); padding:16px 20px; margin-bottom:18px; display:flex; align-items:center; gap:18px; }
+.score-num { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:52px; line-height:1; }
+.score-info { font-family:'Courier New',monospace; font-size:12px; color:var(--muted); line-height:2; }
+.score-info strong { color:var(--txt); }
+.res-ficha { background:var(--s1); border:1px solid var(--border); margin-bottom:6px; overflow:hidden; }
+.res-ficha-nome { padding:7px 13px; font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:17px; letter-spacing:.05em; text-transform:uppercase; border-bottom:1px solid var(--border); }
+.res-campos { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); }
+.res-campo { background:var(--s1); padding:7px 11px; font-size:10px; font-family:'Courier New',monospace; }
+.res-campo .rl { color:var(--muted); font-size:8px; text-transform:uppercase; letter-spacing:.15em; margin-bottom:2px; }
+.res-campo.ok  { background:#060e06; }
+.res-campo.err { background:#0e0606; }
+.res-campo.amb { background:#0e0d06; }
+.res-campo .hint { color:var(--muted); font-size:9px; margin-top:3px; font-style:italic; }
+.amb-note { background:#0e0d06; border-left:2px solid var(--teal); padding:9px 13px; font-size:10px; color:var(--muted); margin:4px 0; line-height:1.7; font-style:italic; font-family:'Courier New',monospace; }
+.btn-dnv { width:100%; background:var(--red); border:none; color:#fff; font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:24px; letter-spacing:.04em; text-transform:uppercase; padding:14px; cursor:pointer; margin-top:18px; border-radius:10px; transition:background .15s; }
+.btn-dnv:hover { background:#c03434; }
+
+/* mock */
+.mock-wrap { position:fixed; bottom:calc(var(--nav-h)+10px); right:10px; z-index:140; display:flex; gap:5px; }
+.btn-mock { background:var(--s2); border:1px solid var(--border); color:var(--muted); font-family:'Courier New',monospace; font-size:9px; padding:5px 10px; cursor:pointer; border-radius:4px; transition:all .15s; letter-spacing:.06em; }
+.btn-mock:hover { border-color:var(--muted); color:var(--txt); }
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* ── HOME ── */
+#home {
+  position:fixed; inset:0; z-index:1000; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:32px 24px; text-align:center;
+  opacity:1; visibility:visible; transition:opacity .35s, visibility .35s;
+}
+#home.off { opacity:0; visibility:hidden; }
+.home-tag { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+.home-title { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:clamp(52px,15vw,84px); text-transform:uppercase; letter-spacing:.04em; line-height:.88; color:var(--txt); margin-bottom:14px; }
+.home-sub { font-family:'Courier New',monospace; font-size:12px; color:var(--muted); line-height:1.9; max-width:320px; margin:0 auto 38px; }
+.home-sub strong { color:var(--txt); }
+.btn-start { height:56px; padding:0 42px; border-radius:12px; background:var(--red); color:#fff; border:none; font-family:'Brunson Rough','Bebas Neue',sans-serif; font-weight:normal; font-size:26px; text-transform:uppercase; letter-spacing:.04em; cursor:pointer; transition:background .15s; }
+.btn-start:hover { background:#c03434; }
+.btn-start:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+.home-foot { position:absolute; bottom:20px; font-family:'Courier New',monospace; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--border); }
+/* ── HEADER BACK ── */
+.btn-home { width:34px; height:34px; border-radius:9px; flex-shrink:0; background:transparent; border:1px solid var(--border); color:var(--muted); cursor:pointer; font-size:17px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.btn-home:hover { border-color:var(--muted); color:var(--txt); }
+.btn-home:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+/* ── MOCK ERROR ── */
+.btn-mock-err { background:var(--red-dim); border:1px solid var(--red); color:var(--red); font-family:'Courier New',monospace; font-size:9px; padding:5px 10px; cursor:pointer; border-radius:4px; transition:all .15s; letter-spacing:.06em; }
+.btn-mock-err:hover { border-color:#ff6060; color:#ff8080; }
+/* ── CLEAR SEQ ── */
+.seq-head { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-bottom:0; }
+.btn-clear-seq { height:28px; padding:0 12px; border-radius:7px; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Courier New',monospace; font-size:9px; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:all .15s; flex-shrink:0; margin-bottom:18px; }
+.btn-clear-seq:hover { border-color:var(--err); color:var(--err); }
+.btn-clear-seq:focus-visible { outline:2px solid var(--teal); outline-offset:2px; }
+.btn-clear-seq:disabled { opacity:.25; cursor:default; pointer-events:none; }
+/* ── RESULT EXTRA ── */
+.res-seq-row { font-family:'Courier New',monospace; font-size:11px; color:var(--muted); padding:10px 20px 14px; border-top:1px solid var(--border); display:flex; gap:20px; flex-wrap:wrap; }
+.res-seq-row .hi { color:var(--txt); font-weight:bold; }
+.btn-home-res { width:100%; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Courier New',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:12px; cursor:pointer; margin-top:8px; border-radius:10px; transition:all .15s; }
+.btn-home-res:hover { border-color:var(--muted); color:var(--txt); }
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="home">
+  <p class="home-tag"><span class="rec-dot" aria-hidden="true"></span>Caso 001 · Rancho Esperança · 1995</p>
+  <h1 class="home-title">Identidade<br>Oculta</h1>
+  <p class="home-sub">
+    Sete pessoas. Uma noite de filmagem.<br>Seis não sobreviveram — mas quem?<br><br>
+    <strong>Ouça as fitas. Monte a linha do tempo.<br>Preencha as fichas. Conclua a investigação.</strong>
+  </p>
+  <button class="btn-start" id="btn-start">Iniciar Investigação</button>
+  <span class="home-foot">Identidade Oculta · Simulação Digital · v1.0</span>
+</div>
+
+<header id="hdr">
+  <button class="btn-home" id="btn-home" aria-label="Voltar à tela inicial" title="Início">←</button>
+  <div class="hdr-brand">
+    <p class="hdr-tag"><span class="rec-dot" aria-hidden="true"></span>Caso 001-95</p>
+    <h1 class="hdr-title">Identidade Oculta</h1>
+  </div>
+  <div class="hdr-info" aria-live="polite">
+    <span id="ctr-ev">0/21 ouvidas</span>
+    <span id="ctr-campos">0/28 campos</span>
+  </div>
+</header>
+
+<div id="content">
+  <div id="tab-fitas" class="tab on">
+    <p class="sec-label">Pasta de evidências — 21 fitas</p>
+    <div id="ev-grid" role="list"></div>
+  </div>
+
+  <div id="tab-seq" class="tab">
+    <div class="seq-head">
+      <div>
+        <h2 class="seq-title">Linha do Tempo</h2>
+        <p class="seq-sub" id="seq-sub">0 de 21 fitas colocadas</p>
+      </div>
+      <button class="btn-clear-seq" id="btn-clear-seq" disabled aria-label="Limpar sequência">Limpar tudo</button>
+    </div>
+    <div id="seq-content"></div>
+  </div>
+
+  <div id="tab-fichas" class="tab">
+    <p class="sec-label">Fichas do caso — 7 personagens</p>
+    <div class="fichas-grid" id="fichas-grid"></div>
+    <div class="conclude-row">
+      <span id="ctr-campos-b" aria-live="polite">0 de 28 campos preenchidos</span>
+      <button class="btn-conclude" id="btn-concluir">Concluir investigação</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM BOTTOM SHEET -->
+<div id="backdrop" aria-hidden="true"></div>
+<div id="sheet" role="dialog" aria-modal="true" aria-label="Exame de evidência" hidden>
+  <div class="sheet-top">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-titles">
+      <div class="sheet-eid" id="s-eid"></div>
+      <div class="sheet-tipo" id="s-tipo"></div>
+    </div>
+    <button class="sheet-close" id="btn-close" aria-label="Fechar">×</button>
+  </div>
+  <div class="sheet-photo" id="s-photo"><div class="sheet-photo-ph">[ FOTO ]</div></div>
+  <div class="sheet-body">
+    <div>
+      <div class="audio-row">
+        <button id="btn-audio" aria-label="Ouvir relato em voz alta">▶ Ouvir</button>
+        <div class="audio-wave" id="wave" aria-hidden="true"></div>
+      </div>
+      <div class="audio-meta" style="margin-top:6px">
+        <span id="audio-time">0:00 / 0:00</span>
+        <div class="reel" id="reel-el" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 26 26">
+            <circle cx="13" cy="13" r="11" fill="none" stroke="#604848" stroke-width="1.5"/>
+            <circle cx="13" cy="13" r="4" fill="#604848"/>
+            <line x1="13" y1="2" x2="13" y2="7" stroke="#604848" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="19" x2="13" y2="24" stroke="#604848" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="2" y1="13" x2="7" y2="13" stroke="#604848" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="13" x2="24" y2="13" stroke="#604848" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="exam-desc" id="s-desc"></div>
+    <div class="seq-box" id="seq-controls" aria-label="Controles da linha do tempo"></div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result" role="dialog" aria-modal="true" hidden>
+  <div id="result-box">
+    <h2 class="res-title">Resultado da<br>Investigação</h2>
+    <div class="res-stamp" id="res-stamp"></div>
+    <div class="score-block">
+      <span class="score-num" id="score-num"></span>
+      <div class="score-info" id="score-info"></div>
+    </div>
+    <div id="res-detalhe"></div>
+    <button class="btn-dnv" id="btn-dnv">Jogar novamente</button>
+    <button class="btn-home-res" id="btn-home-res">← Voltar à tela inicial</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav" aria-label="Navegação principal">
+  <button class="nav-btn on" data-tab="fitas" aria-label="Fitas de evidência">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/>
+        <rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/>
+      </svg>
+    </span>
+    <span class="nav-lbl">Fitas</span>
+    <span class="nav-badge" id="nb-fitas"></span>
+  </button>
+  <button class="nav-btn" data-tab="seq" aria-label="Linha do tempo">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="2" y1="10" x2="18" y2="10"/>
+        <circle cx="5" cy="10" r="2.5" fill="currentColor" stroke="none"/>
+        <circle cx="10" cy="10" r="2.5" fill="currentColor" stroke="none"/>
+        <circle cx="15" cy="10" r="2.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="nav-lbl">Sequência</span>
+    <span class="nav-badge" id="nb-seq"></span>
+  </button>
+  <button class="nav-btn" data-tab="fichas" aria-label="Fichas dos personagens">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="14" height="13" rx="2"/>
+        <line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="12" x2="11" y2="12"/>
+      </svg>
+    </span>
+    <span class="nav-lbl">Fichas</span>
+    <span class="nav-badge" id="nb-fichas"></span>
+  </button>
+</nav>
+
+<div class="mock-wrap">
+  <button class="btn-mock" id="btn-mock">Mock ⚡</button>
+  <button class="btn-mock-err" id="btn-mock-err">Erro ✗</button>
+</div>
+
+<script>
+// ── SVGs ──────────────────────────────────────────────────────────────────
+const SVGS = {
+'E-01':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="0" y="145" width="300" height="40" fill="#111"/><rect x="148" y="72" width="138" height="68" rx="6" fill="#1a1a1a" stroke="#3a3a3a"/><rect x="168" y="50" width="88" height="26" rx="4" fill="#1a1a1a" stroke="#3a3a3a"/><rect x="172" y="54" width="32" height="15" rx="2" fill="#0a1520" stroke="#223"/><rect x="210" y="54" width="32" height="15" rx="2" fill="#0a1520" stroke="#223"/><circle cx="167" cy="147" r="11" fill="#0a0a0a" stroke="#444"/><circle cx="258" cy="147" r="11" fill="#0a0a0a" stroke="#444"/><ellipse cx="92" cy="76" rx="14" ry="16" fill="#252525" stroke="#444"/><rect x="77" y="90" width="30" height="55" rx="6" fill="#252525" stroke="#444"/><line x1="77" y1="100" x2="56" y2="132" stroke="#252525" stroke-width="12" stroke-linecap="round"/><line x1="107" y1="100" x2="150" y2="118" stroke="#252525" stroke-width="12" stroke-linecap="round"/><circle cx="153" cy="121" r="7" fill="#1a1a1a" stroke="#555"/><circle cx="158" cy="115" r="5" fill="#c0392b"/><rect x="42" y="125" width="22" height="14" rx="2" fill="#8a5a20" stroke="#a06820"/><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">BASTIDOR</text></svg>`,
+'E-02':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="38" y="14" width="224" height="158" rx="2" fill="#f0ecd8" stroke="#ccc"/><line x1="54" y1="18" x2="54" y2="170" stroke="#999" stroke-width="1.5"/><circle cx="54" cy="28" r="3" fill="#777"/><circle cx="54" cy="44" r="3" fill="#777"/><circle cx="54" cy="60" r="3" fill="#777"/><circle cx="54" cy="76" r="3" fill="#777"/><line x1="66" y1="34" x2="245" y2="34" stroke="#ccc"/><line x1="66" y1="50" x2="240" y2="50" stroke="#ccc"/><line x1="66" y1="66" x2="200" y2="66" stroke="#ccc"/><text x="72" y="48" fill="#c0392b" font-size="9" font-family="monospace">refazer  ritmo  cortar</text><rect x="60" y="96" width="180" height="38" rx="2" fill="#fff0f0" stroke="#c0392b"/><text x="68" y="112" fill="#c0392b" font-size="9" font-family="monospace" font-weight="bold">Ninguem toca nessa cena</text><text x="68" y="126" fill="#c0392b" font-size="9" font-family="monospace" font-weight="bold">ate eu dizer que esta pronta.</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">DOCUMENTO</text></svg>`,
+'E-03':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#080808"/><rect x="0" y="100" width="300" height="85" fill="#111"/><rect x="232" y="18" width="58" height="118" fill="#3a2000"/><defs><linearGradient id="gA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c87020" stop-opacity=".9"/><stop offset="1" stop-color="#3a2000" stop-opacity=".1"/></linearGradient></defs><rect x="234" y="20" width="54" height="114" fill="url(#gA)"/><rect x="25" y="118" width="185" height="55" rx="10" fill="#202020" stroke="#2a2a2a" transform="rotate(-4 117 145)"/><rect x="55" y="142" width="52" height="14" rx="3" fill="#1a1a1a" stroke="#333"/><text x="8" y="14" fill="#a06010" font-size="8" font-family="monospace">FOTO DE CENA · TARDE</text></svg>`,
+'E-04':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="14" y="10" width="272" height="165" rx="3" fill="#2a1800" stroke="#4a3010"/><rect x="24" y="18" width="78" height="36" rx="2" fill="#ede8d0" stroke="#bbb"/><text x="29" y="31" fill="#333" font-size="7" font-family="monospace">Quem pegou</text><text x="29" y="42" fill="#333" font-size="7" font-family="monospace">meu fone?</text><rect x="112" y="18" width="78" height="36" rx="2" fill="#ede8d0" stroke="#bbb"/><text x="117" y="31" fill="#333" font-size="7" font-family="monospace">Cade meu</text><text x="117" y="42" fill="#333" font-size="7" font-family="monospace">cinto?</text><rect x="200" y="18" width="78" height="36" rx="2" fill="#ede8d0" stroke="#bbb"/><text x="205" y="31" fill="#333" font-size="7" font-family="monospace">Alguem viu</text><text x="205" y="42" fill="#333" font-size="7" font-family="monospace">a alca?</text><rect x="24" y="64" width="78" height="36" rx="2" fill="#ede8d0" stroke="#bbb"/><text x="29" y="77" fill="#333" font-size="7" font-family="monospace">Cade a</text><text x="29" y="88" fill="#333" font-size="7" font-family="monospace">chave?</text><rect x="48" y="112" width="204" height="48" rx="2" fill="#fff0f0" stroke="#c0392b" stroke-width="2"/><text x="150" y="133" fill="#c0392b" font-size="15" font-family="monospace" font-weight="bold" text-anchor="middle">DENIS,</text><text x="150" y="151" fill="#c0392b" font-size="15" font-family="monospace" font-weight="bold" text-anchor="middle">DEVOLVE!</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">MURAL DE RECADOS</text></svg>`,
+'E-05':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="24" y="10" width="252" height="166" rx="2" fill="#f0ece0" stroke="#ccc"/><rect x="34" y="18" width="115" height="11" rx="2" fill="#ddd"/><line x1="34" y1="42" x2="264" y2="42" stroke="#bbb"/><line x1="34" y1="56" x2="248" y2="56" stroke="#bbb"/><line x1="34" y1="70" x2="258" y2="70" stroke="#bbb"/><rect x="30" y="86" width="242" height="22" rx="2" fill="#e8ffe8" stroke="#27ae60"/><text x="38" y="101" fill="#1a6a1a" font-size="9" font-family="monospace">Incisao fina e superficial no pescoco.</text><rect x="30" y="116" width="242" height="22" rx="2" fill="#ffe8e8" stroke="#c0392b"/><text x="38" y="131" fill="#8a1a1a" font-size="9" font-family="monospace">Sem indicios de lamina larga.</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">LAUDO PERICIAL</text></svg>`,
+'E-06':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#060810"/><rect x="0" y="100" width="300" height="85" fill="#0a0c14"/><rect x="58" y="102" width="144" height="62" rx="10" fill="#c0c0c0" stroke="#999"/><rect x="198" y="112" width="72" height="48" rx="6" fill="#181818" stroke="#2a2a2a"/><line x1="38" y1="132" x2="18" y2="164" stroke="#2a2a2a" stroke-width="9" stroke-linecap="round"/><rect x="198" y="22" width="50" height="34" rx="2" fill="#1a1a1a" stroke="#333"/><text x="202" y="42" fill="#b89a3e" font-size="13" font-family="monospace" font-weight="bold">5:40</text><circle cx="200" cy="25" r="4" fill="#9e3228"/><line x1="113" y1="162" x2="113" y2="148" stroke="#9a7a30" stroke-width="3"/><circle cx="113" cy="145" r="5" fill="#9a7a30"/><text x="8" y="14" fill="#4060a0" font-size="8" font-family="monospace">FOTO DE CENA · 5h40</text></svg>`,
+'E-07':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><ellipse cx="150" cy="64" rx="18" ry="20" fill="#252525" stroke="#444"/><rect x="130" y="58" width="13" height="8" rx="3" fill="#1a1a1a" stroke="#555"/><rect x="78" y="82" width="142" height="78" rx="8" fill="#252525" stroke="#444"/><rect x="88" y="72" width="62" height="42" rx="4" fill="#1a1a1a" stroke="#333"/><rect x="92" y="75" width="52" height="35" rx="2" fill="#060606"/><circle cx="154" cy="92" r="6" fill="#0a0a0a" stroke="#444"/><circle cx="154" cy="92" r="3" fill="#222"/><path d="M88 86 Q68 72 58 88 Q56 104 78 108" stroke="#5baa7e" stroke-width="3" fill="none" stroke-linecap="round"/><text x="8" y="14" fill="#5baa7e" font-size="8" font-family="monospace">BASTIDOR · FILMADORA</text></svg>`,
+'E-08':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="82" y="0" width="136" height="185" fill="#1a0f00" stroke="#2a1800"/><line x1="102" y1="0" x2="102" y2="185" stroke="#140b00" stroke-width="2"/><line x1="122" y1="0" x2="122" y2="185" stroke="#140b00" stroke-width="2"/><line x1="142" y1="0" x2="142" y2="185" stroke="#140b00" stroke-width="2"/><line x1="162" y1="0" x2="162" y2="185" stroke="#140b00" stroke-width="2"/><line x1="182" y1="0" x2="182" y2="185" stroke="#140b00" stroke-width="2"/><rect x="98" y="42" width="104" height="100" rx="2" fill="#ede8d5" stroke="#ccc"/><circle cx="150" cy="47" r="4" fill="#c0392b"/><text x="105" y="62" fill="#333" font-size="7.5" font-family="monospace">Bob, tira esse fone</text><text x="105" y="74" fill="#333" font-size="7.5" font-family="monospace">pra ouvir quando te</text><text x="105" y="86" fill="#333" font-size="7.5" font-family="monospace">chamam. E vai dormir,</text><text x="105" y="98" fill="#333" font-size="7.5" font-family="monospace">voce ta com cara de</text><text x="105" y="110" fill="#333" font-size="7.5" font-family="monospace">quem nao dorme ha</text><text x="105" y="122" fill="#333" font-size="7.5" font-family="monospace">dois dias.</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">BILHETE NA PORTA</text></svg>`,
+'E-09':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#04040a"/><rect x="128" y="52" width="158" height="82" rx="7" fill="#141414" stroke="#222"/><rect x="143" y="33" width="100" height="24" rx="4" fill="#141414" stroke="#222"/><polygon points="128,88 58,58 58,118" fill="rgba(255,255,200,.06)"/><circle cx="146" cy="142" r="12" fill="#0a0a0a" stroke="#333"/><circle cx="260" cy="142" r="12" fill="#0a0a0a" stroke="#333"/><rect x="38" y="128" width="86" height="44" rx="6" fill="#1e1e1e" stroke="#2a2a2a" transform="rotate(7 81 150)"/><circle cx="58" cy="166" r="6" fill="#c0392b"/><rect x="146" y="60" width="40" height="22" rx="2" fill="#0a0a0a" stroke="#222"/><text x="148" y="75" fill="#b89a3e" font-size="12" font-family="monospace" font-weight="bold">3:52</text><text x="8" y="14" fill="#364878" font-size="8" font-family="monospace">FOTO DE CENA · 3h52</text></svg>`,
+'E-10':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="168" y="18" width="112" height="142" rx="3" fill="#1a1500" stroke="#3a3000"/><line x1="174" y1="24" x2="274" y2="24" stroke="#5a4a00" stroke-width="2"/><text x="180" y="48" fill="#4a3a00" font-size="7" font-family="monospace">A Hora do Vampiro</text><text x="180" y="62" fill="#4a3a00" font-size="7" font-family="monospace">O Ultimo Ato</text><text x="180" y="76" fill="#4a3a00" font-size="7" font-family="monospace">Sombras de Outrora</text><ellipse cx="88" cy="68" rx="18" ry="20" fill="#252525" stroke="#444"/><rect x="66" y="86" width="44" height="76" rx="8" fill="#252525" stroke="#3a3a3a"/><line x1="88" y1="162" x2="88" y2="185" stroke="#9a7a30" stroke-width="4" stroke-linecap="round"/><circle cx="88" cy="159" r="7" fill="#9a7a30"/><line x1="66" y1="98" x2="44" y2="132" stroke="#252525" stroke-width="12" stroke-linecap="round"/><line x1="110" y1="98" x2="132" y2="132" stroke="#252525" stroke-width="12" stroke-linecap="round"/><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">BASTIDOR · BENGALA</text></svg>`,
+'E-11':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#030803"/><rect x="0" y="78" width="300" height="107" fill="#060d06"/><ellipse cx="48" cy="28" r="18" fill="#0d180d"/><ellipse cx="98" cy="18" r="12" fill="#0d180d"/><ellipse cx="248" cy="23" r="20" fill="#0d180d"/><circle cx="28" cy="16" r="10" fill="#1a1a1a" opacity=".7"/><rect x="48" y="112" width="164" height="56" rx="10" fill="#1e1e1e" stroke="#2a2a2a" transform="rotate(-7 130 140)"/><line x1="88" y1="138" x2="73" y2="154" stroke="#6a4a00" stroke-width="2"/><line x1="128" y1="132" x2="142" y2="150" stroke="#6a4a00" stroke-width="2"/><line x1="168" y1="136" x2="158" y2="156" stroke="#6a4a00" stroke-width="2"/><ellipse cx="78" cy="157" rx="18" ry="10" fill="#5a008a" opacity=".6"/><ellipse cx="152" cy="161" rx="14" ry="8" fill="#003a8a" opacity=".5"/><ellipse cx="198" cy="148" rx="12" ry="7" fill="#1a6a1a" opacity=".5"/><text x="8" y="14" fill="#2a5a2a" font-size="8" font-family="monospace">FOTO DE CENA · MATAGAL</text></svg>`,
+'E-12':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="0" y="130" width="300" height="55" fill="#111"/><rect x="28" y="98" width="224" height="68" rx="12" fill="#1e1e1e" stroke="#2a2a2a"/><ellipse cx="78" cy="90" rx="20" ry="12" fill="#111" stroke="#5b8dd9" stroke-width="2"/><ellipse cx="66" cy="90" rx="6" ry="6" fill="#0a0a0a" stroke="#5b8dd9"/><ellipse cx="90" cy="90" rx="6" ry="6" fill="#0a0a0a" stroke="#5b8dd9"/><rect x="48" y="118" width="52" height="10" rx="3" fill="#1a1a1a" stroke="#c06ec0" stroke-width="1.5"/><line x1="54" y1="120" x2="54" y2="127" stroke="#c06ec0"/><line x1="64" y1="120" x2="64" y2="127" stroke="#c06ec0"/><line x1="74" y1="120" x2="74" y2="127" stroke="#c06ec0"/><path d="M168 106 Q178 93 188 106" stroke="#5baa7e" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="214" cy="143" r="7" fill="#111" stroke="#c0392b" stroke-width="2"/><circle cx="214" cy="143" r="3" fill="#c0392b"/><rect x="194" y="108" width="24" height="15" rx="2" fill="#0a0a0a" stroke="#b89a3e"/><text x="196" y="119" fill="#b89a3e" font-size="8" font-family="monospace" font-weight="bold">2:10</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">FOTO DE CENA · 2h10</text></svg>`,
+'E-13':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="18" y="14" width="158" height="158" rx="2" fill="#e8e0c0" stroke="#bbb"/><text x="28" y="34" fill="#444" font-size="9" font-family="monospace">A Hora do Vampiro</text><text x="28" y="50" fill="#444" font-size="9" font-family="monospace">Janela para o Passado</text><text x="28" y="66" fill="#444" font-size="9" font-family="monospace">O Ultimo Ato (1962)</text><text x="28" y="82" fill="#444" font-size="9" font-family="monospace">Sombras de Outrora</text><text x="28" y="98" fill="#444" font-size="9" font-family="monospace">A Dama do Cinema</text><text x="28" y="114" fill="#444" font-size="9" font-family="monospace">Noite Eterna (1965)</text><rect x="184" y="38" width="96" height="142" rx="2" fill="#d4c070" stroke="#a0902a"/><text x="232" y="84" fill="#5a4a00" font-size="8" font-family="monospace" text-anchor="middle">CINEMA</text><text x="232" y="98" fill="#5a4a00" font-size="8" font-family="monospace" text-anchor="middle">PLAZA</text><text x="232" y="118" fill="#5a4a00" font-size="10" font-family="monospace" text-anchor="middle">1965</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">DOCUMENTO</text></svg>`,
+'E-14':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#030803"/><rect x="0" y="78" width="300" height="107" fill="#060d06"/><g opacity=".32"><rect x="158" y="108" width="82" height="42" rx="8" fill="#1a1a1a" stroke="#2a2a2a"/><ellipse cx="184" cy="136" rx="12" ry="7" fill="#5a008a" opacity=".5"/><ellipse cx="218" cy="130" rx="10" ry="6" fill="#1a6a1a" opacity=".5"/></g><rect x="28" y="92" width="98" height="57" rx="8" fill="#1e1e1e" stroke="#2a2a2a"/><rect x="30" y="94" width="82" height="52" rx="6" fill="#141414"/><circle cx="74" cy="120" r="8" fill="#0a0a0a" stroke="#333"/><line x1="118" y1="138" x2="118" y2="168" stroke="#555" stroke-width="3"/><path d="M118 153 Q136 146 150 158 L150 173 Q136 179 118 171 Z" fill="#444" stroke="#555"/><text x="8" y="14" fill="#2a5a2a" font-size="8" font-family="monospace">FOTO · FOICE</text></svg>`,
+'E-15':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="24" y="10" width="252" height="168" rx="2" fill="#e8e4d5" stroke="#bbb"/><line x1="34" y1="18" x2="34" y2="178" stroke="#ddd" stroke-width="1"/><text x="40" y="38" fill="#333" font-size="9" font-family="monospace">Gasolina . . . . . R$ 45,00</text><text x="40" y="54" fill="#333" font-size="9" font-family="monospace">Aluguel equip. . . R$ 280,00</text><text x="40" y="70" fill="#333" font-size="9" font-family="monospace">Alimentacao . . . R$ 90,00</text><line x1="40" y1="80" x2="262" y2="80" stroke="#999"/><text x="40" y="95" fill="#333" font-size="10" font-family="monospace" font-weight="bold">TOTAL . . . . . . R$ 415,00</text><ellipse cx="222" cy="92" rx="38" ry="11" fill="none" stroke="#c0392b" stroke-width="2.5"/><text x="150" y="122" fill="#c0392b" font-size="15" font-family="monospace" font-weight="bold" text-anchor="middle">ESTOURAMOS</text><text x="40" y="148" fill="#555" font-size="8" font-family="monospace" font-style="italic">Se esse filme nao der dinheiro,</text><text x="40" y="160" fill="#555" font-size="8" font-family="monospace" font-style="italic">meus pais vao me matar.</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">DESPESAS</text></svg>`,
+'E-16':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><ellipse cx="150" cy="52" rx="18" ry="20" fill="#252525" stroke="#444"/><rect x="124" y="70" width="52" height="88" rx="8" fill="#252525" stroke="#3a3a3a"/><rect x="116" y="92" width="68" height="16" rx="4" fill="#1a1a1a" stroke="#c06ec0" stroke-width="1.5"/><line x1="126" y1="94" x2="126" y2="107" stroke="#c06ec0"/><line x1="136" y1="94" x2="136" y2="107" stroke="#c06ec0"/><line x1="146" y1="94" x2="146" y2="107" stroke="#c06ec0"/><line x1="156" y1="94" x2="156" y2="107" stroke="#c06ec0"/><circle cx="58" cy="148" r="18" fill="#0e0e18" stroke="#1a1a30"/><circle cx="70" cy="155" r="14" fill="#1a0a2a" stroke="#2a1040"/><circle cx="210" cy="146" r="16" fill="#0e1a0e" stroke="#1a2a1a"/><circle cx="226" cy="154" r="12" fill="#0a1a0a" stroke="#102010"/><text x="8" y="14" fill="#c06ec0" font-size="8" font-family="monospace">BASTIDOR · CINTO</text></svg>`,
+'E-17':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><ellipse cx="150" cy="48" rx="18" ry="20" fill="#252525" stroke="#444"/><path d="M113 62 Q150 56 187 62" stroke="#5b8dd9" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="116" cy="62" r="9" fill="#0a0a0a" stroke="#5b8dd9" stroke-width="2"/><circle cx="184" cy="62" r="9" fill="#0a0a0a" stroke="#5b8dd9" stroke-width="2"/><rect x="124" y="68" width="52" height="78" rx="8" fill="#252525" stroke="#3a3a3a"/><rect x="78" y="120" width="134" height="58" rx="4" fill="#1a1a1a" stroke="#333"/><rect x="88" y="128" width="68" height="40" rx="3" fill="#111" stroke="#2a2a2a"/><line x1="176" y1="133" x2="202" y2="122" stroke="#555" stroke-width="2"/><circle cx="204" cy="120" r="5" fill="#333" stroke="#555"/><text x="8" y="14" fill="#5b8dd9" font-size="8" font-family="monospace">BASTIDOR · FONE + GRAVADOR</text></svg>`,
+'E-18':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="28" y="18" width="5" height="160" fill="#333" opacity=".5"/><ellipse cx="150" cy="52" rx="18" ry="20" fill="#252525" stroke="#444"/><rect x="124" y="70" width="52" height="82" rx="8" fill="#252525" stroke="#3a3a3a"/><line x1="124" y1="86" x2="103" y2="118" stroke="#252525" stroke-width="12" stroke-linecap="round"/><rect x="76" y="110" width="32" height="42" rx="3" fill="#1a1a1a" stroke="#555"/><line x1="78" y1="113" x2="78" y2="152" stroke="#444" stroke-width="1.5"/><circle cx="88" cy="110" r="4" fill="#c0392b"/><text x="8" y="14" fill="#d94f4f" font-size="8" font-family="monospace">BASTIDOR · BLOQUINHO</text></svg>`,
+'E-19':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="1" y="1" width="298" height="183" fill="none" stroke="#b89a3e" stroke-width="1.5"/><ellipse cx="150" cy="42" rx="18" ry="20" fill="#252525" stroke="#555"/><rect x="124" y="60" width="52" height="92" rx="8" fill="#252525" stroke="#555"/><path d="M108 72 Q150 65 192 72" stroke="#5b8dd9" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="110" cy="71" r="8" fill="#0a0a0a" stroke="#5b8dd9" stroke-width="2"/><circle cx="190" cy="71" r="8" fill="#0a0a0a" stroke="#5b8dd9" stroke-width="2"/><rect x="106" y="96" width="88" height="14" rx="4" fill="#1a1a1a" stroke="#c06ec0" stroke-width="1.5"/><line x1="116" y1="98" x2="116" y2="109" stroke="#c06ec0"/><line x1="128" y1="98" x2="128" y2="109" stroke="#c06ec0"/><line x1="140" y1="98" x2="140" y2="109" stroke="#c06ec0"/><path d="M176 65 Q196 48 212 68" stroke="#5baa7e" stroke-width="3" fill="none" stroke-linecap="round"/><text x="8" y="14" fill="#b89a3e" font-size="8" font-family="monospace">BASTIDOR · 3 OBJETOS</text></svg>`,
+'E-20':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#030803"/><rect x="48" y="38" width="178" height="112" rx="10" fill="#1e1e1e" stroke="#333" transform="rotate(-10 137 94)"/><rect x="52" y="42" width="148" height="92" rx="8" fill="#141414" stroke="#222" transform="rotate(-10 126 88)"/><circle cx="128" cy="93" r="20" fill="#0a0a0a" stroke="#2a2a2a" transform="rotate(-10 128 93)"/><circle cx="128" cy="93" r="8" fill="#111" stroke="#333"/><line x1="192" y1="48" x2="212" y2="28" stroke="#9e3228" stroke-width="2.5" stroke-linecap="round"/><line x1="212" y1="48" x2="192" y2="28" stroke="#9e3228" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="82" cy="73" rx="10" ry="7" fill="#5a008a" opacity=".7" transform="rotate(-10 82 73)"/><ellipse cx="162" cy="118" rx="8" ry="5" fill="#003a8a" opacity=".6" transform="rotate(-10 162 118)"/><text x="8" y="14" fill="#5baa7e" font-size="8" font-family="monospace">DETALHE · SEM ALCA</text></svg>`,
+'E-21':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="24" y="10" width="252" height="166" rx="2" fill="#f0ece0" stroke="#ccc"/><rect x="34" y="18" width="122" height="11" rx="2" fill="#ddd"/><line x1="34" y1="42" x2="264" y2="42" stroke="#bbb"/><line x1="34" y1="56" x2="252" y2="56" stroke="#bbb"/><line x1="34" y1="70" x2="260" y2="70" stroke="#bbb"/><rect x="30" y="84" width="242" height="20" rx="2" fill="#fff8e8" stroke="#b89a3e"/><text x="38" y="98" fill="#6a5000" font-size="8.5" font-family="monospace">Corpo sem condicoes de identificacao.</text><rect x="30" y="112" width="242" height="20" rx="2" fill="#ffe8e8" stroke="#c0392b"/><text x="38" y="126" fill="#8a1a1a" font-size="8.5" font-family="monospace">Nao foi possivel confirmar qual morreu.</text><text x="218" y="170" fill="#666" font-size="42" font-family="monospace" opacity=".18">?</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">LAUDO INCONCLUSIVO</text></svg>`
+};
+
+// ── DADOS ─────────────────────────────────────────────────────────────────
+const EV = [
+  {id:'E-01',tipo:'Bastidor',    desc:'Exterior do rancho, final da tarde. Uma figura de costas encostada no carro. Não consigo ver o rosto. Na mão direita, algo com detalhe vermelho. Embaixo do braço, uma pasta de documentos. Essa pessoa estava prestes a ir embora... ou esperando por alguém.'},
+  {id:'E-02',tipo:'Documento',   desc:'Um bloquinho espiral aberto sobre a mesa. Folheio com cuidado. Anotações em caneta vermelha: "refazer", "ritmo", "cortar". E no centro, sublinhado duas vezes: "Ninguém toca nessa cena até eu dizer que está pronta." Quem escreveu isso — e por que tanto ciúme de uma cena específica?'},
+  {id:'E-03',tipo:'Foto de Cena',desc:'Estou no quarto. O corpo está de bruços sobre a cama. Não consigo identificar o rosto. No chão, um gravador de fita com a fita completamente desenrolada. A luz pela janela é alaranjada — fim de tarde. Marcas de agressão física. Nenhuma lâmina à vista.'},
+  {id:'E-04',tipo:'Documento',   desc:'O mural de recados da produção. Cinco bilhetes: "Quem pegou meu fone?", "Cadê meu cinto de utilidades?", "Alguém viu a alça da filmadora?", "Alguém viu a chave do carro?" E um maior, em vermelho, no centro: DÊNIS, DEVOLVE! Os objetos sumiam antes das mortes.'},
+  {id:'E-05',tipo:'Laudo',       desc:'Laudo pericial da segunda vítima. Registro: lesões contusas múltiplas. Incisão fina e superficial na região do pescoço. Sem indícios de lâmina larga ou instrumento pesado. Dois tipos de agressão na mesma vítima — começaram pelos socos.'},
+  {id:'E-06',tipo:'Foto de Cena',desc:'Entrei na sala com a luz do amanhecer. São 5h40 no relógio de parede. Dois corpos. Um coberto por um lençol — sem identificação possível. O outro ao fundo, sangue já seco. Dois objetos distintos caídos lado a lado entre eles. Não consigo determinar qual é qual.'},
+  {id:'E-07',tipo:'Bastidor',    desc:'Foto de bastidor. Uma silhueta quase inteiramente encoberta por uma filmadora de ombro — com a alça bem visível. Só a mão aparece no equipamento. Essa pessoa vivia atrás da câmera.'},
+  {id:'E-08',tipo:'Documento',   desc:'Um bilhete preso na porta do quarto. Leio: "Bob, tira esse fone pra ouvir quando te chamam. E vai dormir, você tá com cara de quem não dorme há dois dias." Alguém se preocupava com ele. Tarde demais.'},
+  {id:'E-09',tipo:'Foto de Cena',desc:'Exterior, noite funda. O carro com faróis acesos, porta aberta, ignição vazia. Corpo caído ao lado, perto da mão um objeto com detalhe vermelho. O relógio do painel marca 3h52. A chave sumiu antes.'},
+  {id:'E-10',tipo:'Bastidor',    desc:'Uma silhueta apoiada numa bengala com cabo dourado. Casaco largo. Ao fundo, um cartaz antigo de cinema com título ilegível. Essa pessoa veio de outro tempo — e provavelmente conhecia muito bem esse lugar.'},
+  {id:'E-11',tipo:'Foto de Cena',desc:'Estou no matagal, noite. Abro caminho entre os galhos. Corpo de bruços — não consigo identificar. Marcas de agressão e um corte no pescoço. Pincéis e latas de tinta colorida espalhados ao redor. Instrumento de corte fino — nada pesado aqui.'},
+  {id:'E-12',tipo:'Foto de Cena',desc:'Sala. Chão frio. Um corpo com marcas de facadas múltiplas. Noto: algo no pescoço da vítima, um cinto na cintura, uma alça no braço, e saindo do bolso, um objeto vermelho. O relógio de pulso quebrado no chão marca 2h10. Essa pessoa carregava coisas que não eram dela.'},
+  {id:'E-13',tipo:'Documento',   desc:'Do bolso de um casaco antigo, dobrado com cuidado: uma lista manuscrita de títulos de filmes — todos dos anos 60. E um ingresso amarelado — Cinema Plaza, 1965. Trinta anos guardado. Essa memória importava demais pra jogar fora.'},
+  {id:'E-14',tipo:'Foto de Cena',desc:'Matagal, mesma noite. Uma filmadora caída — sem a alça, só o encaixe vazio. Ao lado, uma foice. O corpo à frente tem cortes largos. Ao fundo, fora de foco, outro corpo entre pincéis e tinta. Dois aqui — mas esse foi a foice.'},
+  {id:'E-15',tipo:'Documento',   desc:'Uma folha de despesas da produção. Gasolina, equipamento, alimentação. O total circulado em vermelho. Na margem, manuscrito: "Se esse filme não der dinheiro, meus pais vão me matar." Pressão séria. Motivo suficiente pra explodir.'},
+  {id:'E-16',tipo:'Bastidor',    desc:'Uma silhueta em meio a tecidos e latas de tinta. Cinto de utilidades na cintura — pincéis e tesoura bem visíveis. Alguém que faz de tudo no set. Arte, figurino, o que aparecer.'},
+  {id:'E-17',tipo:'Bastidor',    desc:'Um grande fone de ouvido preto pendurado no pescoço. Sobre a mesa, um gravador de fita e um microfone boom. Essa pessoa cuida do som — e provavelmente escuta tudo.'},
+  {id:'E-18',tipo:'Bastidor',    desc:'Uma mão segurando um bloquinho espiral. Uma caneta vermelha entre os dedos — a mesma cor das anotações que vi antes. Em frente a um set. Essa pessoa anota tudo. Controla tudo.'},
+  {id:'E-19',tipo:'Bastidor',    desc:'Silhueta em roupa neutra, de costas. Fone de ouvido preto no pescoço. Cinto de utilidades na cintura. Alça de filmadora no ombro. Três objetos que pertencem a três pessoas diferentes. Só uma poderia ter tudo isso ao mesmo tempo.'},
+  {id:'E-20',tipo:'Detalhe',     desc:'A filmadora está caída no mato. A alça está ausente — só o encaixe vazio. Respingos de tinta colorida na carcaça. Essa câmera foi separada de quem a carregava à força.'},
+  {id:'E-21',tipo:'Laudo',       desc:'Laudo final. Leio: "Corpo sem condições de identificação visual. Havia dois envolvidos no confronto final. Não foi possível confirmar qual deles morreu." A última morte fica em aberto. Para sempre.'}
+];
+
+const PERS = [
+  {id:'Bob',    nome:'Roberto (Bob)', cor:'#5b8dd9', idade:22},
+  {id:'Monica', nome:'Mônica',        cor:'#c06ec0', idade:22},
+  {id:'Marcos', nome:'Marcos',        cor:'#5baa7e', idade:20},
+  {id:'Denis',  nome:'Dênis',         cor:'#aaaaaa', idade:20},
+  {id:'Samuel', nome:'Samuel',        cor:'#d98c5b', idade:24},
+  {id:'Vera',   nome:'Vera',          cor:'#d94f4f', idade:23},
+  {id:'Claudio',nome:'Cláudio',       cor:'#7b8fa6', idade:65}
+];
+
+const GAB = {
+  Bob:    {ordem:['1','primeiro'],  local:['quarto','dentro'],       quando:['tarde','entardecer'],  como:['espanc','pancada','agressao','trauma','contus']},
+  Monica: {ordem:['2','segunda'],   local:['matagal','fora','mata'], quando:['noite'],               como:['espanc','corte','pescoco','fina','navalha']},
+  Marcos: {ordem:['3','terceiro'],  local:['matagal','fora','mata'], quando:['noite'],               como:['foice','golpe','larga']},
+  Denis:  {ordem:['4','quarto'],    local:['sala','dentro'],         quando:['madrugada','2h','210'],como:['facada','faca','esfaq']},
+  Samuel: {ordem:['5','quinto'],    local:['carro','fora'],          quando:['madrugada','3h','352'],como:['facada','faca','esfaq']},
+  Vera:   {especial:true,           local:['sala','dentro'],         quando:['amanhecer','5h','540'],como:['tiro','bala','disparo','arma']},
+  Claudio:{especial:true,           local:['sala','dentro'],         quando:['amanhecer','5h','540'],como:['tiro','bala','disparo','arma']}
+};
+
+const OPCOES = {
+  ordem:[
+    {v:'',l:'— escolha —'},{v:'1 primeiro',l:'1.° — Primeiro'},{v:'2 segunda',l:'2.° — Segundo'},
+    {v:'3 terceiro',l:'3.° — Terceiro'},{v:'4 quarto',l:'4.° — Quarto'},
+    {v:'5 quinto',l:'5.° — Quinto'},{v:'6',l:'6.° — Ambíguo'}
+  ],
+  local:[
+    {v:'',l:'— escolha —'},{v:'quarto dentro',l:'Quarto (dentro)'},{v:'sala dentro',l:'Sala (dentro)'},
+    {v:'matagal fora mata',l:'Matagal (fora)'},{v:'carro fora',l:'Perto do carro (fora)'}
+  ],
+  quando:[
+    {v:'',l:'— escolha —'},{v:'tarde entardecer',l:'Final da tarde'},{v:'noite',l:'Noite'},
+    {v:'madrugada 2h 210',l:'Madrugada — 2h10'},{v:'madrugada 3h 352',l:'Madrugada — 3h52'},
+    {v:'amanhecer 5h 540',l:'Amanhecer — 5h40'}
+  ],
+  como:[
+    {v:'',l:'— escolha —'},{v:'espancado pancada agressao trauma contus',l:'Espancado / pancadas'},
+    {v:'corte pescoco fina navalha',l:'Corte no pescoço (lâmina fina)'},{v:'foice golpe larga',l:'Foice (lâmina larga)'},
+    {v:'facada faca esfaqueado',l:'Facadas'},{v:'tiro bala disparo arma',l:'Tiro'}
+  ]
+};
+
+const MOCK_FICHAS = {
+  Bob:    {ordem:'1 primeiro',    local:'quarto dentro',     quando:'tarde entardecer',  como:'espancado pancada agressao trauma contus'},
+  Monica: {ordem:'2 segunda',     local:'matagal fora mata', quando:'noite',             como:'corte pescoco fina navalha'},
+  Marcos: {ordem:'3 terceiro',    local:'matagal fora mata', quando:'noite',             como:'foice golpe larga'},
+  Denis:  {ordem:'4 quarto',      local:'sala dentro',       quando:'madrugada 2h 210',  como:'facada faca esfaqueado'},
+  Samuel: {ordem:'5 quinto',      local:'carro fora',        quando:'madrugada 3h 352',  como:'facada faca esfaqueado'},
+  Vera:   {ordem:'6',             local:'sala dentro',       quando:'amanhecer 5h 540',  como:'tiro bala disparo arma'},
+  Claudio:{ordem:'6',             local:'sala dentro',       quando:'amanhecer 5h 540',  como:'tiro bala disparo arma'}
+};
+
+const MOCK_SEQ = ['E-13','E-15','E-10','E-18','E-17','E-16','E-07','E-04','E-08','E-02',
+                  'E-01','E-03','E-05','E-11','E-14','E-20','E-19','E-12','E-09','E-06','E-21'];
+
+// Respostas erradas — mortes trocadas entre personagens, sequência invertida
+const MOCK_FICHAS_WRONG = {
+  Bob:    {ordem:'3 terceiro',    local:'matagal fora mata', quando:'noite',             como:'foice golpe larga'},
+  Monica: {ordem:'4 quarto',      local:'sala dentro',       quando:'madrugada 2h 210',  como:'facada faca esfaqueado'},
+  Marcos: {ordem:'1 primeiro',    local:'quarto dentro',     quando:'tarde entardecer',  como:'espancado pancada agressao trauma contus'},
+  Denis:  {ordem:'2 segunda',     local:'carro fora',        quando:'madrugada 3h 352',  como:'foice golpe larga'},
+  Samuel: {ordem:'5 quinto',      local:'matagal fora mata', quando:'noite',             como:'corte pescoco fina navalha'},
+  Vera:   {ordem:'6',             local:'carro fora',        quando:'madrugada 3h 352',  como:'facada faca esfaqueado'},
+  Claudio:{ordem:'6',             local:'quarto dentro',     quando:'tarde entardecer',  como:'espancado pancada agressao trauma contus'}
+};
+const MOCK_SEQ_WRONG = ['E-21','E-06','E-09','E-12','E-19','E-20','E-14','E-11','E-05',
+                        'E-03','E-01','E-02','E-08','E-04','E-07','E-16','E-17','E-18','E-10','E-15','E-13'];
+
+// ── ESTADO ─────────────────────────────────────────────────────────────────
+let deck      = [];
+let vistas    = new Set();
+let sequence  = [];
+let examIdx   = null;
+let activeTab = 'fitas';
+let isPlaying = false, audioStart = 0, audioDuration = 0, audioTimer = null;
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim();}
+function match(v,list){const n=norm(v);return list.some(a=>n.includes(norm(a)));}
+function inner(id){return(SVGS[id]||'').replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');}
+function fmt(s){return`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;}
+function getLabel(f,v){return OPCOES[f]?.find(o=>o.v===v)?.l||v||'—';}
+
+// ── TAB SWITCHING ────────────────────────────────────────────────────────────
+function switchTab(name){
+  activeTab = name;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.id===`tab-${name}`));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('on', b.dataset.tab===name));
+  if(name==='seq') renderSeq();
+}
+
+// ── SEQUENCE ─────────────────────────────────────────────────────────────────
+function addToSeq(evId){
+  if(sequence.includes(evId)) return;
+  sequence.push(evId);
+  updateSeqUI(evId);
+  renderSeq();
+  updateCounters();
+}
+function removeFromSeq(evId){
+  sequence = sequence.filter(id=>id!==evId);
+  const cur = deck[examIdx]?.id;
+  if(cur) updateSeqUI(cur);
+  renderSeq();
+  renderGrid();
+  updateCounters();
+}
+function moveSeq(evId, dir){
+  const i = sequence.indexOf(evId);
+  if(i===-1) return;
+  const j = i+dir;
+  if(j<0||j>=sequence.length) return;
+  [sequence[i],sequence[j]]=[sequence[j],sequence[i]];
+  const cur = deck[examIdx]?.id;
+  if(cur) updateSeqUI(cur);
+  renderSeq();
+}
+function openByEvId(evId){
+  const i = deck.findIndex(e=>e.id===evId);
+  if(i!==-1) openExam(i);
+}
+function clearSeq(){
+  if(sequence.length===0) return;
+  sequence=[];
+  const cur=deck[examIdx]?.id;
+  if(cur) updateSeqUI(cur);
+  renderGrid(); renderSeq(); updateCounters();
+}
+
+function renderSeq(){
+  const sub  = document.getElementById('seq-sub');
+  const cont = document.getElementById('seq-content');
+  const nbEl = document.getElementById('nb-seq');
+  if(sub)  sub.textContent  = `${sequence.length} de 21 fitas colocadas`;
+  if(nbEl){ nbEl.textContent = sequence.length||''; nbEl.classList.toggle('on', sequence.length>0); }
+  const clrBtn=document.getElementById('btn-clear-seq');
+  if(clrBtn) clrBtn.disabled = sequence.length===0;
+  if(!cont) return;
+
+  if(sequence.length===0){
+    cont.innerHTML=`<div class="seq-empty">Nenhuma fita colocada ainda.<br><br>Abra uma evidência na aba <strong>Fitas</strong> e toque em <strong>+ Adicionar à sequência</strong>.</div>`;
+    return;
+  }
+
+  const cur = deck[examIdx]?.id;
+  cont.innerHTML = `<div class="seq-list">${sequence.map((evId,i)=>{
+    const ev = EV.find(e=>e.id===evId);
+    const isCur = evId===cur;
+    const svgT = SVGS[evId]
+      ? `<svg viewBox="0 0 300 185" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%">${inner(evId)}</svg>`
+      : '';
+    return `<div class="seq-row${isCur?' cur':''}" data-evid="${evId}">
+      <div class="seq-row-num">#${i+1}</div>
+      <div class="seq-row-thumb" onclick="openByEvId('${evId}')" title="Examinar">${svgT}</div>
+      <div class="seq-row-info" onclick="openByEvId('${evId}')">
+        <div class="seq-row-id">${evId}</div>
+        <div class="seq-row-type">${ev?.tipo||'—'}</div>
+      </div>
+      <div class="seq-row-btns">
+        <button class="seq-row-btn" ${i===0?'disabled':''} onclick="moveSeq('${evId}',-1)" aria-label="Mover para cima">↑</button>
+        <button class="seq-row-btn" ${i===sequence.length-1?'disabled':''} onclick="moveSeq('${evId}',+1)" aria-label="Mover para baixo">↓</button>
+        <button class="seq-row-btn rm" onclick="removeFromSeq('${evId}')" aria-label="Remover">×</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function updateSeqUI(evId){
+  const box = document.getElementById('seq-controls');
+  if(!box) return;
+  const idx = sequence.indexOf(evId);
+  if(idx===-1){
+    box.innerHTML=`<span class="seq-box-lbl">Linha do tempo</span><button class="btn-add-seq" onclick="addToSeq('${evId}')">+ Adicionar à sequência</button>`;
+  } else {
+    box.innerHTML=`
+      <span class="seq-box-lbl">Posição <span class="hi">#${idx+1}</span> de ${sequence.length}</span>
+      <div class="seq-nav">
+        <button class="seq-nav-btn" ${idx===0?'disabled':''} onclick="moveSeq('${evId}',-1)" aria-label="Mover para antes">←</button>
+        <button class="seq-nav-btn" ${idx===sequence.length-1?'disabled':''} onclick="moveSeq('${evId}',+1)" aria-label="Mover para depois">→</button>
+        <button class="seq-rm-btn" onclick="removeFromSeq('${evId}')">Remover</button>
+      </div>`;
+  }
+}
+
+// ── AUDIO ─────────────────────────────────────────────────────────────────────
+function stopAudio(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  isPlaying=false; clearTimeout(audioTimer); syncAudio(false);
+}
+function toggleAudio(text){
+  if(isPlaying){stopAudio();return;}
+  if(!window.speechSynthesis){alert('Navegador não suporta síntese de voz.');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='pt-BR'; u.rate=0.88; u.pitch=0.92;
+  audioDuration=Math.max(4,Math.round(text.length/15));
+  u.onstart=()=>{isPlaying=true;audioStart=Date.now();syncAudio(true);tickAudio();};
+  u.onend=()=>{isPlaying=false;clearTimeout(audioTimer);syncAudio(false,true);};
+  u.onerror=()=>{isPlaying=false;clearTimeout(audioTimer);syncAudio(false);};
+  window.speechSynthesis.speak(u);
+}
+function tickAudio(){
+  if(!isPlaying) return;
+  const elapsed=( Date.now()-audioStart)/1000;
+  const prog=Math.min(elapsed/audioDuration,1);
+  const tEl=document.getElementById('audio-time');
+  if(tEl) tEl.textContent=`${fmt(elapsed)} / ${fmt(audioDuration)}`;
+  const bars=document.querySelectorAll('.wave-bar');
+  const cut=Math.round(prog*bars.length);
+  bars.forEach((b,i)=>{b.classList.toggle('played',i<cut);b.classList.toggle('rem',i>=cut);});
+  if(prog<1) audioTimer=setTimeout(tickAudio,400);
+}
+function syncAudio(playing, done=false){
+  const btn=document.getElementById('btn-audio');
+  const wave=document.getElementById('wave');
+  const reel=document.getElementById('reel-el');
+  if(!btn) return;
+  if(playing){
+    btn.textContent='⏸ Pausar'; btn.classList.add('playing');
+    wave?.classList.add('audio-playing'); reel?.classList.add('spin');
+  } else {
+    btn.textContent='▶ Ouvir'; btn.classList.remove('playing');
+    wave?.classList.remove('audio-playing'); reel?.classList.remove('spin');
+    const tEl=document.getElementById('audio-time');
+    if(done&&tEl) tEl.textContent=`${fmt(audioDuration)} / ${fmt(audioDuration)}`;
+    if(!done){
+      document.querySelectorAll('.wave-bar').forEach(b=>{b.classList.remove('played');b.classList.add('rem');});
+      if(tEl) tEl.textContent=`0:00 / ${fmt(audioDuration)}`;
+    }
+  }
+}
+
+// ── EXAM SHEET ────────────────────────────────────────────────────────────────
+function openExam(i){
+  stopAudio();
+  const ev = deck[i];
+  vistas.add(ev.id);
+  examIdx = i;
+
+  // fill header
+  document.getElementById('s-eid').textContent  = `EVIDÊNCIA ${ev.id}`;
+  document.getElementById('s-tipo').textContent = ev.tipo;
+
+  // photo
+  const photoEl = document.getElementById('s-photo');
+  if(SVGS[ev.id]){
+    const svgFixed = SVGS[ev.id].replace('<svg ',`<svg style="display:block;width:100%;height:auto" `);
+    photoEl.innerHTML=`${svgFixed}<div class="rec-tag"><span class="rec-dot" aria-hidden="true"></span>REC · ${ev.id}</div>`;
+  } else {
+    photoEl.innerHTML=`<div class="sheet-photo-ph">[ FOTO ]</div>`;
+  }
+
+  // audio init
+  audioDuration=Math.max(4,Math.round(ev.desc.length/15));
+  document.getElementById('audio-time').textContent=`0:00 / ${fmt(audioDuration)}`;
+  const wv = document.getElementById('wave');
+  if(wv) wv.innerHTML=Array.from({length:30},(_,j)=>{
+    const d=(j*.028+(j%3)*.04).toFixed(3);
+    return `<div class="wave-bar rem" style="--d:${d}s"></div>`;
+  }).join('');
+
+  // description
+  document.getElementById('s-desc').textContent = ev.desc;
+
+  // audio button — clone to remove old listener
+  const oldBtn = document.getElementById('btn-audio');
+  const newBtn = oldBtn.cloneNode(true);
+  oldBtn.replaceWith(newBtn);
+  newBtn.addEventListener('click',()=>toggleAudio(ev.desc));
+
+  // seq controls
+  updateSeqUI(ev.id);
+
+  // open sheet
+  const sheet   = document.getElementById('sheet');
+  const backdrop = document.getElementById('backdrop');
+  sheet.hidden = false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    sheet.classList.add('on');
+    backdrop.classList.add('on');
+  }));
+
+  renderGrid();
+  updateCounters();
+}
+
+function closeExam(){
+  stopAudio();
+  examIdx = null;
+  const sheet    = document.getElementById('sheet');
+  const backdrop = document.getElementById('backdrop');
+  sheet.classList.remove('on');
+  backdrop.classList.remove('on');
+  sheet.addEventListener('transitionend',()=>{
+    if(!sheet.classList.contains('on')) sheet.hidden=true;
+  },{once:true});
+  renderGrid();
+  if(activeTab==='seq') renderSeq();
+  updateCounters();
+}
+
+// ── RENDER GRID ───────────────────────────────────────────────────────────────
+function renderGrid(){
+  const g=document.getElementById('ev-grid');
+  if(!g) return;
+  g.innerHTML='';
+  deck.forEach((ev,i)=>{
+    const seen   = vistas.has(ev.id);
+    const isSel  = examIdx===i;
+    const inSeq  = sequence.includes(ev.id);
+    const seqPos = sequence.indexOf(ev.id);
+
+    const btn=document.createElement('button');
+    btn.className='ev-card'+(seen?' seen':'')+(isSel?' sel':'');
+    btn.style.animationDelay=`${i*0.018}s`;
+    btn.setAttribute('role','listitem');
+    btn.setAttribute('aria-label',`${ev.id} — ${ev.tipo}${seen?' (ouvida)':''}${inSeq?` · #${seqPos+1} na sequência`:''}`);
+
+    const svgContent = SVGS[ev.id]
+      ? inner(ev.id).replace(/id="g(\w+)"/g,`id="g$1-${ev.id}"`).replace(/url\(#g(\w+)\)/g,`url(#g$1-${ev.id})`)
+      : '';
+
+    btn.innerHTML=`
+      <div class="ev-photo">
+        ${svgContent
+          ? `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">${svgContent}</svg>`
+          : `<span class="ev-ph">[ FOTO ]</span>`}
+        <span class="badge-status ${seen?'vista':'nova'}" aria-hidden="true">${seen?'VISTA':'NOVA'}</span>
+        ${inSeq?`<span class="badge-seq" aria-hidden="true">#${seqPos+1}</span>`:''}
+      </div>
+      <div class="ev-foot">
+        <span class="ev-eid">${ev.id}</span>
+        <span class="ev-tipo">${ev.tipo}</span>
+      </div>`;
+
+    btn.addEventListener('click',()=>openExam(i));
+    g.appendChild(btn);
+  });
+}
+
+// ── RENDER FICHAS ─────────────────────────────────────────────────────────────
+function renderFichas(){
+  const g=document.getElementById('fichas-grid');
+  if(!g) return;
+  const labels={ordem:'Ordem',local:'Local',quando:'Hora',como:'Causa'};
+  PERS.forEach(p=>{
+    const card=document.createElement('article');
+    card.className='ficha'; card.dataset.pid=p.id;
+    const esp=GAB[p.id]?.especial;
+    const campos=['ordem','local','quando','como'].map(f=>{
+      const opts=OPCOES[f].map(o=>`<option value="${o.v}">${o.l}</option>`).join('');
+      return `<div class="ficha-row">
+        <label class="ficha-lbl" for="${p.id}-${f}">${labels[f]}</label>
+        <select id="${p.id}-${f}" class="ficha-sel" data-campo="${f}" data-pid="${p.id}" aria-label="${labels[f]} de ${p.nome}">${opts}</select>
+      </div>`;
+    }).join('');
+    card.innerHTML=`
+      <div class="ficha-bar" style="background:${p.cor}"></div>
+      <div class="ficha-body">
+        <div class="ficha-head">
+          <span class="ficha-dot" style="background:${p.cor}" aria-hidden="true"></span>
+          <div class="ficha-info">
+            <div class="ficha-nome">${p.nome}</div>
+            <div class="ficha-age">${p.idade} anos${esp?' · ambíguo':''}</div>
+          </div>
+          <span class="ficha-cnt" id="cnt-${p.id}" aria-live="polite">0/4</span>
+        </div>
+        ${campos}
+      </div>`;
+    g.appendChild(card);
+  });
+  document.querySelectorAll('.ficha-sel').forEach(s=>s.addEventListener('change',updateCounters));
+}
+
+// ── COUNTERS ──────────────────────────────────────────────────────────────────
+function updateCounters(){
+  const nEv=vistas.size;
+  document.querySelectorAll('#ctr-ev').forEach(el=>el.textContent=`${nEv}/21 ouvidas`);
+
+  // nav badge fitas — show unseen count
+  const nbF=document.getElementById('nb-fitas');
+  const unseen=21-nEv;
+  if(nbF){nbF.textContent=unseen>0?unseen:'';nbF.classList.toggle('on',unseen>0&&nEv>0);}
+
+  // fichas
+  let total=0;
+  PERS.forEach(p=>{
+    let pn=0;
+    document.querySelectorAll(`.ficha-sel[data-pid="${p.id}"]`).forEach(s=>{if(s.value){total++;pn++;}});
+    const c=document.getElementById(`cnt-${p.id}`);
+    if(c) c.textContent=`${pn}/4`;
+  });
+  document.querySelectorAll('#ctr-campos,#ctr-campos-b').forEach(el=>el.textContent=`${total}/28 campos`);
+  const nbFi=document.getElementById('nb-fichas');
+  if(nbFi){nbFi.textContent=total>0?total:'';nbFi.classList.toggle('on',total>0);}
+}
+
+// ── PONTUAÇÃO DE SEQUÊNCIA ────────────────────────────────────────────────────
+function seqScore(){
+  if(sequence.length===0) return 0;
+  let hits=0;
+  for(let i=0;i<Math.min(sequence.length,MOCK_SEQ.length);i++){
+    if(sequence[i]===MOCK_SEQ[i]) hits++;
+  }
+  return hits/MOCK_SEQ.length;
+}
+
+// ── VERIFICAR ─────────────────────────────────────────────────────────────────
+function verificar(){
+  let tot=0,cor=0;
+  const dets=[];
+  const hints={
+    Bob:    {ordem:'1.° — primeiro',     local:'quarto (dentro)',       quando:'final da tarde',   como:'espancado'},
+    Monica: {ordem:'2.° — segundo',      local:'matagal (fora)',        quando:'noite',            como:'corte no pescoço (lâmina fina)'},
+    Marcos: {ordem:'3.° — terceiro',     local:'matagal (fora)',        quando:'noite',            como:'foice (lâmina larga)'},
+    Denis:  {ordem:'4.° — quarto',       local:'sala (dentro)',         quando:'madrugada / 2h10', como:'facadas'},
+    Samuel: {ordem:'5.° — quinto',       local:'perto do carro (fora)', quando:'madrugada / 3h52', como:'facadas'},
+    Vera:   {ordem:'ambíguo',            local:'sala (dentro)',         quando:'amanhecer / 5h40', como:'tiro'},
+    Claudio:{ordem:'ambíguo',            local:'sala (dentro)',         quando:'amanhecer / 5h40', como:'tiro'}
+  };
+  PERS.forEach(p=>{
+    const gab=GAB[p.id];
+    const campos=['ordem','local','quando','como'].map(f=>{
+      const sel=document.querySelector(`.ficha-sel[data-pid="${p.id}"][data-campo="${f}"]`);
+      const val=sel?.value||'';
+      let ok,cls;
+      if(gab.especial&&f==='ordem'){ok=true;cls='amb';tot++;cor++;}
+      else{ok=match(val,gab[f]||[]);cls=ok?'ok':'err';tot++;if(ok)cor++;}
+      if(sel) sel.className=`ficha-sel ${cls}`;
+      return{label:{ordem:'Ordem',local:'Local',quando:'Horário',como:'Causa'}[f],val:getLabel(f,val),ok,cls,hint:hints[p.id]?.[f]||''};
+    });
+    dets.push({p,campos,especial:gab.especial});
+  });
+
+  const pct    = Math.round(cor/tot*100);
+  const seqPct = Math.round(seqScore()*100);
+  const seqHits= Math.round(seqScore()*MOCK_SEQ.length);
+
+  // ── 5 FINAIS ──────────────────────────────────────────────────────────────
+  // Vera e Cláudio — ordem sempre "amb" (ambíguo), ambos aceitos: 2 finais válidos dentro do "total"
+  // seqPct compara posição exata de cada fita contra a ordem correta (MOCK_SEQ)
+  let ending;
+  if     (pct>=90 && seqPct>=65)          ending='total';
+  else if(pct>=75 && seqPct<50)           ending='fichas-ok';
+  else if(seqPct>=65 && pct<65)           ending='seq-ok';
+  else if(pct>=50)                        ending='parcial';
+  else                                    ending='inconclusivo';
+
+  const ENDINGS={
+    'total':{
+      stamp:'Arquivo encerrado',color:'#4CAF50',
+      info:`<strong>Investigação concluída.</strong><br>Você identificou as vítimas, reconstituiu a cronologia e chegou à única conclusão possível. Resta um ponto irresolvível: a vítima final é ambígua por design — o laudo E-21 se recusa a nomear. Dois finais são válidos aqui.`
+    },
+    'fichas-ok':{
+      stamp:'Vítimas identificadas',color:'#7DD5D8',
+      info:`<strong>Boas conclusões, cronologia incompleta.</strong><br>Você identificou quem morreu, onde e como — mas a ordem das fitas não está reconstituída. A linha do tempo é parte da resposta.`
+    },
+    'seq-ok':{
+      stamp:'Cronologia reconstituída',color:'#FFB74D',
+      info:`<strong>Boa ordem, conclusões imprecisas.</strong><br>Você montou a linha do tempo corretamente, mas as fichas têm erros. Ouça as fitas novamente com a sequência como guia.`
+    },
+    'parcial':{
+      stamp:'Caso parcialmente resolvido',color:'#FFB74D',
+      info:`<strong>${pct}% de acerto.</strong><br>Você tem algumas peças certas, mas o quadro está incompleto. Continue ouvindo as fitas e revise as fichas.`
+    },
+    'inconclusivo':{
+      stamp:'Investigação inconclusiva',color:'#D94040',
+      info:`<strong>O caso permanece aberto.</strong><br>As evidências estão aqui — ouça com atenção. Cada fita tem uma pista. Cada objeto é uma assinatura.`
+    }
+  };
+
+  const e=ENDINGS[ending];
+  const stamp=document.getElementById('res-stamp');
+  if(stamp){stamp.textContent=e.stamp;stamp.style.cssText=`color:${e.color};border-color:${e.color}`;}
+  document.getElementById('score-num').textContent=`${cor}/${tot}`;
+  document.getElementById('score-info').innerHTML=`<strong>${pct}% fichas</strong> · <strong>${seqPct}% sequência</strong><br>${cor} de ${tot} campos · ${seqHits} de 21 fitas na ordem<br>${e.info}`;
+
+  let html='';
+  dets.forEach(({p,campos,especial})=>{
+    html+=`<div class="res-ficha"><div class="res-ficha-nome" style="color:${p.cor};background:${p.cor}18;border-left:3px solid ${p.cor}">${p.nome}</div><div class="res-campos">`;
+    campos.forEach(c=>{
+      html+=`<div class="res-campo ${c.cls}"><div class="rl">${c.label}</div><div>${c.cls==='ok'?'✓ ':c.cls==='err'?'✗ ':'? '}"${c.val}"</div>${c.cls==='err'?`<div class="hint">→ ${c.hint}</div>`:''}${c.cls==='amb'?`<div class="hint">→ ambíguo — ambos aceitos</div>`:''}</div>`;
+    });
+    html+=`</div>`;
+    if(especial) html+=`<div class="amb-note">⚠ A morte de ${p.nome} é intencionalmente ambígua — E-21 confirma que a vítima final não pôde ser identificada. Vera e Cláudio são ambos resposta válida.</div>`;
+    html+=`</div>`;
+  });
+  document.getElementById('res-detalhe').innerHTML=html;
+  document.getElementById('result').hidden=false;
+}
+
+// ── REINICIAR ─────────────────────────────────────────────────────────────────
+function reiniciar(){
+  stopAudio();
+  closeExam();
+  deck     = shuffle(EV);
+  vistas   = new Set();
+  sequence = [];
+  examIdx  = null;
+  document.getElementById('result').hidden=true;
+  document.querySelectorAll('.ficha-sel').forEach(s=>{s.value='';s.className='ficha-sel';});
+  renderGrid();
+  renderSeq();
+  updateCounters();
+  switchTab('fitas');
+}
+
+// ── MOCK ─────────────────────────────────────────────────────────────────────
+function preencherMock(){
+  PERS.forEach(p=>{
+    const res=MOCK_FICHAS[p.id];
+    document.querySelectorAll(`.ficha-sel[data-pid="${p.id}"]`).forEach(s=>{s.value=res[s.dataset.campo]||'';s.className='ficha-sel';});
+  });
+  sequence=MOCK_SEQ.filter(id=>EV.some(e=>e.id===id));
+  renderGrid(); renderSeq(); updateCounters();
+}
+
+function preencherMockErro(){
+  PERS.forEach(p=>{
+    const res=MOCK_FICHAS_WRONG[p.id];
+    document.querySelectorAll(`.ficha-sel[data-pid="${p.id}"]`).forEach(s=>{s.value=res[s.dataset.campo]||'';s.className='ficha-sel';});
+  });
+  sequence=MOCK_SEQ_WRONG.filter(id=>EV.some(e=>e.id===id));
+  renderGrid(); renderSeq(); updateCounters();
+}
+
+// ── NAVEGAÇÃO HOME ────────────────────────────────────────────────────────────
+function startGame(){
+  document.getElementById('home').classList.add('off');
+}
+
+function hasProgress(){
+  if(vistas.size>0||sequence.length>0) return true;
+  return [...document.querySelectorAll('.ficha-sel')].some(s=>s.value!=='');
+}
+
+function goHome(){
+  if(hasProgress()&&!confirm('Voltar à tela inicial?\n\nO progresso atual será mantido — você pode continuar depois.')) return;
+  stopAudio();
+  if(examIdx!==null) closeExam();
+  document.getElementById('result').hidden=true;
+  document.getElementById('home').classList.remove('off');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+deck = shuffle(EV);
+renderGrid();
+renderFichas();
+renderSeq();
+updateCounters();
+
+document.getElementById('btn-close').addEventListener('click', closeExam);
+document.getElementById('backdrop').addEventListener('click', closeExam);
+document.getElementById('btn-concluir').addEventListener('click', verificar);
+document.getElementById('btn-dnv').addEventListener('click', reiniciar);
+document.getElementById('btn-mock').addEventListener('click', preencherMock);
+document.getElementById('btn-mock-err').addEventListener('click', preencherMockErro);
+document.getElementById('btn-clear-seq').addEventListener('click', clearSeq);
+document.getElementById('btn-start').addEventListener('click', startGame);
+document.getElementById('btn-home').addEventListener('click', goHome);
+document.getElementById('btn-home-res').addEventListener('click', goHome);
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+</script>
+</body>
+</html>
