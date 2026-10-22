@@ -100,6 +100,9 @@ body { background:var(--bg); color:var(--txt); font-family:'Barlow',sans-serif; 
   position:relative; overflow:hidden; background:var(--s1); line-height:0; min-height:80px;
 }
 .ev-photo svg { display:block; width:100%; height:auto; }
+.ev-photo img { display:block; width:100%; aspect-ratio:300/185; object-fit:cover; }
+.seq-row-thumb img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+.sheet-photo img { display:block; width:100%; max-height:300px; object-fit:cover; }
 .ev-ph { font-family:'Courier New',monospace; font-size:9px; color:var(--border); letter-spacing:.1em; }
 .badge-status {
   position:absolute; top:5px; right:5px; z-index:2;
@@ -567,28 +570,43 @@ const SVGS = {
 'E-21':`<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="24" y="10" width="252" height="166" rx="2" fill="#f0ece0" stroke="#ccc"/><rect x="34" y="18" width="122" height="11" rx="2" fill="#ddd"/><line x1="34" y1="42" x2="264" y2="42" stroke="#bbb"/><line x1="34" y1="56" x2="252" y2="56" stroke="#bbb"/><line x1="34" y1="70" x2="260" y2="70" stroke="#bbb"/><rect x="30" y="84" width="242" height="20" rx="2" fill="#fff8e8" stroke="#b89a3e"/><text x="38" y="98" fill="#6a5000" font-size="8.5" font-family="monospace">Corpo sem condicoes de identificacao.</text><rect x="30" y="112" width="242" height="20" rx="2" fill="#ffe8e8" stroke="#c0392b"/><text x="38" y="126" fill="#8a1a1a" font-size="8.5" font-family="monospace">Nao foi possivel confirmar qual morreu.</text><text x="218" y="170" fill="#666" font-size="42" font-family="monospace" opacity=".18">?</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">LAUDO INCONCLUSIVO</text></svg>`
 };
 
+// ── FOTOS REAIS ───────────────────────────────────────────────────────────
+const PHOTOS = {
+  'E-01': 'Tratadas/CARRO%20INTERNO.jpg',
+  'E-03': 'Tratadas/JANELA%20M%C3%83O.jpg',
+  'E-06': 'Tratadas/CLAUDIO_VERA.jpg',
+  'E-09': 'Tratadas/SAMUEL.jpg',
+  'E-11': 'Tratadas/MONICA.jpg',
+  'E-12': 'Tratadas/DENIS.jpg',
+  'E-14': 'Tratadas/MARCOS%202.jpg',
+  'E-16': 'Tratadas/MONICA%202.jpg',
+  'E-17': 'Tratadas/BOB.jpg',
+  'E-19': 'Tratadas/PISTA%20VERA.jpg',
+  'E-20': 'Tratadas/MARCOS.jpg'
+};
+
 // ── DADOS ─────────────────────────────────────────────────────────────────
 const EV = [
-  {id:'E-01',tipo:'Bastidor',    desc:'Exterior do rancho, final da tarde. Uma figura de costas encostada no carro. Não consigo ver o rosto. Na mão direita, algo com detalhe vermelho. Embaixo do braço, uma pasta de documentos. Essa pessoa estava prestes a ir embora... ou esperando por alguém.'},
+  {id:'E-01',tipo:'Bastidor',    desc:'Interior do carro. Banco do motorista vazio, porta aberta. Uma chave de carro no chão — e marcas de sangue no encosto do banco. Alguém saiu daqui às pressas ou foi retirado à força. Este é o carro de Samuel — só ele tinha a chave. Quem estava aqui antes?'},
   {id:'E-02',tipo:'Documento',   desc:'Um bloquinho espiral aberto sobre a mesa. Folheio com cuidado. Anotações em caneta vermelha: "refazer", "ritmo", "cortar". E no centro, sublinhado duas vezes: "Ninguém toca nessa cena até eu dizer que está pronta." Quem escreveu isso — e por que tanto ciúme de uma cena específica?'},
-  {id:'E-03',tipo:'Foto de Cena',desc:'Estou no quarto. O corpo está de bruços sobre a cama. Não consigo identificar o rosto. No chão, um gravador de fita com a fita completamente desenrolada. A luz pela janela é alaranjada — fim de tarde. Marcas de agressão física. Nenhuma lâmina à vista.'},
+  {id:'E-03',tipo:'Foto de Cena',desc:'A janela do quarto. Luz alaranjada de fim de tarde. Uma marca de mão ensanguentada impressa no vidro — dedos espalhados como quem tentou se segurar. Quem ficou no quarto a tarde toda era Bob. O gravador estava no chão com a fita desenrolada. Marcas de agressão física. Nenhuma lâmina.'},
   {id:'E-04',tipo:'Documento',   desc:'O mural de recados da produção. Cinco bilhetes: "Quem pegou meu fone?", "Cadê meu cinto de utilidades?", "Alguém viu a alça da filmadora?", "Alguém viu a chave do carro?" E um maior, em vermelho, no centro: DÊNIS, DEVOLVE! Os objetos sumiam antes das mortes.'},
   {id:'E-05',tipo:'Laudo',       desc:'Laudo pericial da segunda vítima. Registro: lesões contusas múltiplas. Incisão fina e superficial na região do pescoço. Sem indícios de lâmina larga ou instrumento pesado. Dois tipos de agressão na mesma vítima — começaram pelos socos.'},
-  {id:'E-06',tipo:'Foto de Cena',desc:'Entrei na sala com a luz do amanhecer. São 5h40 no relógio de parede. Dois corpos. Um coberto por um lençol — sem identificação possível. O outro ao fundo, sangue já seco. Dois objetos distintos caídos lado a lado entre eles. Não consigo determinar qual é qual.'},
+  {id:'E-06',tipo:'Foto de Cena',desc:'Sala. Luz do amanhecer — são 5h40. O sangue no chão está seco; isso aconteceu horas atrás. Dois corpos. Entre eles, dois objetos distintos: uma bengala e um cinto de utilidades — de pessoas diferentes. Não consigo confirmar qual dos dois não sobreviveu. O laudo vai dizer o mesmo.'},
   {id:'E-07',tipo:'Bastidor',    desc:'Foto de bastidor. Uma silhueta quase inteiramente encoberta por uma filmadora de ombro — com a alça bem visível. Só a mão aparece no equipamento. Essa pessoa vivia atrás da câmera.'},
   {id:'E-08',tipo:'Documento',   desc:'Um bilhete preso na porta do quarto. Leio: "Bob, tira esse fone pra ouvir quando te chamam. E vai dormir, você tá com cara de quem não dorme há dois dias." Alguém se preocupava com ele. Tarde demais.'},
-  {id:'E-09',tipo:'Foto de Cena',desc:'Exterior, noite funda. O carro com faróis acesos, porta aberta, ignição vazia. Corpo caído ao lado, perto da mão um objeto com detalhe vermelho. O relógio do painel marca 3h52. A chave sumiu antes.'},
+  {id:'E-09',tipo:'Foto de Cena',desc:'Óculos caídos na terra batida, fora do rancho, perto do carro. Manchas de sangue na armação. Só uma pessoa usava óculos aqui — Samuel. A armação está torcida: saíram do rosto com muita força. O relógio do painel marcava 3h52 quando a porta ficou aberta.'},
   {id:'E-10',tipo:'Bastidor',    desc:'Uma silhueta apoiada numa bengala com cabo dourado. Casaco largo. Ao fundo, um cartaz antigo de cinema com título ilegível. Essa pessoa veio de outro tempo — e provavelmente conhecia muito bem esse lugar.'},
-  {id:'E-11',tipo:'Foto de Cena',desc:'Estou no matagal, noite. Abro caminho entre os galhos. Corpo de bruços — não consigo identificar. Marcas de agressão e um corte no pescoço. Pincéis e latas de tinta colorida espalhados ao redor. Instrumento de corte fino — nada pesado aqui.'},
-  {id:'E-12',tipo:'Foto de Cena',desc:'Sala. Chão frio. Um corpo com marcas de facadas múltiplas. Noto: algo no pescoço da vítima, um cinto na cintura, uma alça no braço, e saindo do bolso, um objeto vermelho. O relógio de pulso quebrado no chão marca 2h10. Essa pessoa carregava coisas que não eram dela.'},
+  {id:'E-11',tipo:'Foto de Cena',desc:'Matagal, noite. Uma corda com manchas de sangue enrolada num galho. Ao redor: pincéis e latas de tinta colorida espalhados no chão — a assinatura de quem cuida da arte do set. O corte era fino, de lâmina pequena. Mônica estava no matagal. Ela não saiu daqui.'},
+  {id:'E-12',tipo:'Foto de Cena',desc:'Sala. Uma bolsa de câmera aberta no chão, ao lado de um charco de sangue. Um relógio de pulso quebrado, ponteiros travados em 2h10. Facadas múltiplas. Dênis carregava coisas que não eram dele: a alça da filmadora, os objetos do mural. Tudo aqui. Essa cena fecha o mural de recados.'},
   {id:'E-13',tipo:'Documento',   desc:'Do bolso de um casaco antigo, dobrado com cuidado: uma lista manuscrita de títulos de filmes — todos dos anos 60. E um ingresso amarelado — Cinema Plaza, 1965. Trinta anos guardado. Essa memória importava demais pra jogar fora.'},
-  {id:'E-14',tipo:'Foto de Cena',desc:'Matagal, mesma noite. Uma filmadora caída — sem a alça, só o encaixe vazio. Ao lado, uma foice. O corpo à frente tem cortes largos. Ao fundo, fora de foco, outro corpo entre pincéis e tinta. Dois aqui — mas esse foi a foice.'},
+  {id:'E-14',tipo:'Foto de Cena',desc:'Matagal. Óculos com muito sangue — armação diferente da de Samuel, mais velha. Marcos usava óculos. Ao lado, marcas de lâmina larga no chão. Uma foice foi usada aqui. Ao fundo, fora de foco, outro corpo entre pincéis e tinta. Dois aqui — mas esse foi a foice.'},
   {id:'E-15',tipo:'Documento',   desc:'Uma folha de despesas da produção. Gasolina, equipamento, alimentação. O total circulado em vermelho. Na margem, manuscrito: "Se esse filme não der dinheiro, meus pais vão me matar." Pressão séria. Motivo suficiente pra explodir.'},
-  {id:'E-16',tipo:'Bastidor',    desc:'Uma silhueta em meio a tecidos e latas de tinta. Cinto de utilidades na cintura — pincéis e tesoura bem visíveis. Alguém que faz de tudo no set. Arte, figurino, o que aparecer.'},
-  {id:'E-17',tipo:'Bastidor',    desc:'Um grande fone de ouvido preto pendurado no pescoço. Sobre a mesa, um gravador de fita e um microfone boom. Essa pessoa cuida do som — e provavelmente escuta tudo.'},
+  {id:'E-16',tipo:'Bastidor',    desc:'Matagal. Um pincel grande, sujo de tinta colorida e sangue, encostado numa raiz. Ao redor, respingos de tinta que não foram intencionais. Mônica carregava pincéis sempre — responsável pela arte do set. Arte, figurino, o que aparecer. Este pincel estava com ela quando morreu.'},
+  {id:'E-17',tipo:'Bastidor',    desc:'Um cabo de áudio grosso com manchas de sangue escuro em uma das pontas. Do tipo que conecta gravador de fita ao microfone boom — o equipamento de Bob. Encontrei perto do quarto, não longe do gravador com a fita desenrolada. Esse cabo estava com ele quando foi atacado.'},
   {id:'E-18',tipo:'Bastidor',    desc:'Uma mão segurando um bloquinho espiral. Uma caneta vermelha entre os dedos — a mesma cor das anotações que vi antes. Em frente a um set. Essa pessoa anota tudo. Controla tudo.'},
-  {id:'E-19',tipo:'Bastidor',    desc:'Silhueta em roupa neutra, de costas. Fone de ouvido preto no pescoço. Cinto de utilidades na cintura. Alça de filmadora no ombro. Três objetos que pertencem a três pessoas diferentes. Só uma poderia ter tudo isso ao mesmo tempo.'},
-  {id:'E-20',tipo:'Detalhe',     desc:'A filmadora está caída no mato. A alça está ausente — só o encaixe vazio. Respingos de tinta colorida na carcaça. Essa câmera foi separada de quem a carregava à força.'},
+  {id:'E-19',tipo:'Bastidor',    desc:'Uma lata de tinta com etiqueta escrita à mão: "VERA". O nome aparece também no bloquinho de anotações que examinei antes. Dênis coletava objetos de todos — e esse estava com ele. Ou alguém deixou aqui intencionalmente. Essa lata é a prova de que ele esteve onde Vera estava.'},
+  {id:'E-20',tipo:'Detalhe',     desc:'Óculos no mato — limpos, ainda sem sangue. Os de Marcos, pela armação. Caíram aqui antes de tudo. Ao redor, galhos quebrados: houve uma luta. A filmadora que ele carregava sumiu — só o encaixe da alça vazio no chão. Essa câmera foi separada de quem a carregava à força.'},
   {id:'E-21',tipo:'Laudo',       desc:'Laudo final. Leio: "Corpo sem condições de identificação visual. Havia dois envolvidos no confronto final. Não foi possível confirmar qual deles morreu." A última morte fica em aberto. Para sempre.'}
 ];
 
@@ -741,9 +759,11 @@ function renderSeq(){
   cont.innerHTML = `<div class="seq-list">${sequence.map((evId,i)=>{
     const ev = EV.find(e=>e.id===evId);
     const isCur = evId===cur;
-    const svgT = SVGS[evId]
-      ? `<svg viewBox="0 0 300 185" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%">${inner(evId)}</svg>`
-      : '';
+    const svgT = PHOTOS[evId]
+      ? `<img src="${PHOTOS[evId]}" alt="${EV.find(e=>e.id===evId)?.tipo||''}">`
+      : SVGS[evId]
+        ? `<svg viewBox="0 0 300 185" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%">${inner(evId)}</svg>`
+        : '';
     return `<div class="seq-row${isCur?' cur':''}" data-evid="${evId}">
       <div class="seq-row-num">#${i+1}</div>
       <div class="seq-row-thumb" onclick="openByEvId('${evId}')" title="Examinar">${svgT}</div>
@@ -838,7 +858,9 @@ function openExam(i){
 
   // photo
   const photoEl = document.getElementById('s-photo');
-  if(SVGS[ev.id]){
+  if(PHOTOS[ev.id]){
+    photoEl.innerHTML=`<img src="${PHOTOS[ev.id]}" alt="${ev.tipo}"><div class="rec-tag"><span class="rec-dot" aria-hidden="true"></span>REC · ${ev.id}</div>`;
+  } else if(SVGS[ev.id]){
     const svgFixed = SVGS[ev.id].replace('<svg ',`<svg style="display:block;width:100%;height:auto" `);
     photoEl.innerHTML=`${svgFixed}<div class="rec-tag"><span class="rec-dot" aria-hidden="true"></span>REC · ${ev.id}</div>`;
   } else {
@@ -914,12 +936,15 @@ function renderGrid(){
     const svgContent = SVGS[ev.id]
       ? inner(ev.id).replace(/id="g(\w+)"/g,`id="g$1-${ev.id}"`).replace(/url\(#g(\w+)\)/g,`url(#g$1-${ev.id})`)
       : '';
+    const photoSrc = PHOTOS[ev.id] || '';
 
     btn.innerHTML=`
       <div class="ev-photo">
-        ${svgContent
-          ? `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">${svgContent}</svg>`
-          : `<span class="ev-ph">[ FOTO ]</span>`}
+        ${photoSrc
+          ? `<img src="${photoSrc}" alt="${ev.tipo}" loading="lazy">`
+          : svgContent
+            ? `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">${svgContent}</svg>`
+            : `<span class="ev-ph">[ FOTO ]</span>`}
         <span class="badge-status ${seen?'vista':'nova'}" aria-hidden="true">${seen?'VISTA':'NOVA'}</span>
         ${inSeq?`<span class="badge-seq" aria-hidden="true">#${seqPos+1}</span>`:''}
       </div>
