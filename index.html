@@ -102,7 +102,7 @@ body { background:var(--bg); color:var(--txt); font-family:'Barlow',sans-serif; 
 .ev-photo svg { display:block; width:100%; height:auto; }
 .ev-photo img { display:block; width:100%; aspect-ratio:300/185; object-fit:cover; }
 .seq-row-thumb img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
-.sheet-photo img { display:block; width:100%; max-height:300px; object-fit:cover; }
+.sheet-photo img { display:block; width:100%; height:auto; }
 .ev-ph { font-family:'Courier New',monospace; font-size:9px; color:var(--border); letter-spacing:.1em; }
 .badge-status {
   position:absolute; top:5px; right:5px; z-index:2;
@@ -396,19 +396,74 @@ body { background:var(--bg); color:var(--txt); font-family:'Barlow',sans-serif; 
 .res-seq-row .hi { color:var(--txt); font-weight:bold; }
 .btn-home-res { width:100%; background:transparent; border:1px solid var(--border); color:var(--muted); font-family:'Courier New',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:12px; cursor:pointer; margin-top:8px; border-radius:10px; transition:all .15s; }
 .btn-home-res:hover { border-color:var(--muted); color:var(--txt); }
+/* ── HOME TABS ── */
+.home-tabs { display:flex; margin-bottom:28px; border:1px solid var(--border); border-radius:10px; overflow:hidden; width:100%; max-width:320px; }
+.home-tab-btn { flex:1; height:38px; background:transparent; border:none; color:var(--muted); font-family:'Courier New',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .15s; }
+.home-tab-btn.on { background:var(--s2); color:var(--txt); }
+.home-tab-btn:focus-visible { outline:2px solid var(--teal); outline-offset:-2px; }
+/* ── COMO JOGAR ── */
+.how-list { width:100%; max-width:320px; display:flex; flex-direction:column; gap:18px; text-align:left; margin-bottom:32px; }
+.how-step { display:flex; gap:14px; align-items:flex-start; }
+.how-num { font-family:'Brunson Rough','Bebas Neue',sans-serif; font-size:34px; color:var(--red); line-height:1; flex-shrink:0; width:30px; }
+.how-text h3 { font-family:'Courier New',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); margin-bottom:4px; }
+.how-text p { font-family:'Courier New',monospace; font-size:11px; color:var(--muted); line-height:1.75; }
 </style>
 </head>
 <body>
 
 <!-- HOME SCREEN -->
 <div id="home">
-  <p class="home-tag"><span class="rec-dot" aria-hidden="true"></span>Caso 001 · Rancho Esperança · 1995</p>
-  <h1 class="home-title">Identidade<br>Oculta</h1>
-  <p class="home-sub">
-    Sete pessoas. Uma noite de filmagem.<br>Seis não sobreviveram — mas quem?<br><br>
-    <strong>Ouça as fitas. Monte a linha do tempo.<br>Preencha as fichas. Conclua a investigação.</strong>
-  </p>
-  <button class="btn-start" id="btn-start">Iniciar Investigação</button>
+  <div class="home-tabs" role="tablist">
+    <button class="home-tab-btn on" data-htab="intro" role="tab" aria-selected="true">Início</button>
+    <button class="home-tab-btn" data-htab="how" role="tab" aria-selected="false">Como Jogar</button>
+  </div>
+
+  <!-- ABA INÍCIO -->
+  <div id="htab-intro">
+    <p class="home-tag"><span class="rec-dot" aria-hidden="true"></span>Caso 001 · Rancho Esperança · 1995</p>
+    <h1 class="home-title">Identidade<br>Oculta</h1>
+    <p class="home-sub">
+      Sete pessoas. Uma noite de filmagem.<br>Seis não sobreviveram — mas quem?<br><br>
+      <strong>Ouça as fitas. Monte a linha do tempo.<br>Preencha as fichas. Conclua a investigação.</strong>
+    </p>
+    <button class="btn-start" id="btn-start">Iniciar Investigação</button>
+  </div>
+
+  <!-- ABA COMO JOGAR -->
+  <div id="htab-how" hidden>
+    <div class="how-list">
+      <div class="how-step">
+        <span class="how-num">1</span>
+        <div class="how-text">
+          <h3>Ouça as fitas</h3>
+          <p>Abra cada evidência na aba <strong style="color:var(--txt)">Fitas</strong>. Leia a descrição e toque em <strong style="color:var(--txt)">Ouvir</strong> para escutar o relato em voz alta. São 21 fitas no total.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="how-num">2</span>
+        <div class="how-text">
+          <h3>Monte a sequência</h3>
+          <p>Dentro de cada fita, toque em <strong style="color:var(--txt)">+ Adicionar à sequência</strong>. Na aba <strong style="color:var(--txt)">Sequência</strong>, ordene as fitas cronologicamente usando as setas.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="how-num">3</span>
+        <div class="how-text">
+          <h3>Preencha as fichas</h3>
+          <p>Na aba <strong style="color:var(--txt)">Fichas</strong>, preencha para cada personagem: ordem da morte, local, horário e causa. Use as pistas das fitas.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="how-num">4</span>
+        <div class="how-text">
+          <h3>Conclua</h3>
+          <p>Quando terminar, toque em <strong style="color:var(--txt)">Concluir investigação</strong>. O resultado revela o que você acertou — e o que ainda está em aberto.</p>
+        </div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startGame()">Iniciar Investigação</button>
+  </div>
+
   <span class="home-foot">Identidade Oculta · Simulação Digital · v1.0</span>
 </div>
 
@@ -1145,6 +1200,15 @@ function preencherMockErro(){
 }
 
 // ── NAVEGAÇÃO HOME ────────────────────────────────────────────────────────────
+function switchHomeTab(name){
+  document.querySelectorAll('.home-tab-btn').forEach(b=>{
+    b.classList.toggle('on', b.dataset.htab===name);
+    b.setAttribute('aria-selected', b.dataset.htab===name);
+  });
+  document.getElementById('htab-intro').hidden = name!=='intro';
+  document.getElementById('htab-how').hidden   = name!=='how';
+}
+
 function startGame(){
   document.getElementById('home').classList.add('off');
 }
@@ -1180,6 +1244,7 @@ document.getElementById('btn-start').addEventListener('click', startGame);
 document.getElementById('btn-home').addEventListener('click', goHome);
 document.getElementById('btn-home-res').addEventListener('click', goHome);
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+document.querySelectorAll('.home-tab-btn').forEach(b=>b.addEventListener('click',()=>switchHomeTab(b.dataset.htab)));
 </script>
 </body>
 </html>
