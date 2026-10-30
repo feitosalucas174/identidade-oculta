@@ -110,6 +110,16 @@ body {
   filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 10px rgba(220, 20, 60, 0.5));
 }
 
+.sprite-revolver {
+  width: 260px;
+  height: 173px;
+  background-image: url('/assets/revolver_strip.png');
+  background-size: 1600% 100%;
+  animation: playSprite 1.0s steps(16) infinite;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 18px rgba(220, 20, 60, 0.75)) drop-shadow(0 0 10px rgba(180, 0, 0, 0.5));
+}
+
 @keyframes skullPopup {
   0% {
     opacity: 0;
