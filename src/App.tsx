@@ -53,6 +53,8 @@ export const App: React.FC = () => {
     img1.src = '/assets/skull_strip.png';
     const img2 = new Image();
     img2.src = '/assets/vhs_strip.png';
+    const img3 = new Image();
+    img3.src = '/assets/claquete_strip.png';
   }, []);
 
   // Counters
@@ -115,7 +117,7 @@ export const App: React.FC = () => {
   const handleAddToSeq = (evId: string) => {
     setSequence(prev => {
       if (prev.includes(evId)) return prev;
-      const animCycle: TimelineAnimationType[] = ['skull', 'vhs'];
+      const animCycle: TimelineAnimationType[] = ['skull', 'vhs', 'claquete'];
       const nextType = animCycle[prev.length % animCycle.length];
       setTimelineAnimType(nextType);
       setTimelineAnimTrigger(t => t + 1);
@@ -357,6 +359,13 @@ export const App: React.FC = () => {
             triggerSignal={timelineAnimTrigger}
             animationType={timelineAnimType}
           />
+
+          {/* Hidden pre-warm container for mobile GPU texture cache */}
+          <div style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
+            <div className="sprite-skull" />
+            <div className="sprite-vhs" />
+            <div className="sprite-claquete" />
+          </div>
 
           {/* Dev / Test Mock Buttons */}
           <aside className="fixed bottom-[calc(var(--nav-h)+10px)] right-[10px] z-[140] flex gap-[5px]">
