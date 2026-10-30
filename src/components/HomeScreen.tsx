@@ -262,7 +262,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               />
 
               <p className="font-mono-retro text-[12px] sm:text-[13px] text-[#F2EAE0] leading-[1.65] text-left">
-                A Produtora Alice Guy é uma produtora universitária fundada por estudantes do curso de Produção Audiovisual da USCS.
+                A Alice Guy é uma produtora de cinema universitária formada por jovens profissionais apaixonados por criar. Unimos formação acadêmica, experiência e visão autoral para desenvolver projetos de cinema, tv e conteúdo audiovisual.
               </p>
             </div>
 
