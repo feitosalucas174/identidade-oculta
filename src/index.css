@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Brunson Rough';
+  src: url('/Brunson Rough.ttf') format('truetype');
+}
+
+:root {
+  --bg: #0D0D0D;
+  --s1: #181818;
+  --s2: #222222;
+  --s3: #2C2626;
+  --txt: #F2EAE0;
+  --muted: #9A9590;
+  --red: #D94040;
+  --red-dim: #3A1010;
+  --teal: #7DD5D8;
+  --paper: #E8DFC8;
+  --border: #303030;
+  --bv: #222222;
+  --ok: #4CAF50;
+  --err: #E57373;
+  --amb: #FFB74D;
+  --nav-h: 64px;
+  --hdr-h: 60px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 17px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.font-brunson {
+  font-family: 'Brunson Rough', 'Bebas Neue', sans-serif;
+  font-weight: normal;
+}
+
+.font-mono-retro {
+  font-family: 'Courier New', monospace;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes reel {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bar {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes fadeup {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── CSS SPRITE ANIMATIONS FOR MOBILE ───────────────────────────────── */
+@keyframes playSprite {
+  from { background-position: 0 0; }
+  to { background-position: -1600% 0; }
+}
+
+.sprite-skull {
+  width: 220px;
+  height: 220px;
+  background-image: url('/assets/skull_strip.png');
+  background-size: 1600% 100%;
+  animation: playSprite 1.0s steps(16) infinite;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 16px rgba(255, 55, 0, 0.55));
+}
+
+.sprite-vhs {
+  width: 260px;
+  height: 173px;
+  background-image: url('/assets/vhs_strip.png');
+  background-size: 1600% 100%;
+  animation: playSprite 1.0s steps(16) infinite;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.6)) drop-shadow(0 0 10px rgba(255, 0, 128, 0.45));
+}
+
+@keyframes skullPopup {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(24px);
+  }
+  14% {
+    opacity: 1;
+    transform: scale(1.04) translateY(-3px);
+  }
+  24% {
+    transform: scale(1) translateY(0);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1) translateY(-5px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12) translateY(-28px);
+  }
+}
+
+.animate-skullPopup {
+  animation: skullPopup 2.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  animation: blink 1.4s step-end infinite;
+  display: inline-block;
+}
+
+.reel-spin {
+  animation: reel 1.4s linear infinite;
+}
+
+.wave-bar {
+  flex: 1;
+  border-radius: 2px;
+  height: 100%;
+  transform-origin: bottom;
+  transform: scaleY(0.2);
+  transition: background 0.3s;
+}
+
+.wave-bar.rem {
+  background: #604848;
+}
+
+.wave-bar.played {
+  background: var(--teal);
+  transform: scaleY(0.7);
+}
+
+.audio-playing .wave-bar.rem {
+  animation: bar 0.8s ease-in-out var(--d, 0s) infinite alternate;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
