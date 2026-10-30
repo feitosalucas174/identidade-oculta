@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Evidence } from '../types';
 import { formatTime, PHOTOS, SVGS } from '../data/evidence';
+import { Mic, Volume2, Pause, RotateCcw, Disc } from 'lucide-react';
 
 interface ExamSheetProps {
   evidence: Evidence | null;
@@ -176,54 +177,100 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
         {/* Body */}
         <div className="p-[14px_14px] sm:p-[18px_20px] flex flex-col gap-[12px] sm:gap-[14px]">
-          {/* Audio Controls */}
-          <div>
-            <div className="flex items-center gap-[12px]">
-              <button
-                type="button"
-                onClick={toggleAudio}
-                aria-label="Ouvir relato em voz alta"
-                className={`h-[44px] px-[20px] rounded-full flex-shrink-0 border-none font-inherit text-[14px] font-bold uppercase tracking-[0.07em] cursor-pointer transition-colors min-w-[110px] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DD5D8] ${
-                  isPlaying ? 'bg-[#F2EAE0] text-[#0D0D0D]' : 'bg-[#7DD5D8] text-[#0D0D0D] hover:bg-[#9DE0E3]'
-                }`}
-              >
-                {isPlaying ? '⏸ Pausar' : '▶ Ouvir'}
-              </button>
+          {/* Police Dictaphone Audio Control Panel */}
+          <div className="bg-[#16171b] border-2 border-[#2d3038] rounded-[14px] p-3.5 sm:p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_8px_20px_rgba(0,0,0,0.6)] relative overflow-hidden">
+            
+            {/* Top Dictaphone Branding & Status Indicator */}
+            <div className="flex items-center justify-between gap-2 pb-2.5 mb-3 border-b border-[#282b33]">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#111] border border-[#444] flex items-center justify-center">
+                  <div className={`w-1.5 h-1.5 rounded-full transition-all ${
+                    isPlaying ? 'bg-[#ff3b30] shadow-[0_0_8px_#ff3b30] animate-pulse' : 'bg-[#402020]'
+                  }`} />
+                </div>
+                <span className="font-mono-retro text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-[#9A9590] font-semibold flex items-center gap-1.5">
+                  <Mic className="w-3.5 h-3.5 text-[#d94040]" />
+                  Gravador Policial · {evidence.id}
+                </span>
+              </div>
 
-              {/* Animated waveform bars */}
-              <div
-                className={`flex items-end gap-[2px] h-[28px] flex-1 ${isPlaying ? 'audio-playing' : ''}`}
-                aria-hidden="true"
-              >
-                {Array.from({ length: 30 }, (_, j) => {
-                  const barCut = Math.round(progressRatio * 30);
-                  const isBarPlayed = j < barCut;
-                  const delay = (j * 0.028 + (j % 3) * 0.04).toFixed(3);
-                  return (
-                    <div
-                      key={j}
-                      className={`wave-bar ${isBarPlayed ? 'played' : 'rem'}`}
-                      style={{ '--d': `${delay}s` } as React.CSSProperties}
-                    />
-                  );
-                })}
+              {/* Counter & Cassette Reel */}
+              <div className="flex items-center gap-2 bg-[#0d0e11] px-2.5 py-1 rounded-[5px] border border-[#22252c]">
+                <span className="font-mono-retro text-[11px] tracking-[0.08em] text-[#7DD5D8] font-bold">
+                  {formatTime(elapsed)} / {formatTime(duration)}
+                </span>
+                <div className={`reel ${isPlaying ? 'reel-spin' : ''}`} aria-hidden="true">
+                  <Disc className={`w-4 h-4 text-[#8a8f9d] ${isPlaying ? 'text-[#7DD5D8]' : ''}`} />
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between font-mono-retro text-[12px] text-[#9A9590] mt-[8px]">
-              <span>
-                {formatTime(elapsed)} / {formatTime(duration)}
-              </span>
-              <div className={`reel ${isPlaying ? 'reel-spin' : ''}`} aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 26 26">
-                  <circle cx="13" cy="13" r="11" fill="none" stroke="#604848" strokeWidth="1.5" />
-                  <circle cx="13" cy="13" r="4" fill="#604848" />
-                  <line x1="13" y1="2" x2="13" y2="7" stroke="#604848" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="13" y1="19" x2="13" y2="24" stroke="#604848" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="2" y1="13" x2="7" y2="13" stroke="#604848" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="19" y1="13" x2="24" y2="13" stroke="#604848" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
+            {/* Tape Deck Window & Animated Waveform */}
+            <div className="bg-[#0b0c0e] border border-[#22252e] rounded-[8px] p-2.5 mb-3 flex items-center gap-3">
+              {/* Dual Cassette Reel Display */}
+              <div className="hidden sm:flex items-center justify-between w-[60px] h-[30px] bg-[#14161b] border border-[#2a2d36] rounded-[4px] px-1.5 flex-shrink-0 relative overflow-hidden">
+                <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 h-[2px] bg-[#4a2a18]" />
+                <Disc className={`w-4 h-4 text-[#6a7080] z-10 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '2s' }} />
+                <Disc className={`w-4 h-4 text-[#6a7080] z-10 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '2s' }} />
               </div>
+
+              {/* Audio Waveform / Level Meter */}
+              <div className="flex-1 flex flex-col gap-1">
+                <div className={`flex items-end gap-[2px] h-[26px] w-full ${isPlaying ? 'audio-playing' : ''}`} aria-hidden="true">
+                  {Array.from({ length: 28 }, (_, j) => {
+                    const barCut = Math.round(progressRatio * 28);
+                    const isBarPlayed = j < barCut;
+                    const delay = (j * 0.03 + (j % 3) * 0.04).toFixed(3);
+                    return (
+                      <div
+                        key={j}
+                        className={`wave-bar ${isBarPlayed ? 'played' : 'rem'}`}
+                        style={{ '--d': `${delay}s` } as React.CSSProperties}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Tactile Police Recorder Control Keys */}
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <button
+                type="button"
+                onClick={toggleAudio}
+                aria-label={isPlaying ? "Pausar gravação policial" : "Ouvir gravação de depoimento policial"}
+                className={`flex-1 min-h-[44px] px-4 rounded-[8px] font-mono-retro text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.08em] cursor-pointer flex items-center justify-center gap-2.5 transition-all duration-150 select-none border-t border-l ${
+                  isPlaying
+                    ? 'bg-[#d94040] text-white border-t-[#ff6666] border-l-[#ff6666] border-r-[#802020] border-b-[#802020] shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] translate-y-[1px]'
+                    : 'bg-gradient-to-b from-[#343842] via-[#282c35] to-[#1c2028] text-[#F2EAE0] border-t-[#4a505e] border-l-[#4a505e] border-r-[#121419] border-b-[#121419] hover:from-[#3d424e] hover:to-[#222630] active:translate-y-[1px] shadow-[0_3px_6px_rgba(0,0,0,0.4)]'
+                } focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DD5D8]`}
+              >
+                {isPlaying ? (
+                  <>
+                    <Pause className="w-4 h-4 fill-current text-white flex-shrink-0" />
+                    <span>Pausar Depoimento</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-4 h-4 text-[#7DD5D8] flex-shrink-0" />
+                    <span>Ouvir Gravação</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  stopAudio();
+                  toggleAudio();
+                }}
+                title="Reiniciar depoimento do início"
+                aria-label="Reiniciar depoimento do início"
+                className="h-[44px] px-3.5 rounded-[8px] bg-gradient-to-b from-[#2a2d36] to-[#1a1c22] border-t border-l border-t-[#3e4250] border-l-[#3e4250] border-r-[#101115] border-b-[#101115] text-[#9A9590] hover:text-[#F2EAE0] hover:from-[#323642] active:translate-y-[1px] flex items-center justify-center gap-1.5 font-mono-retro text-[11px] uppercase tracking-[0.05em] cursor-pointer transition-all flex-shrink-0 shadow-[0_3px_6px_rgba(0,0,0,0.4)]"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Reiniciar</span>
+              </button>
             </div>
           </div>
 
