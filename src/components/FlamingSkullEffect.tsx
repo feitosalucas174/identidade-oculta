@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-export type TimelineAnimationType = 'vhs' | 'claquete' | 'revolver' | 'ampulheta';
+export type TimelineAnimationType = 'vhs' | 'claquete' | 'revolver' | 'ampulheta' | 'lupa';
 
 interface FlamingSkullEffectProps {
   triggerSignal: number;
@@ -36,6 +36,7 @@ export const FlamingSkullEffect: React.FC<FlamingSkullEffectProps> = ({
   const isVhs = currentType === 'vhs';
   const isClaquete = currentType === 'claquete';
   const isRevolver = currentType === 'revolver';
+  const isAmpulheta = currentType === 'ampulheta';
 
   return (
     <div
@@ -52,7 +53,9 @@ export const FlamingSkullEffect: React.FC<FlamingSkullEffectProps> = ({
               ? 'sprite-claquete'
               : isRevolver
               ? 'sprite-revolver'
-              : 'sprite-ampulheta'
+              : isAmpulheta
+              ? 'sprite-ampulheta'
+              : 'sprite-lupa'
           }
         />
 
@@ -64,10 +67,12 @@ export const FlamingSkullEffect: React.FC<FlamingSkullEffectProps> = ({
               ? 'text-[#ffd700] bg-black/85 border border-[#ffd700]/50 shadow-[0_0_20px_rgba(255,215,0,0.45)]'
               : isRevolver
               ? 'text-[#ff4455] bg-black/85 border border-[#ff2244]/50 shadow-[0_0_20px_rgba(255,34,68,0.5)]'
-              : 'text-[#ff8855] bg-black/85 border border-[#ff6633]/50 shadow-[0_0_20px_rgba(255,102,51,0.5)]'
+              : isAmpulheta
+              ? 'text-[#ff8855] bg-black/85 border border-[#ff6633]/50 shadow-[0_0_20px_rgba(255,102,51,0.5)]'
+              : 'text-[#ffb733] bg-black/85 border border-[#ffaa00]/50 shadow-[0_0_20px_rgba(255,170,0,0.5)]'
           }`}
         >
-          Nova animação adicionada
+          + Nova pista adicionada
         </div>
       </div>
     </div>

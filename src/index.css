@@ -120,6 +120,16 @@ body {
   filter: drop-shadow(0 0 18px rgba(220, 50, 50, 0.75)) drop-shadow(0 0 10px rgba(255, 140, 0, 0.5));
 }
 
+.sprite-lupa {
+  width: 260px;
+  height: 173px;
+  background-image: url('/assets/lupa_strip.png');
+  background-size: 1600% 100%;
+  animation: playSprite 1.0s steps(16) infinite;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 18px rgba(255, 180, 50, 0.75)) drop-shadow(0 0 10px rgba(180, 50, 0, 0.5));
+}
+
 @keyframes skullPopup {
   0% {
     opacity: 0;
