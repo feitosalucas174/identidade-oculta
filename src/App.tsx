@@ -57,6 +57,8 @@ export const App: React.FC = () => {
     img3.src = '/assets/claquete_strip.png';
     const img4 = new Image();
     img4.src = '/assets/revolver_strip.png';
+    const img5 = new Image();
+    img5.src = '/assets/faca_strip.png';
   }, []);
 
   // Counters
@@ -119,7 +121,7 @@ export const App: React.FC = () => {
   const handleAddToSeq = (evId: string) => {
     setSequence(prev => {
       if (prev.includes(evId)) return prev;
-      const animCycle: TimelineAnimationType[] = ['skull', 'vhs', 'claquete', 'revolver'];
+      const animCycle: TimelineAnimationType[] = ['skull', 'vhs', 'claquete', 'revolver', 'faca'];
       const nextType = animCycle[prev.length % animCycle.length];
       setTimelineAnimType(nextType);
       setTimelineAnimTrigger(t => t + 1);
@@ -368,6 +370,7 @@ export const App: React.FC = () => {
             <div className="sprite-vhs" />
             <div className="sprite-claquete" />
             <div className="sprite-revolver" />
+            <div className="sprite-faca" />
           </div>
 
           {/* Dev / Test Mock Buttons */}
