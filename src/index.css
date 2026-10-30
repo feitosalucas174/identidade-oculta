@@ -80,16 +80,6 @@ body {
   to { background-position: -1600% 0; }
 }
 
-.sprite-skull {
-  width: 220px;
-  height: 220px;
-  background-image: url('/assets/skull_strip.png');
-  background-size: 1600% 100%;
-  animation: playSprite 1.0s steps(16) infinite;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 0 16px rgba(255, 55, 0, 0.55));
-}
-
 .sprite-vhs {
   width: 260px;
   height: 173px;
@@ -118,16 +108,6 @@ body {
   animation: playSprite 1.0s steps(16) infinite;
   image-rendering: pixelated;
   filter: drop-shadow(0 0 18px rgba(220, 20, 60, 0.75)) drop-shadow(0 0 10px rgba(180, 0, 0, 0.5));
-}
-
-.sprite-faca {
-  width: 260px;
-  height: 173px;
-  background-image: url('/assets/faca_strip.png');
-  background-size: 1600% 100%;
-  animation: playSprite 1.0s steps(16) infinite;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 0 18px rgba(255, 30, 30, 0.8)) drop-shadow(0 0 10px rgba(150, 0, 0, 0.5));
 }
 
 @keyframes skullPopup {

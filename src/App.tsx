@@ -45,20 +45,16 @@ export const App: React.FC = () => {
   const [isHomeOpen, setIsHomeOpen] = useState(true);
   const [isRetroSheetOpen, setIsRetroSheetOpen] = useState(false);
   const [timelineAnimTrigger, setTimelineAnimTrigger] = useState(0);
-  const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('skull');
+  const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('vhs');
 
   // Preload sprite assets and pre-warm GPU texture cache on mount for instant mobile performance
   useEffect(() => {
     const img1 = new Image();
-    img1.src = '/assets/skull_strip.png';
+    img1.src = '/assets/vhs_strip.png';
     const img2 = new Image();
-    img2.src = '/assets/vhs_strip.png';
+    img2.src = '/assets/claquete_strip.png';
     const img3 = new Image();
-    img3.src = '/assets/claquete_strip.png';
-    const img4 = new Image();
-    img4.src = '/assets/revolver_strip.png';
-    const img5 = new Image();
-    img5.src = '/assets/faca_strip.png';
+    img3.src = '/assets/revolver_strip.png';
   }, []);
 
   // Counters
@@ -121,7 +117,7 @@ export const App: React.FC = () => {
   const handleAddToSeq = (evId: string) => {
     setSequence(prev => {
       if (prev.includes(evId)) return prev;
-      const animCycle: TimelineAnimationType[] = ['skull', 'vhs', 'claquete', 'revolver', 'faca'];
+      const animCycle: TimelineAnimationType[] = ['vhs', 'claquete', 'revolver'];
       const nextType = animCycle[prev.length % animCycle.length];
       setTimelineAnimType(nextType);
       setTimelineAnimTrigger(t => t + 1);
@@ -366,11 +362,9 @@ export const App: React.FC = () => {
 
           {/* Hidden pre-warm container for mobile GPU texture cache */}
           <div style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
-            <div className="sprite-skull" />
             <div className="sprite-vhs" />
             <div className="sprite-claquete" />
             <div className="sprite-revolver" />
-            <div className="sprite-faca" />
           </div>
 
           {/* Dev / Test Mock Buttons */}
