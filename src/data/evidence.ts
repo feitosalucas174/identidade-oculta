@@ -123,7 +123,7 @@ export const EV: Evidence[] = [
   {
     id: 'E-12',
     tipo: 'Foto de Cena',
-    desc: 'Sala. A filmadora caída no chão, ao lado de um charco de sangue. Um relógio de pulso quebrado marcando 2h10 no braço de Dênis. Facadas múltiplas. Dênis carregava coisas que não eram dele: a câmera de Marcos, os objetos do mural. Tudo aqui. Essa cena fecha a linha do tempo de Dênis.'
+    desc: 'Sala. A filmadora caída no chão, ao lado de um charco de sangue. Um relógio digital quebrado marcando 2h10 no chão da sala. Facadas múltiplas. Dênis carregava coisas que não eram dele: a câmera de Marcos, os objetos do mural. Tudo aqui. Essa cena fecha a linha do tempo de Dênis.'
   },
   {
     id: 'E-13',

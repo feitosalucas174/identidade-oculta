@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AllAnswers, FieldKey } from '../types';
 import { GAB, OPCOES, PERS } from '../data/evidence';
 
@@ -22,6 +22,14 @@ export const FichasTab: React.FC<FichasTabProps> = ({
     como: 'Causa',
   };
 
+  // Fixed non-chronological shuffle so players cannot infer the timeline order from card sequence
+  const shuffledPers = useMemo(() => {
+    const order = ['Marcos', 'Vera', 'Bob', 'Samuel', 'Claudio', 'Denis', 'Monica'];
+    return order
+      .map(id => PERS.find(p => p.id === id))
+      .filter((p): p is (typeof PERS)[0] => p !== undefined);
+  }, []);
+
   // Calculate total answered fields
   let totalFilled = 0;
   PERS.forEach(p => {
@@ -41,7 +49,7 @@ export const FichasTab: React.FC<FichasTabProps> = ({
       </div>
 
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[12px] mb-6">
-        {PERS.map(p => {
+        {shuffledPers.map(p => {
           const isEsp = GAB[p.id]?.especial;
           const pAns = answers[p.id] || {};
           let count = 0;
