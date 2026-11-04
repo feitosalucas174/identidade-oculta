@@ -9,6 +9,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 const EVIDENCE_AUDIO: Record<string, string> = {
   'E-01': `${import.meta.env.BASE_URL}assets/aistudio/EV1_e4d9c0c5.wav?v=2b2c9caaa98a93d443693908f5521ba3a1b41b35`,
   'E-02': `${import.meta.env.BASE_URL}assets/aistudio/EV2.wav`,
+  'E-03': `${import.meta.env.BASE_URL}assets/aistudio/EV3.wav`,
 };
 
 interface ExamSheetProps {
