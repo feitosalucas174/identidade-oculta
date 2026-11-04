@@ -47,7 +47,7 @@ export const PHOTOS: Record<string, string> = {
   'E-18': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%95ES%20VERA.jpg`,
   'E-19': `${BASE_URL}Tratadas/PISTA%20VERA.jpg`,
   'E-20': `${BASE_URL}Tratadas/MARCOS%203.jpg`,
-  'E-21': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%83O%20FINAL.jpg'
+  'E-21': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%83O%20FINAL.jpg`
 };
 
 export function shuffle<T>(array: T[]): T[] {
