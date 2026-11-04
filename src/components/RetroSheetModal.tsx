@@ -7,6 +7,7 @@ interface RetroSheetModalProps {
 }
 
 export const RetroSheetModal: React.FC<RetroSheetModalProps> = ({ isOpen, onClose }) => {
+  const BASE_URL = import.meta.env.BASE_URL;
   useScrollLock(isOpen);
 
   if (!isOpen) return null;
@@ -37,7 +38,7 @@ export const RetroSheetModal: React.FC<RetroSheetModalProps> = ({ isOpen, onClos
 
         <div className="flex-1 w-full bg-[#008080] p-1 overflow-hidden">
           <iframe
-            src="/retrosheet-95.html"
+            src={`${BASE_URL}retrosheet-95.html`}
             title="RetroSheet 95"
             className="w-full h-full border-none"
           />
