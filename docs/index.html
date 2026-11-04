@@ -16,6 +16,54 @@
         src: url('/identidade-oculta/Brunson%20Rough.ttf') format('truetype');
       }
     </style>
+<script>
+(() => {
+  // Áudios reais por evidência. Para adicionar os próximos, inclua outro ID e caminho aqui.
+  const audioByEvidence = {
+    'E-01': '/identidade-oculta/assets/aistudio/EV1_e4d9c0c5.wav?v=2b2c9caaa98a93d443693908f5521ba3a1b41b35'
+  };
+  const speech = window.speechSynthesis;
+  if (!speech) return;
+
+  const originalSpeak = speech.speak.bind(speech);
+  const originalCancel = speech.cancel.bind(speech);
+  let activeAudio = null;
+
+  speech.speak = (utterance) => {
+    const evidenceId = document.querySelector('#sheet')?.textContent?.match(/EVIDÊNCIA\s+(E-\d+)/)?.[1];
+    const source = evidenceId ? audioByEvidence[evidenceId] : null;
+    if (!source) return originalSpeak(utterance);
+
+    if (activeAudio) {
+      activeAudio.pause();
+      activeAudio = null;
+    }
+
+    const audio = new Audio(source);
+    activeAudio = audio;
+    audio.addEventListener('play', () => utterance.onstart?.());
+    audio.addEventListener('ended', () => {
+      if (activeAudio === audio) activeAudio = null;
+      utterance.onend?.();
+    });
+    audio.addEventListener('error', () => {
+      if (activeAudio === audio) activeAudio = null;
+      utterance.onerror?.();
+    });
+    audio.play().catch(() => utterance.onerror?.());
+  };
+
+  speech.cancel = () => {
+    if (activeAudio) {
+      const audio = activeAudio;
+      activeAudio = null;
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    return originalCancel();
+  };
+})();
+</script>
     <script type="module" crossorigin src="/identidade-oculta/assets/index-DKvJgWBI.js"></script>
     <link rel="stylesheet" crossorigin href="/identidade-oculta/assets/index-BHnWf-dF.css">
   </head>
