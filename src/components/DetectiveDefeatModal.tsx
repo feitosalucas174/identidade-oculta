@@ -8,6 +8,8 @@ interface DetectiveDefeatModalProps {
   onRestart: () => void;
 }
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
   isOpen,
   onReview,
@@ -77,7 +79,7 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
               return (
                 <img
                   key={i}
-                  src={`/assets/detetive_derrota/frame_${String(i).padStart(2, '0')}.png`}
+                  src={`${BASE_URL}assets/detetive_derrota/frame_${String(i).padStart(2, '0')}.png`}
                   alt="Detetive desolado sob a luz da rua"
                   className={`absolute inset-0 m-auto h-[240px] sm:h-[270px] w-auto object-contain image-rendering-pixelated ${
                     isCurrent ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
