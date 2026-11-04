@@ -5,6 +5,7 @@
 @font-face {
   font-family: 'Brunson Rough';
   src: url('/Brunson Rough.ttf') format('truetype');
+  font-display: block;
 }
 
 :root {

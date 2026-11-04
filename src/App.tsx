@@ -29,6 +29,9 @@ import { ExamSheet } from './components/ExamSheet';
 import { ResultModal } from './components/ResultModal';
 import { RetroSheetModal } from './components/RetroSheetModal';
 import { FlamingSkullEffect, TimelineAnimationType } from './components/FlamingSkullEffect';
+import { DetectiveBriefingModal } from './components/DetectiveBriefingModal';
+import { DetectiveDefeatModal } from './components/DetectiveDefeatModal';
+import { DetectiveVictoryModal } from './components/DetectiveVictoryModal';
 
 export const App: React.FC = () => {
   // Game state
@@ -43,22 +46,54 @@ export const App: React.FC = () => {
   >({});
   const [verificationResult, setVerificationResult] = useState<FinalVerificationResult | null>(null);
   const [isHomeOpen, setIsHomeOpen] = useState(true);
+  const [isBriefingOpen, setIsBriefingOpen] = useState(false);
+  const [isDefeatOpen, setIsDefeatOpen] = useState(false);
+  const [isVictoryOpen, setIsVictoryOpen] = useState(false);
   const [isRetroSheetOpen, setIsRetroSheetOpen] = useState(false);
   const [timelineAnimTrigger, setTimelineAnimTrigger] = useState(0);
   const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('vhs');
 
-  // Preload sprite assets and pre-warm GPU texture cache on mount for instant mobile performance
+  // Preload sprite assets, fonts, and pre-warm GPU texture cache on mount for instant performance
   useEffect(() => {
-    const img1 = new Image();
-    img1.src = '/assets/vhs_strip.png';
-    const img2 = new Image();
-    img2.src = '/assets/claquete_strip.png';
-    const img3 = new Image();
-    img3.src = '/assets/revolver_strip.png';
-    const img4 = new Image();
-    img4.src = '/assets/ampulheta_strip.png';
-    const img5 = new Image();
-    img5.src = '/assets/lupa_strip.png';
+    if (typeof document !== 'undefined' && document.fonts && document.fonts.load) {
+      document.fonts.load('1em "Brunson Rough"');
+    }
+
+    ['/assets/vhs_strip.png', '/assets/claquete_strip.png', '/assets/revolver_strip.png', '/assets/ampulheta_strip.png', '/assets/lupa_strip.png'].forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    // Preload all 16 detective intro frames
+    for (let i = 0; i < 16; i++) {
+      const img = new Image();
+      img.src = `/assets/detetive/frame_${String(i).padStart(2, '0')}.png`;
+    }
+
+    // Preload all 8 detective defeat frames
+    for (let i = 0; i < 8; i++) {
+      const img = new Image();
+      img.src = `/assets/detetive_derrota/frame_${String(i).padStart(2, '0')}.png`;
+    }
+
+    // Preload Produtora Alice Guy logo and crew photos for instant tab display
+    const aliceGuyImages = [
+      '/assets/aistudio/AG_FC_44a91d2b.jpg',
+      '/assets/aistudio/1_994dbf90.jpg',
+      '/assets/aistudio/2_d8fcfc06.jpg',
+      '/assets/aistudio/3_259d20ba.jpg',
+      '/assets/aistudio/4_88dd4e00.jpg',
+      '/assets/aistudio/5_666b334d.jpg',
+      '/assets/aistudio/6_5c870541.jpg',
+      '/assets/aistudio/7_aa3e89d6.jpg',
+      '/assets/aistudio/8_6ce7ced0.jpg',
+      '/assets/aistudio/9_467f2335.jpg',
+      '/assets/aistudio/10_df7bff44.jpg',
+    ];
+    aliceGuyImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
   }, []);
 
   // Counters
@@ -84,6 +119,14 @@ export const App: React.FC = () => {
 
   const handleStart = () => {
     setIsHomeOpen(false);
+    if (!hasProgress()) {
+      setIsBriefingOpen(true);
+    }
+  };
+
+  const handleFinishBriefing = () => {
+    setIsBriefingOpen(false);
+    setIsHomeOpen(false);
   };
 
   const handleGoHome = () => {
@@ -92,6 +135,8 @@ export const App: React.FC = () => {
     }
     setExamIdx(null);
     setVerificationResult(null);
+    setIsDefeatOpen(false);
+    setIsVictoryOpen(false);
     setIsHomeOpen(true);
   };
 
@@ -224,9 +269,7 @@ export const App: React.FC = () => {
     const seqHits = Math.round(seqFraction * MOCK_SEQ.length);
 
     let endingKey: 'total' | 'fichas-ok' | 'seq-ok' | 'parcial' | 'inconclusivo';
-    if (pct >= 90 && seqPct >= 65) endingKey = 'total';
-    else if (pct >= 75 && seqPct < 50) endingKey = 'fichas-ok';
-    else if (seqPct >= 65 && pct < 65) endingKey = 'seq-ok';
+    if (pct >= 85) endingKey = 'total';
     else if (pct >= 50) endingKey = 'parcial';
     else endingKey = 'inconclusivo';
 
@@ -245,6 +288,24 @@ export const App: React.FC = () => {
       info: infoText,
       details: dets,
     });
+
+    // Show victory or defeat modal depending on result
+    if (endingKey === 'total') {
+      setIsVictoryOpen(true);
+      setIsDefeatOpen(false);
+    } else {
+      setIsVictoryOpen(false);
+      setIsDefeatOpen(true);
+    }
+  };
+
+  const handleReviewFromDefeat = () => {
+    setIsDefeatOpen(false);
+  };
+
+  const handleRestartFromDefeat = () => {
+    setIsDefeatOpen(false);
+    handleRestart();
   };
 
   const handleRestart = () => {
@@ -255,8 +316,12 @@ export const App: React.FC = () => {
     setAnswers({});
     setFieldStatuses({});
     setVerificationResult(null);
+    setIsDefeatOpen(false);
+    setIsVictoryOpen(false);
     setActiveTab('fitas');
     setTimelineAnimTrigger(0);
+    setIsBriefingOpen(true);
+    setIsHomeOpen(false);
   };
 
   const handleMockSuccess = () => {
@@ -279,6 +344,12 @@ export const App: React.FC = () => {
         hasProgress={hasProgress()}
         onStart={handleStart}
         onRestart={handleRestart}
+      />
+
+      {/* Detective Briefing Modal on Game Start */}
+      <DetectiveBriefingModal
+        isOpen={isBriefingOpen}
+        onClose={handleFinishBriefing}
       />
 
       {/* Main App Layout */}
@@ -343,11 +414,28 @@ export const App: React.FC = () => {
             onOpenRetroSheet={() => setIsRetroSheetOpen(true)}
           />
 
+          {/* Detective Defeat Modal on Failed Investigation */}
+          <DetectiveDefeatModal
+            isOpen={isDefeatOpen}
+            onReview={handleReviewFromDefeat}
+            onRestart={handleRestartFromDefeat}
+          />
+
+          {/* Detective Victory Modal on Solved Investigation */}
+          <DetectiveVictoryModal
+            isOpen={isVictoryOpen}
+            onReview={() => setIsVictoryOpen(false)}
+            onRestart={handleRestart}
+          />
+
           {/* Result Modal */}
           <ResultModal
             result={verificationResult}
-            isOpen={verificationResult !== null}
-            onClose={() => setVerificationResult(null)}
+            isOpen={verificationResult !== null && !isDefeatOpen && !isVictoryOpen}
+            onClose={() => {
+              setVerificationResult(null);
+              setActiveTab('fichas');
+            }}
             onRestart={handleRestart}
             onGoHome={handleGoHome}
           />

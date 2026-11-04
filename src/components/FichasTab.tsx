@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
+import { Hash, MapPin, Clock, AlertOctagon, UserCheck, ShieldAlert } from 'lucide-react';
 import { AllAnswers, FieldKey } from '../types';
 import { GAB, OPCOES, PERS } from '../data/evidence';
+import { DossierDropdown } from './DossierDropdown';
 
 interface FichasTabProps {
   answers: AllAnswers;
@@ -15,14 +17,26 @@ export const FichasTab: React.FC<FichasTabProps> = ({
   onAnswerChange,
   onConclude,
 }) => {
-  const labels: Record<FieldKey, string> = {
-    ordem: 'Ordem',
-    local: 'Local',
-    quando: 'Hora',
-    como: 'Causa',
+  const fieldMeta: Record<FieldKey, { label: string; icon: React.ReactNode }> = {
+    ordem: {
+      label: 'Ordem Cronológica',
+      icon: <Hash className="w-3.5 h-3.5 text-[#7DD5D8]" />,
+    },
+    local: {
+      label: 'Local do Corpo',
+      icon: <MapPin className="w-3.5 h-3.5 text-[#e09f58]" />,
+    },
+    quando: {
+      label: 'Horário Estimado',
+      icon: <Clock className="w-3.5 h-3.5 text-[#8ab4f8]" />,
+    },
+    como: {
+      label: 'Causa da Morte',
+      icon: <AlertOctagon className="w-3.5 h-3.5 text-[#e57373]" />,
+    },
   };
 
-  // Fixed non-chronological shuffle so players cannot infer the timeline order from card sequence
+  // Fixed non-chronological shuffle so players cannot infer timeline order from card order
   const shuffledPers = useMemo(() => {
     const order = ['Marcos', 'Vera', 'Bob', 'Samuel', 'Claudio', 'Denis', 'Monica'];
     return order
@@ -43,12 +57,26 @@ export const FichasTab: React.FC<FichasTabProps> = ({
   });
 
   return (
-    <div id="tab-fichas" className="p-[20px_16px]">
-      <div className="font-mono-retro text-[11px] tracking-[0.22em] uppercase text-[#9A9590] mb-[16px] flex items-center gap-[10px] after:content-[''] after:flex-1 after:h-[1px] after:bg-[#303030]">
-        Fichas do caso — 7 personagens
+    <div id="tab-fichas" className="p-4 sm:p-6 max-w-[1400px] mx-auto">
+      {/* Dossier Header Info */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-[#282b36]">
+        <div>
+          <div className="font-mono-retro text-[11px] tracking-[0.2em] uppercase text-[#7DD5D8] font-bold flex items-center gap-2">
+            <span>Dossiê Policial · Laudos Periciais</span>
+          </div>
+          <h2 className="font-brunson text-[26px] sm:text-[32px] uppercase tracking-[0.03em] text-[#F2EAE0] leading-none mt-1">
+            Fichas dos 7 Personagens
+          </h2>
+        </div>
+
+        <div className="flex items-center gap-2 font-mono-retro text-[12px] text-[#9A9590] bg-[#14151c] px-3 py-1.5 rounded-[8px] border border-[#262832]">
+          <UserCheck className="w-4 h-4 text-[#7DD5D8]" />
+          <span>{totalFilled} de 28 deduções preenchidas</span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[12px] mb-6">
+      {/* Grid of Dossier Character Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
         {shuffledPers.map(p => {
           const isEsp = GAB[p.id]?.especial;
           const pAns = answers[p.id] || {};
@@ -58,88 +86,98 @@ export const FichasTab: React.FC<FichasTabProps> = ({
           if (pAns.quando) count++;
           if (pAns.como) count++;
 
+          const isCardComplete = count === 4;
+
           return (
             <article
               key={p.id}
-              className="bg-[#181818] rounded-[12px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.3)] flex flex-col"
+              className="relative bg-[#14151b] border-2 border-[#262832] hover:border-[#383d4c] rounded-[14px] shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex flex-col transition-all duration-200"
             >
-              <div className="h-[4px]" style={{ backgroundColor: p.cor }} />
-              <div className="p-[16px_18px] flex flex-col gap-[10px]">
-                {/* Header */}
-                <div className="flex items-center gap-[10px]">
-                  <span
-                    className="w-[12px] h-[12px] rounded-full flex-shrink-0"
-                    style={{ backgroundColor: p.cor }}
-                    aria-hidden="true"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-brunson text-[24px] uppercase tracking-[0.03em] leading-[0.95] text-[#F2EAE0] truncate">
-                      {p.nome}
-                    </div>
-                    <div className="font-mono-retro text-[12px] text-[#9A9590] mt-[2px]">
-                      {p.idade} anos{isEsp ? ' · ambíguo' : ''}
+              {/* Top Colored Folder Header Strip */}
+              <div
+                className="h-[5px] w-full rounded-t-[12px]"
+                style={{ backgroundColor: p.cor }}
+              />
+
+              <div className="p-4 sm:p-5 flex flex-col gap-4">
+                {/* Character Header Info */}
+                <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#22242e]">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span
+                      className="w-3.5 h-3.5 rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                      style={{ backgroundColor: p.cor }}
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0">
+                      <div className="font-brunson text-[26px] sm:text-[28px] uppercase tracking-[0.03em] leading-none text-[#F2EAE0] truncate">
+                        {p.nome}
+                      </div>
+                      <div className="font-mono-retro text-[11px] text-[#9A9590] mt-1 flex items-center gap-2">
+                        <span>{p.idade} anos</span>
+                        {isEsp && (
+                          <span className="flex items-center gap-1 text-[#FFB74D] text-[10px] uppercase font-bold bg-[#FFB74D]/10 px-1.5 py-0.5 rounded border border-[#FFB74D]/25">
+                            <ShieldAlert className="w-3 h-3" />
+                            Ambíguo
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <span className="font-mono-retro text-[13px] text-[#9A9590] flex-shrink-0" aria-live="polite">
-                    {count}/4
+
+                  {/* Progress Counter Tag */}
+                  <span
+                    className={`font-mono-retro text-[11px] font-bold px-2 py-1 rounded-[6px] border flex-shrink-0 ${
+                      isCardComplete
+                        ? 'bg-[#4CAF50]/15 text-[#4CAF50] border-[#4CAF50]/30'
+                        : count > 0
+                        ? 'bg-[#1e2028] text-[#F2EAE0] border-[#383d4c]'
+                        : 'bg-[#181920] text-[#707482] border-[#262832]'
+                    }`}
+                    aria-live="polite"
+                  >
+                    {count}/4 campos
                   </span>
                 </div>
 
-                {/* Fields */}
-                {(['ordem', 'local', 'quando', 'como'] as FieldKey[]).map(f => {
-                  const val = pAns[f] || '';
-                  const status = fieldStatuses[p.id]?.[f];
-                  let statusClass = 'border-[#303030] text-[#F2EAE0]';
-                  if (status === 'ok') statusClass = 'border-[#4CAF50] text-[#4CAF50]';
-                  else if (status === 'err') statusClass = 'border-[#E57373] text-[#E57373]';
-                  else if (status === 'amb') statusClass = 'border-[#FFB74D] text-[#FFB74D]';
+                {/* 4 Interactive Dropdown Fields */}
+                <div className="flex flex-col gap-3.5">
+                  {(['ordem', 'local', 'quando', 'como'] as FieldKey[]).map(f => {
+                    const val = pAns[f] || '';
+                    const status = fieldStatuses[p.id]?.[f];
+                    const meta = fieldMeta[f];
 
-                  return (
-                    <div key={f} className="flex items-center gap-[8px]">
-                      <label
-                        htmlFor={`${p.id}-${f}`}
-                        className="font-mono-retro text-[12px] tracking-[0.14em] uppercase text-[#9A9590] w-[54px] flex-shrink-0"
-                      >
-                        {labels[f]}
-                      </label>
-                      <select
+                    return (
+                      <DossierDropdown
+                        key={f}
                         id={`${p.id}-${f}`}
+                        label={meta.label}
+                        icon={meta.icon}
+                        options={OPCOES[f]}
                         value={val}
-                        onChange={e => onAnswerChange(p.id, f, e.target.value)}
-                        aria-label={`${labels[f]} de ${p.nome}`}
-                        className={`flex-1 h-[44px] px-[26px_11px] bg-[#222222] border rounded-[8px] font-inherit text-[14px] cursor-pointer appearance-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DD5D8] ${statusClass}`}
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239A9590' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
-                          backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'right 11px center',
-                        }}
-                      >
-                        {OPCOES[f].map(o => (
-                          <option key={o.v} value={o.v} className="bg-[#222222] text-[#F2EAE0]">
-                            {o.l}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                })}
+                        status={status}
+                        onChange={(newVal) => onAnswerChange(p.id, f, newVal)}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </article>
           );
         })}
       </div>
 
-      <div className="flex items-center justify-between flex-wrap gap-4 pt-[16px] border-t border-[#303030]">
-        <span className="font-mono-retro text-[13px] text-[#9A9590]" aria-live="polite">
-          {totalFilled} de 28 campos preenchidos
-        </span>
+      {/* Bottom Action Section (non-sticky, appears only at the end of scroll) */}
+      <div className="pt-6 pb-12 flex flex-col items-center justify-center gap-2.5 border-t border-[#262832]">
         <button
           type="button"
           onClick={onConclude}
-          className="w-full sm:w-auto font-brunson text-[20px] sm:text-[23px] uppercase tracking-[0.04em] bg-[#D94040] text-white border-none rounded-[10px] px-6 py-2.5 min-h-[48px] cursor-pointer hover:bg-[#c03434] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DD5D8] whitespace-nowrap flex items-center justify-center"
+          className="w-full sm:w-auto font-brunson text-[22px] sm:text-[25px] uppercase tracking-[0.05em] bg-[#D94040] text-white border-none rounded-[10px] px-10 py-3.5 min-h-[50px] cursor-pointer hover:bg-[#c03434] transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DD5D8] whitespace-nowrap flex items-center justify-center shadow-[0_4px_16px_rgba(217,64,64,0.35)]"
         >
-          Concluir investigação
+          Concluir Investigação 🔍
         </button>
+        <span className="font-mono-retro text-[11px] text-[#707482] uppercase tracking-[0.12em]">
+          Rancho Esperança · Dossiê Pericial 1995
+        </span>
       </div>
     </div>
   );

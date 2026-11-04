@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Evidence } from '../types';
 import { formatTime, PHOTOS, SVGS } from '../data/evidence';
-import { Mic, Volume2, Pause, RotateCcw, Disc } from 'lucide-react';
+import { Mic, Volume2, Pause, RotateCcw, Disc, FileText } from 'lucide-react';
 
 interface ExamSheetProps {
   evidence: Evidence | null;
@@ -46,6 +46,17 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
   useEffect(() => {
     stopAudio();
+    if (isOpen) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      return () => {
+        stopAudio();
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
     return () => {
       stopAudio();
     };
@@ -106,11 +117,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       {/* Backdrop */}
       <div
         id="backdrop"
-        onClick={() => {
-          stopAudio();
-          onClose();
-        }}
-        className="fixed inset-0 z-[200] bg-black/70 transition-opacity duration-300"
+        className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-[2px] transition-opacity duration-300"
         aria-hidden="true"
       />
 
@@ -120,7 +127,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
         role="dialog"
         aria-modal="true"
         aria-label="Exame de evidência"
-        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] overflow-y-auto sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-[calc(var(--nav-h)+16px)] transition-transform duration-300 animate-fadeup"
+        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] overflow-y-auto sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-6 sm:pb-8 transition-transform duration-300 animate-fadeup"
       >
         {/* Top bar */}
         <div className="sticky top-0 z-[2] bg-[#222222] flex items-center justify-between p-[14px_20px_12px] border-b border-[#303030]">
@@ -274,9 +281,21 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
             </div>
           </div>
 
-          {/* Typewriter Description on parchment */}
-          <div className="bg-[#E8DFC8] rounded-[10px] p-[16px_18px] font-mono-retro text-[15px] text-[#1A1008] leading-[1.75] italic shadow-inner">
-            {evidence.desc}
+          {/* 1995 Police Evidence File Docket (Complete Original Text) */}
+          <div className="bg-[#E8DFC8] border-2 border-[#cfc4a9] rounded-[11px] p-4 sm:p-5 shadow-inner relative overflow-hidden">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#c8be9f]">
+              <span className="font-mono-retro text-[10px] sm:text-[11px] uppercase tracking-[0.16em] text-[#6b5838] font-bold flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[#8c6b32]" />
+                Laudo de Cena · Evidência {evidence.id}
+              </span>
+              <span className="font-mono-retro text-[9px] uppercase tracking-[0.12em] text-[#8c7e63] bg-[#dbd0b6] px-2 py-0.5 rounded font-semibold">
+                {evidence.tipo}
+              </span>
+            </div>
+
+            <p className="font-mono-retro text-[14px] sm:text-[15px] text-[#241a12] leading-[1.8] font-normal">
+              "{evidence.desc}"
+            </p>
           </div>
 
           {/* RetroSheet-95 Easter Egg */}

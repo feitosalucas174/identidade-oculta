@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ vistasCount, camposCount, onGoHo
       <div className="flex-1 min-w-0">
         <p className="font-mono-retro text-[10px] sm:text-[11px] tracking-[0.14em] text-[#9A9590] flex items-center gap-[6px] uppercase truncate">
           <span className="rec-dot" aria-hidden="true" />
-          Caso 001-95
+          Caso nº 139 · 1995
         </p>
         <h1 className="font-brunson text-[22px] sm:text-[28px] tracking-[0.05em] uppercase leading-none text-[#F2EAE0] truncate">
           Identidade Oculta
