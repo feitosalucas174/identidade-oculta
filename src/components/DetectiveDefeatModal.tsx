@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, RotateCcw, AlertTriangle } from 'lucide-react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface DetectiveDefeatModalProps {
   isOpen: boolean;
@@ -12,16 +13,12 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
   onReview,
   onRestart,
 }) => {
+  useScrollLock(isOpen);
+
   const [currentFrame, setCurrentFrame] = useState(0);
 
-  // Lock body scroll and fluid 260ms cadence across the 8 streetlamp frames without stutter
   useEffect(() => {
     if (!isOpen) return;
-
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
 
     setCurrentFrame(0);
     const interval = setInterval(() => {
@@ -30,8 +27,6 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
 
     return () => {
       clearInterval(interval);
-      document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
     };
   }, [isOpen]);
 
@@ -39,14 +34,18 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[2500] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-[2500] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto overscroll-contain touch-pan-y animate-fadeIn"
       role="dialog"
       aria-modal="true"
       aria-label="Investigação Inconclusiva"
+      onTouchMove={(e) => {
+        if (e.target === e.currentTarget) {
+          e.preventDefault();
+        }
+      }}
     >
       <div className="w-full max-w-[560px] bg-[#0c0d10] border-2 border-[#2b2d36] rounded-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col my-auto relative">
         
-        {/* Header Bar */}
         <div className="bg-[#07080a] border-b border-[#1f2128] p-[12px_18px] flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-[#d94040]" />
@@ -60,10 +59,8 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
           </span>
         </div>
 
-        {/* Modal Main Content */}
         <div className="p-4 sm:p-6 flex flex-col gap-4">
           
-          {/* Headline & Narrative Box */}
           <div className="text-center flex flex-col items-center">
             <h2 className="font-brunson text-[30px] sm:text-[38px] uppercase tracking-[0.04em] leading-[0.95] text-[#F2EAE0] mb-2.5">
               Investigação<br />Inconclusiva
@@ -73,10 +70,8 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
             </p>
           </div>
 
-          {/* Detective Animation Under Street Lamp (Pure #000000 solid background matching the art) */}
           <div className="relative h-[250px] sm:h-[280px] w-full bg-[#000000] border border-[#20222a] rounded-[12px] flex items-center justify-center overflow-hidden">
 
-            {/* Pre-rendered frame stack: Instant clean pixel swap (no opacity fade blur) */}
             {Array.from({ length: 8 }, (_, i) => {
               const isCurrent = i === currentFrame;
               return (
@@ -92,15 +87,12 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
               );
             })}
 
-            {/* Stamp / Tag overlay */}
             <div className="absolute bottom-2.5 right-3 z-30 font-mono-retro text-[9px] uppercase tracking-[0.14em] text-[#9A9590] bg-[#0c0d10]/85 px-2 py-0.5 rounded border border-[#20222a]">
               DETETIVE · SEM CONCLUSÃO
             </div>
           </div>
 
-          {/* Action Buttons Panel (Unified to 2 distinct options) */}
           <div className="flex flex-col gap-2.5 pt-1">
-            {/* Unified Review Action: Opens Laudo pericial with full error breakdown and return to fichas */}
             <button
               type="button"
               onClick={onReview}
@@ -110,7 +102,6 @@ export const DetectiveDefeatModal: React.FC<DetectiveDefeatModalProps> = ({
               <span>Ver Laudo e Corrigir Fichas</span>
             </button>
 
-            {/* Restart Action */}
             <button
               type="button"
               onClick={onRestart}

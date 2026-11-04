@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Evidence } from '../types';
 import { formatTime, PHOTOS, SVGS } from '../data/evidence';
 import { Mic, Volume2, Pause, RotateCcw, Disc, FileText } from 'lucide-react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ExamSheetProps {
   evidence: Evidence | null;
@@ -29,9 +30,11 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
   const timerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
 
+  // Rigid scroll lock on mobile & desktop
+  useScrollLock(isOpen);
+
   const duration = evidence ? Math.max(4, Math.round(evidence.desc.length / 15)) : 0;
 
-  // Stop audio whenever evidence changes or sheet closes
   const stopAudio = () => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -46,17 +49,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
   useEffect(() => {
     stopAudio();
-    if (isOpen) {
-      const originalBodyOverflow = document.body.style.overflow;
-      const originalHtmlOverflow = document.documentElement.style.overflow;
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-      return () => {
-        stopAudio();
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-      };
-    }
     return () => {
       stopAudio();
     };
@@ -114,22 +106,26 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         id="backdrop"
+        onClick={() => {
+          stopAudio();
+          onClose();
+        }}
+        onTouchMove={(e) => {
+          e.preventDefault();
+        }}
         className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-[2px] transition-opacity duration-300"
         aria-hidden="true"
       />
 
-      {/* Sheet */}
       <div
         id="sheet"
         role="dialog"
         aria-modal="true"
         aria-label="Exame de evidência"
-        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] overflow-y-auto sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-6 sm:pb-8 transition-transform duration-300 animate-fadeup"
+        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] overflow-y-auto overscroll-contain touch-pan-y sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-6 sm:pb-8 transition-transform duration-300 animate-fadeup"
       >
-        {/* Top bar */}
         <div className="sticky top-0 z-[2] bg-[#222222] flex items-center justify-between p-[14px_20px_12px] border-b border-[#303030]">
           <div className="w-[36px] h-[4px] rounded-[2px] bg-[#303030] absolute top-[10px] left-1/2 -translate-x-1/2" aria-hidden="true" />
           <div className="text-center flex-1">
@@ -153,7 +149,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
           </button>
         </div>
 
-        {/* Photo Container */}
         <div className="relative overflow-hidden bg-[#0D0D0D] border-b border-[#222222]">
           {photo ? (
             <img
@@ -182,12 +177,9 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
           </div>
         </div>
 
-        {/* Body */}
         <div className="p-[14px_14px] sm:p-[18px_20px] flex flex-col gap-[12px] sm:gap-[14px]">
-          {/* Police Dictaphone Audio Control Panel */}
           <div className="bg-[#16171b] border-2 border-[#2d3038] rounded-[14px] p-3.5 sm:p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_8px_20px_rgba(0,0,0,0.6)] relative overflow-hidden">
             
-            {/* Top Dictaphone Branding & Status Indicator */}
             <div className="flex items-center justify-between gap-2 pb-2.5 mb-3 border-b border-[#282b33]">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#111] border border-[#444] flex items-center justify-center">
@@ -201,7 +193,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                 </span>
               </div>
 
-              {/* Counter & Cassette Reel */}
               <div className="flex items-center gap-2 bg-[#0d0e11] px-2.5 py-1 rounded-[5px] border border-[#22252c]">
                 <span className="font-mono-retro text-[11px] tracking-[0.08em] text-[#7DD5D8] font-bold">
                   {formatTime(elapsed)} / {formatTime(duration)}
@@ -212,16 +203,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
               </div>
             </div>
 
-            {/* Tape Deck Window & Animated Waveform */}
             <div className="bg-[#0b0c0e] border border-[#22252e] rounded-[8px] p-2.5 mb-3 flex items-center gap-3">
-              {/* Dual Cassette Reel Display */}
               <div className="hidden sm:flex items-center justify-between w-[60px] h-[30px] bg-[#14161b] border border-[#2a2d36] rounded-[4px] px-1.5 flex-shrink-0 relative overflow-hidden">
                 <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 h-[2px] bg-[#4a2a18]" />
                 <Disc className={`w-4 h-4 text-[#6a7080] z-10 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '2s' }} />
                 <Disc className={`w-4 h-4 text-[#6a7080] z-10 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '2s' }} />
               </div>
 
-              {/* Audio Waveform / Level Meter */}
               <div className="flex-1 flex flex-col gap-1">
                 <div className={`flex items-end gap-[2px] h-[26px] w-full ${isPlaying ? 'audio-playing' : ''}`} aria-hidden="true">
                   {Array.from({ length: 28 }, (_, j) => {
@@ -240,7 +228,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
               </div>
             </div>
 
-            {/* Tactile Police Recorder Control Keys */}
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <button
                 type="button"
@@ -281,7 +268,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
             </div>
           </div>
 
-          {/* 1995 Police Evidence File Docket (Complete Original Text) */}
           <div className="bg-[#E8DFC8] border-2 border-[#cfc4a9] rounded-[11px] p-4 sm:p-5 shadow-inner relative overflow-hidden">
             <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#c8be9f]">
               <span className="font-mono-retro text-[10px] sm:text-[11px] uppercase tracking-[0.16em] text-[#6b5838] font-bold flex items-center gap-1.5">
@@ -298,7 +284,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
             </p>
           </div>
 
-          {/* RetroSheet-95 Easter Egg */}
           {evidence.id === 'E-15' && onOpenRetroSheet && (
             <button
               type="button"
@@ -310,7 +295,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
             </button>
           )}
 
-          {/* Timeline Controls */}
           <div className="bg-[#2C2626] border border-[#303030] rounded-[10px] p-[12px_16px] flex items-center gap-3 flex-wrap min-h-[54px]">
             {!inSeq ? (
               <>

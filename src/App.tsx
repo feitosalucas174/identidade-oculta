@@ -32,9 +32,11 @@ import { FlamingSkullEffect, TimelineAnimationType } from './components/FlamingS
 import { DetectiveBriefingModal } from './components/DetectiveBriefingModal';
 import { DetectiveDefeatModal } from './components/DetectiveDefeatModal';
 import { DetectiveVictoryModal } from './components/DetectiveVictoryModal';
+import { RetroBootScreen } from './components/RetroBootScreen';
 
 export const App: React.FC = () => {
   // Game state
+  const [isBooting, setIsBooting] = useState(true);
   const [deck, setDeck] = useState(() => shuffle(EV));
   const [vistas, setVistas] = useState<Set<string>>(() => new Set());
   const [sequence, setSequence] = useState<string[]>([]);
@@ -52,49 +54,6 @@ export const App: React.FC = () => {
   const [isRetroSheetOpen, setIsRetroSheetOpen] = useState(false);
   const [timelineAnimTrigger, setTimelineAnimTrigger] = useState(0);
   const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('vhs');
-
-  // Preload sprite assets, fonts, and pre-warm GPU texture cache on mount for instant performance
-  useEffect(() => {
-    if (typeof document !== 'undefined' && document.fonts && document.fonts.load) {
-      document.fonts.load('1em "Brunson Rough"');
-    }
-
-    ['/assets/vhs_strip.png', '/assets/claquete_strip.png', '/assets/revolver_strip.png', '/assets/ampulheta_strip.png', '/assets/lupa_strip.png'].forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-
-    // Preload all 16 detective intro frames
-    for (let i = 0; i < 16; i++) {
-      const img = new Image();
-      img.src = `/assets/detetive/frame_${String(i).padStart(2, '0')}.png`;
-    }
-
-    // Preload all 8 detective defeat frames
-    for (let i = 0; i < 8; i++) {
-      const img = new Image();
-      img.src = `/assets/detetive_derrota/frame_${String(i).padStart(2, '0')}.png`;
-    }
-
-    // Preload Produtora Alice Guy logo and crew photos for instant tab display
-    const aliceGuyImages = [
-      '/assets/aistudio/AG_FC_44a91d2b.jpg',
-      '/assets/aistudio/1_994dbf90.jpg',
-      '/assets/aistudio/2_d8fcfc06.jpg',
-      '/assets/aistudio/3_259d20ba.jpg',
-      '/assets/aistudio/4_88dd4e00.jpg',
-      '/assets/aistudio/5_666b334d.jpg',
-      '/assets/aistudio/6_5c870541.jpg',
-      '/assets/aistudio/7_aa3e89d6.jpg',
-      '/assets/aistudio/8_6ce7ced0.jpg',
-      '/assets/aistudio/9_467f2335.jpg',
-      '/assets/aistudio/10_df7bff44.jpg',
-    ];
-    aliceGuyImages.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, []);
 
   // Counters
   const vistasCount = vistas.size;
@@ -335,6 +294,10 @@ export const App: React.FC = () => {
   };
 
   const currentExamEv = examIdx !== null ? deck[examIdx] : null;
+
+  if (isBooting) {
+    return <RetroBootScreen onComplete={() => setIsBooting(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-[#F2EAE0] font-sans selection:bg-[#7DD5D8] selection:text-[#0D0D0D]">

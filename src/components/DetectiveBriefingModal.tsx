@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, FastForward, Search, ShieldAlert, Sparkles } from 'lucide-react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface BriefingSlide {
   title: string;
@@ -47,6 +48,9 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentFrameInSlide, setCurrentFrameInSlide] = useState(0);
 
+  // Rigid scroll lock on all mobile & desktop viewports
+  useScrollLock(isOpen);
+
   // Always reset to the first card when the report is opened
   useEffect(() => {
     if (isOpen) {
@@ -57,14 +61,9 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
 
   const slide = BRIEFING_SLIDES[currentSlideIndex];
 
-  // Lock body scroll and animate detective frame transitions (~450ms per frame)
+  // Animate detective frame transitions (~450ms per frame)
   useEffect(() => {
     if (!isOpen) return;
-
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
 
     setCurrentFrameInSlide(0);
     const interval = setInterval(() => {
@@ -73,8 +72,6 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
 
     return () => {
       clearInterval(interval);
-      document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
     };
   }, [currentSlideIndex, isOpen, slide.frames.length]);
 
@@ -101,10 +98,15 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[2000] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-[2000] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto overscroll-contain touch-pan-y animate-fadeIn"
       role="dialog"
       aria-modal="true"
       aria-label="Relatório Inicial do Detetive"
+      onTouchMove={(e) => {
+        if (e.target === e.currentTarget) {
+          e.preventDefault();
+        }
+      }}
     >
       <div className="w-full max-w-[620px] bg-[#16171b] border-2 border-[#2d3038] rounded-[16px] shadow-[0_12px_50px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col my-auto relative">
         

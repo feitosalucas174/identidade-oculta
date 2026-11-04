@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, RotateCcw, Trophy, Sparkles } from 'lucide-react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface DetectiveVictoryModalProps {
   isOpen: boolean;
@@ -12,11 +13,12 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
   onReview,
   onRestart,
 }) => {
+  useScrollLock(isOpen);
+
   const [currentFrame, setCurrentFrame] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
-  // Load animation sheet on mount
   useEffect(() => {
     const img = new Image();
     img.src = '/assets/aistudio/Detetive_Pixelado_no_Ref_gio_Aconchegante_674d8c38.png';
@@ -25,14 +27,8 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
     };
   }, []);
 
-  // Lock body scroll and frame loop animation across 8 frames (220ms per frame)
   useEffect(() => {
     if (!isOpen) return;
-
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
 
     setCurrentFrame(0);
     const interval = setInterval(() => {
@@ -41,12 +37,9 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
 
     return () => {
       clearInterval(interval);
-      document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
     };
   }, [isOpen]);
 
-  // Draw current frame onto canvas
   useEffect(() => {
     if (!isOpen) return;
     const canvas = canvasRef.current;
@@ -86,14 +79,18 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[2500] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-[2500] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto overscroll-contain touch-pan-y animate-fadeIn"
       role="dialog"
       aria-modal="true"
       aria-label="Investigação Solucionada"
+      onTouchMove={(e) => {
+        if (e.target === e.currentTarget) {
+          e.preventDefault();
+        }
+      }}
     >
       <div className="w-full max-w-[560px] bg-[#0c0d10] border-2 border-[#1e4840] rounded-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col my-auto relative">
         
-        {/* Header Bar */}
         <div className="bg-[#070b09] border-b border-[#183a33] p-[12px_18px] flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4 text-[#7DD5D8]" />
@@ -108,10 +105,8 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
           </span>
         </div>
 
-        {/* Modal Main Content */}
         <div className="p-4 sm:p-6 flex flex-col gap-4">
           
-          {/* Headline & Narrative Box */}
           <div className="text-center flex flex-col items-center">
             <h2 className="font-brunson text-[32px] sm:text-[40px] uppercase tracking-[0.04em] leading-[0.95] text-[#7DD5D8] mb-2.5 drop-shadow-[0_2px_10px_rgba(125,213,216,0.3)]">
               Investigação<br />Solucionada!
@@ -121,7 +116,6 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
             </p>
           </div>
 
-          {/* Detective Animation by the Fireplace (Pure #000000 solid background matching the defeat style) */}
           <div className="relative h-[250px] sm:h-[280px] w-full bg-[#000000] border border-[#20222a] rounded-[12px] flex items-center justify-center overflow-hidden">
             
             <canvas
@@ -130,15 +124,12 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
               style={{ imageRendering: 'pixelated' }}
             />
 
-            {/* Stamp / Tag overlay */}
             <div className="absolute bottom-2.5 right-3 z-30 font-mono-retro text-[9px] uppercase tracking-[0.14em] text-[#D4AF37] bg-[#0c0d10]/90 px-2.5 py-1 rounded border border-[#3d2e14] font-bold shadow-md">
               DETETIVE · CASO RESOLVIDO 🥂
             </div>
           </div>
 
-          {/* Action Buttons Panel */}
           <div className="flex flex-col gap-2.5 pt-1">
-            {/* Review Laudo Action */}
             <button
               type="button"
               onClick={onReview}
@@ -148,7 +139,6 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
               <span>Ver Laudo Final de Autópsia</span>
             </button>
 
-            {/* Restart Action */}
             <button
               type="button"
               onClick={onRestart}

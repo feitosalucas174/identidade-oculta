@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface RetroSheetModalProps {
   isOpen: boolean;
@@ -6,25 +7,20 @@ interface RetroSheetModalProps {
 }
 
 export const RetroSheetModal: React.FC<RetroSheetModalProps> = ({ isOpen, onClose }) => {
-  useEffect(() => {
-    if (isOpen) {
-      const originalBodyOverflow = document.body.style.overflow;
-      const originalHtmlOverflow = document.documentElement.style.overflow;
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-      };
-    }
-  }, [isOpen]);
+  useScrollLock(isOpen);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[700] bg-black/80 flex items-center justify-center p-2 sm:p-4">
+    <div
+      className="fixed inset-0 z-[700] bg-black/80 flex items-center justify-center p-2 sm:p-4 overscroll-contain touch-pan-y"
+      onTouchMove={(e) => {
+        if (e.target === e.currentTarget) {
+          e.preventDefault();
+        }
+      }}
+    >
       <div className="relative w-full max-w-5xl h-[90vh] bg-[#c0c0c0] border-2 border-t-white border-l-white border-r-black border-b-black shadow-2xl flex flex-col">
-        {/* Title bar */}
         <div className="bg-[#000080] text-white px-2 py-1 flex items-center justify-between font-mono-retro font-bold text-xs select-none">
           <div className="flex items-center gap-1">
             <span>📊</span>
@@ -39,7 +35,6 @@ export const RetroSheetModal: React.FC<RetroSheetModalProps> = ({ isOpen, onClos
           </button>
         </div>
 
-        {/* Content iframe */}
         <div className="flex-1 w-full bg-[#008080] p-1 overflow-hidden">
           <iframe
             src="/retrosheet-95.html"

@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FinalVerificationResult } from '../types';
 import { FileText, CheckCircle2, XCircle, AlertCircle, RotateCcw, Home, ArrowLeft } from 'lucide-react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ResultModalProps {
   result: FinalVerificationResult | null;
@@ -17,19 +18,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   onRestart,
   onGoHome,
 }) => {
-  // Prevent background scrolling when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      const originalBodyOverflow = document.body.style.overflow;
-      const originalHtmlOverflow = document.documentElement.style.overflow;
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-      };
-    }
-  }, [isOpen]);
+  useScrollLock(isOpen);
 
   if (!isOpen || !result) return null;
 
@@ -41,13 +30,16 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Laudo Pericial da Investigação"
-      className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-md overflow-y-auto p-3 sm:p-6 flex justify-center animate-fadeup"
+      onTouchMove={(e) => {
+        if (e.target === e.currentTarget) {
+          e.preventDefault();
+        }
+      }}
+      className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-md overflow-y-auto overscroll-contain touch-pan-y p-3 sm:p-6 flex justify-center animate-fadeup"
     >
       <div id="result-box" className="max-w-[760px] w-full my-auto py-4">
-        {/* Main 1995 Police Forensic Docket Card */}
         <div className="bg-[#121318] border-2 border-[#2b2d38] rounded-[18px] shadow-[0_20px_70px_rgba(0,0,0,0.9)] overflow-hidden">
           
-          {/* Header Bar */}
           <div className="bg-[#07080a] border-b border-[#20222a] p-[14px_20px] flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[#7DD5D8]" />
@@ -67,10 +59,8 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             </button>
           </div>
 
-          {/* Dossier Body */}
           <div className="p-4 sm:p-7 flex flex-col gap-5">
             
-            {/* Title & Official Rubber Stamp */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#232530]">
               <div>
                 <span className="font-mono-retro text-[10px] sm:text-[11px] tracking-[0.2em] text-[#9A9590] uppercase font-bold">
@@ -81,7 +71,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                 </h2>
               </div>
 
-              {/* Textured 1995 Police Rubber Stamp */}
               <div
                 className="inline-flex items-center gap-2 font-mono-retro text-[11px] sm:text-[13px] tracking-[0.22em] uppercase border-2 px-4 py-2 rounded-[8px] -rotate-[1.5deg] origin-left font-bold shadow-md bg-[#0a0b0e]"
                 style={{ color: result.color, borderColor: result.color }}
@@ -90,11 +79,9 @@ export const ResultModal: React.FC<ResultModalProps> = ({
               </div>
             </div>
 
-            {/* Score Summary Docket */}
             <div className="bg-[#090a0d] border-2 border-[#232632] rounded-[14px] p-4 sm:p-5 flex flex-col gap-4 shadow-inner">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 
-                {/* Big Score Counter & Breakdown (Stacked vertically on mobile) */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                   <div className="bg-[#14161f] border border-[#2d3142] px-4 py-2.5 rounded-[10px] text-center w-full sm:w-auto sm:min-w-[130px] flex sm:flex-col items-center justify-between sm:justify-center gap-2 sm:gap-0 shadow-sm">
                     <span className="font-brunson text-[38px] sm:text-[50px] leading-none text-[#F2EAE0]">
@@ -117,9 +104,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                   </div>
                 </div>
 
-                {/* Accuracy Percentage Meters */}
                 <div className="w-full sm:w-[220px] flex flex-col gap-2 bg-[#12141c] p-3 rounded-[10px] border border-[#232634]">
-                  {/* Fichas Meter */}
                   <div>
                     <div className="flex justify-between font-mono-retro text-[10px] text-[#a0a0b0] font-bold mb-1 uppercase">
                       <span>Fichas dos Personagens</span>
@@ -133,7 +118,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Sequência Meter */}
                   <div>
                     <div className="flex justify-between font-mono-retro text-[10px] text-[#a0a0b0] font-bold mb-1 uppercase">
                       <span>Sequência de Fitas VHS</span>
@@ -149,14 +133,12 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                 </div>
               </div>
 
-              {/* Narrative Evaluation Note */}
               <div
                 className="font-mono-retro text-[12px] sm:text-[13px] text-[#d4cfc5] leading-[1.7] bg-[#14151c] p-3.5 rounded-[10px] border border-[#262836]"
                 dangerouslySetInnerHTML={{ __html: result.info }}
               />
             </div>
 
-            {/* Character Forensic Dossiers breakdown */}
             <div id="res-detalhe" className="flex flex-col gap-4">
               <div className="font-mono-retro text-[11px] tracking-[0.16em] uppercase text-[#7DD5D8] font-bold flex items-center gap-2 pb-1 border-b border-[#232530]">
                 <span>📋 ANÁLISE DETALHADA POR PERSONAGEM</span>
@@ -167,7 +149,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                   key={p.id}
                   className="bg-[#090a0d] border-2 border-[#232632] rounded-[14px] overflow-hidden shadow-md"
                 >
-                  {/* Character Header Bar */}
                   <div
                     className="p-[10px_16px] flex items-center justify-between border-b border-[#20222e]"
                     style={{
@@ -193,7 +174,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                     </span>
                   </div>
 
-                  {/* 4 Fields Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 bg-[#0d0e12]">
                     {campos.map((c, idx) => {
                       const isOk = c.cls === 'ok';
@@ -211,7 +191,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                               : 'bg-[#18140a] border-[#4a3d1c] text-[#fef5e6]'
                           }`}
                         >
-                          {/* Field Tag Header */}
                           <div className="flex items-center justify-between pb-1 border-b border-white/10">
                             <span className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#a0a0b0]">
                               {c.label}
@@ -237,12 +216,10 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                             )}
                           </div>
 
-                          {/* Selected Answer */}
                           <div className="text-[13px] font-bold mt-1 leading-snug">
                             "{c.val || '— não respondido —'}"
                           </div>
 
-                          {/* Hint / Discrepancy Note Box */}
                           {isErr && c.hint && (
                             <div className="mt-2 bg-[#0d0708] border border-[#602528] p-2 rounded-[6px] text-[11px] text-[#f5a6a6] leading-[1.5] italic">
                               💡 <strong>Pista do Laudo:</strong> {c.hint}
@@ -259,7 +236,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                     })}
                   </div>
 
-                  {/* Ambiguity Footer for Vera / Cláudio */}
                   {especial && (
                     <div className="bg-[#141208] border-t border-[#3d3315] p-3 text-[11px] text-[#ffd899] font-mono-retro italic leading-[1.6]">
                       ⚠ A morte de {p.nome} é intencionalmente ambígua conforme o laudo pericial final (Evidência E-21). Tanto Vera quanto Cláudio são aceitos como resposta válida para o confronto das 5h40.
@@ -269,7 +245,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({
               ))}
             </div>
 
-            {/* Action Buttons Panel */}
             <div className="flex flex-col gap-2.5 pt-3 border-t border-[#232530]">
               <button
                 type="button"
@@ -307,4 +282,3 @@ export const ResultModal: React.FC<ResultModalProps> = ({
     </div>
   );
 };
-
