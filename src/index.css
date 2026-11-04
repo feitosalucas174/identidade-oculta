@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Brunson Rough';
-  src: url('/Brunson Rough.ttf') format('truetype');
+  src: url('/identidade-oculta/Brunson Rough.ttf') format('truetype');
   font-display: block;
 }
 
@@ -84,7 +84,7 @@ body {
 .sprite-vhs {
   width: 260px;
   height: 173px;
-  background-image: url('/assets/vhs_strip.png');
+  background-image: url('/identidade-oculta/assets/vhs_strip.png');
   background-size: 1600% 100%;
   animation: playSprite 1.0s steps(16) infinite;
   image-rendering: pixelated;
@@ -94,7 +94,7 @@ body {
 .sprite-claquete {
   width: 260px;
   height: 173px;
-  background-image: url('/assets/claquete_strip.png');
+  background-image: url('/identidade-oculta/assets/claquete_strip.png');
   background-size: 1600% 100%;
   animation: playSprite 1.0s steps(16) infinite;
   image-rendering: pixelated;
@@ -104,7 +104,7 @@ body {
 .sprite-revolver {
   width: 260px;
   height: 173px;
-  background-image: url('/assets/revolver_strip.png');
+  background-image: url('/identidade-oculta/assets/revolver_strip.png');
   background-size: 1600% 100%;
   animation: playSprite 1.0s steps(16) infinite;
   image-rendering: pixelated;
@@ -114,7 +114,7 @@ body {
 .sprite-ampulheta {
   width: 260px;
   height: 173px;
-  background-image: url('/assets/ampulheta_strip.png');
+  background-image: url('/identidade-oculta/assets/ampulheta_strip.png');
   background-size: 1600% 100%;
   animation: playSprite 1.0s steps(16) infinite;
   image-rendering: pixelated;
@@ -124,7 +124,7 @@ body {
 .sprite-lupa {
   width: 260px;
   height: 173px;
-  background-image: url('/assets/lupa_strip.png');
+  background-image: url('/identidade-oculta/assets/lupa_strip.png');
   background-size: 1600% 100%;
   animation: playSprite 1.0s steps(16) infinite;
   image-rendering: pixelated;
