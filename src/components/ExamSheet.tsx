@@ -8,6 +8,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 // O BASE_URL mantém o caminho correto tanto no GitHub Pages quanto em outros deploys Vite.
 const EVIDENCE_AUDIO: Record<string, string> = {
   'E-01': `${import.meta.env.BASE_URL}assets/aistudio/EV1_e4d9c0c5.wav?v=2b2c9caaa98a93d443693908f5521ba3a1b41b35`,
+  'E-02': `${import.meta.env.BASE_URL}assets/aistudio/EV2.wav`,
 };
 
 interface ExamSheetProps {
@@ -243,16 +244,31 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                   const actualDuration = audioRef.current?.duration;
                   if (actualDuration !== undefined && Number.isFinite(actualDuration)) {
                     setAudioDuration(actualDuration);
+                    setElapsed(audioRef.current?.currentTime ?? 0);
+                  }
+                }}
+                onDurationChange={() => {
+                  const actualDuration = audioRef.current?.duration;
+                  if (actualDuration !== undefined && Number.isFinite(actualDuration)) {
+                    setAudioDuration(actualDuration);
                   }
                 }}
                 onTimeUpdate={() => {
-                  if (audioRef.current) setElapsed(audioRef.current.currentTime);
+                  const audio = audioRef.current;
+                  if (audio) {
+                    setElapsed(audio.currentTime);
+                    if (Number.isFinite(audio.duration)) setAudioDuration(audio.duration);
+                  }
                 }}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onEnded={() => {
                   setIsPlaying(false);
-                  if (audioRef.current) setElapsed(audioRef.current.duration);
+                  const audio = audioRef.current;
+                  if (audio) {
+                    setElapsed(audio.duration);
+                    setAudioDuration(audio.duration);
+                  }
                 }}
                 onError={() => {
                   console.error(`Falha ao carregar o arquivo de áudio: ${audioSrc}`);
