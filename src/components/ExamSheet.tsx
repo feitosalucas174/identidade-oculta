@@ -235,6 +235,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
           <div className="bg-[#16171b] border-2 border-[#2d3038] rounded-[14px] p-3.5 sm:p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_8px_20px_rgba(0,0,0,0.6)] relative overflow-hidden">
             {audioSrc && (
               <audio
+                key={audioSrc}
                 ref={audioRef}
                 src={audioSrc}
                 preload="metadata"
