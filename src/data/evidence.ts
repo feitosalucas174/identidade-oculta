@@ -1,5 +1,7 @@
 import { Character, Evidence, FieldKey, FieldOption } from '../types';
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 export const SVGS: Record<string, string> = {
   'E-01': `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="0" y="145" width="300" height="40" fill="#111"/><rect x="148" y="72" width="138" height="68" rx="6" fill="#1a1a1a" stroke="#3a3a3a"/><rect x="168" y="50" width="88" height="26" rx="4" fill="#1a1a1a" stroke="#3a3a3a"/><rect x="172" y="54" width="32" height="15" rx="2" fill="#0a1520" stroke="#223"/><rect x="210" y="54" width="32" height="15" rx="2" fill="#0a1520" stroke="#223"/><circle cx="167" cy="147" r="11" fill="#0a0a0a" stroke="#444"/><circle cx="258" cy="147" r="11" fill="#0a0a0a" stroke="#444"/><ellipse cx="92" cy="76" rx="14" ry="16" fill="#252525" stroke="#444"/><rect x="77" y="90" width="30" height="55" rx="6" fill="#252525" stroke="#444"/><line x1="77" y1="100" x2="56" y2="132" stroke="#252525" stroke-width="12" stroke-linecap="round"/><line x1="107" y1="100" x2="150" y2="118" stroke="#252525" stroke-width="12" stroke-linecap="round"/><circle cx="153" cy="121" r="7" fill="#1a1a1a" stroke="#555"/><circle cx="158" cy="115" r="5" fill="#c0392b"/><rect x="42" y="125" width="22" height="14" rx="2" fill="#8a5a20" stroke="#a06820"/><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">BASTIDOR</text></svg>`,
   'E-02': `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="38" y="14" width="224" height="158" rx="2" fill="#f0ecd8" stroke="#ccc"/><line x1="54" y1="18" x2="54" y2="170" stroke="#999" stroke-width="1.5"/><circle cx="54" cy="28" r="3" fill="#777"/><circle cx="54" cy="44" r="3" fill="#777"/><circle cx="54" cy="60" r="3" fill="#777"/><circle cx="54" cy="76" r="3" fill="#777"/><line x1="66" y1="34" x2="245" y2="34" stroke="#ccc"/><line x1="66" y1="50" x2="240" y2="50" stroke="#ccc"/><line x1="66" y1="66" x2="200" y2="66" stroke="#ccc"/><text x="72" y="48" fill="#c0392b" font-size="9" font-family="monospace">refazer  ritmo  cortar</text><rect x="60" y="96" width="180" height="38" rx="2" fill="#fff0f0" stroke="#c0392b"/><text x="68" y="112" fill="#c0392b" font-size="9" font-family="monospace" font-weight="bold">Ninguem toca nessa cena</text><text x="68" y="126" fill="#c0392b" font-size="9" font-family="monospace" font-weight="bold">ate eu dizer que esta pronta.</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">DOCUMENTO</text></svg>`,
@@ -25,27 +27,27 @@ export const SVGS: Record<string, string> = {
 };
 
 export const PHOTOS: Record<string, string> = {
-  'E-01': '/Tratadas/CARRO%20INTERNO.jpg',
-  'E-02': '/Tratadas/CHECKLIST%20MONICA.jpg',
-  'E-03': '/Tratadas/JANELA%20M%C3%83O.jpg',
-  'E-04': '/Tratadas/CHECKLIST%20DENIS.jpg',
-  'E-05': '/Tratadas/ANOTA%C3%87%C3%83O%20POLICIAL.jpg',
-  'E-06': '/Tratadas/CLAUDIO_VERA.jpg',
-  'E-07': '/Tratadas/CAMERA%20MARCOS.jpg',
-  'E-08': '/Tratadas/FONE%20BOB.jpg',
-  'E-09': '/Tratadas/SAMUEL.jpg',
-  'E-10': '/Tratadas/PROVA%20DE%20ANTIGUIDADE.jpg',
-  'E-11': '/Tratadas/MONICA.jpg',
-  'E-12': '/Tratadas/DENIS.jpg',
-  'E-13': '/Tratadas/BILHETES%20CLAUDIO.jpg',
-  'E-14': '/Tratadas/MARCOS%202.jpg',
-  'E-15': '/Tratadas/DESPESAS_SAMUEL.jpg',
-  'E-16': '/Tratadas/MONICA%203.jpg',
-  'E-17': '/Tratadas/BOB.jpg',
-  'E-18': '/Tratadas/ANOTA%C3%87%C3%95ES%20VERA.jpg',
-  'E-19': '/Tratadas/PISTA%20VERA.jpg',
-  'E-20': '/Tratadas/MARCOS%203.jpg',
-  'E-21': '/Tratadas/ANOTA%C3%87%C3%83O%20FINAL.jpg'
+  'E-01': `${BASE_URL}Tratadas/CARRO%20INTERNO.jpg`,
+  'E-02': `${BASE_URL}Tratadas/CHECKLIST%20MONICA.jpg`,
+  'E-03': `${BASE_URL}Tratadas/JANELA%20M%C3%83O.jpg`,
+  'E-04': `${BASE_URL}Tratadas/CHECKLIST%20DENIS.jpg`,
+  'E-05': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%83O%20POLICIAL.jpg`,
+  'E-06': `${BASE_URL}Tratadas/CLAUDIO_VERA.jpg`,
+  'E-07': `${BASE_URL}Tratadas/CAMERA%20MARCOS.jpg`,
+  'E-08': `${BASE_URL}Tratadas/FONE%20BOB.jpg`,
+  'E-09': `${BASE_URL}Tratadas/SAMUEL.jpg`,
+  'E-10': `${BASE_URL}Tratadas/PROVA%20DE%20ANTIGUIDADE.jpg`,
+  'E-11': `${BASE_URL}Tratadas/MONICA.jpg`,
+  'E-12': `${BASE_URL}Tratadas/DENIS.jpg`,
+  'E-13': `${BASE_URL}Tratadas/BILHETES%20CLAUDIO.jpg`,
+  'E-14': `${BASE_URL}Tratadas/MARCOS%202.jpg`,
+  'E-15': `${BASE_URL}Tratadas/DESPESAS_SAMUEL.jpg`,
+  'E-16': `${BASE_URL}Tratadas/MONICA%203.jpg`,
+  'E-17': `${BASE_URL}Tratadas/BOB.jpg`,
+  'E-18': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%95ES%20VERA.jpg`,
+  'E-19': `${BASE_URL}Tratadas/PISTA%20VERA.jpg`,
+  'E-20': `${BASE_URL}Tratadas/MARCOS%203.jpg`,
+  'E-21': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%83O%20FINAL.jpg'
 };
 
 export function shuffle<T>(array: T[]): T[] {
