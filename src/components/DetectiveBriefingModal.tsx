@@ -41,6 +41,8 @@ interface DetectiveBriefingModalProps {
   onClose: () => void;
 }
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
   isOpen,
   onClose,
@@ -189,7 +191,7 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
               return (
                 <img
                   key={i}
-                  src={`/assets/detetive/frame_${String(i).padStart(2, '0')}.png`}
+                  src={`${BASE_URL}assets/detetive/frame_${String(i).padStart(2, '0')}.png`}
                   alt="Detetive em Pixel Art"
                   className={`absolute inset-0 m-auto h-[180px] sm:h-[210px] w-auto object-contain image-rendering-pixelated ${
                     isCurrent ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
