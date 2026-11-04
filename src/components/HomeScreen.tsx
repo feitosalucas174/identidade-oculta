@@ -7,56 +7,58 @@ interface HomeScreenProps {
   onRestart?: () => void;
 }
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const CREW = [
   {
     nome: 'Juliana Naka',
     cargo: 'Diretora',
-    foto: '/assets/aistudio/1_994dbf90.jpg',
+    foto: `${BASE_URL}assets/aistudio/1_994dbf90.jpg`,
   },
   {
     nome: 'Karen Ialago',
     cargo: 'Assistente de Direção',
-    foto: '/assets/aistudio/2_d8fcfc06.jpg',
+    foto: `${BASE_URL}assets/aistudio/2_d8fcfc06.jpg`,
   },
   {
     nome: 'Davi Vieira',
     cargo: 'Produtor e Roteirista',
-    foto: '/assets/aistudio/3_259d20ba.jpg',
+    foto: `${BASE_URL}assets/aistudio/3_259d20ba.jpg`,
   },
   {
     nome: 'Lucas Feitosa',
     cargo: 'Diretor de Elenco e Roteirista',
-    foto: '/assets/aistudio/4_88dd4e00.jpg',
+    foto: `${BASE_URL}assets/aistudio/4_88dd4e00.jpg`,
   },
   {
     nome: 'Lucas Batista',
     cargo: 'Diretor de Fotografia e Roteirista',
-    foto: '/assets/aistudio/5_666b334d.jpg',
+    foto: `${BASE_URL}assets/aistudio/5_666b334d.jpg`,
   },
   {
     nome: 'Vinícius Oliveira',
     cargo: 'Cinegrafista',
-    foto: '/assets/aistudio/6_5c870541.jpg',
+    foto: `${BASE_URL}assets/aistudio/6_5c870541.jpg`,
   },
   {
     nome: 'Pietra Notarberardino',
     cargo: 'Diretora de Arte',
-    foto: '/assets/aistudio/7_aa3e89d6.jpg',
+    foto: `${BASE_URL}assets/aistudio/7_aa3e89d6.jpg`,
   },
   {
     nome: 'Izzy Donatella',
     cargo: 'Maquiadora e Figurinista',
-    foto: '/assets/aistudio/8_6ce7ced0.jpg',
+    foto: `${BASE_URL}assets/aistudio/8_6ce7ced0.jpg`,
   },
   {
     nome: 'Gabriel Elias',
     cargo: 'Editor',
-    foto: '/assets/aistudio/9_467f2335.jpg',
+    foto: `${BASE_URL}assets/aistudio/9_467f2335.jpg`,
   },
   {
     nome: 'Marcello Araújo',
     cargo: 'Sonoplasta',
-    foto: '/assets/aistudio/10_df7bff44.jpg',
+    foto: `${BASE_URL}assets/aistudio/10_df7bff44.jpg`,
   },
 ];
 
@@ -320,7 +322,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
                 <div className="relative overflow-hidden rounded-[6px] border border-[#2a2a35] bg-[#000]">
                   <img
-                    src="/assets/aistudio/AG_FC_44a91d2b.jpg"
+                    src={`${BASE_URL}assets/aistudio/AG_FC_44a91d2b.jpg`}
                     alt="Produtora Alice Guy - USCS"
                     loading="eager"
                     fetchPriority="high"
