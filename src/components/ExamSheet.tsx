@@ -4,6 +4,12 @@ import { formatTime, PHOTOS, SVGS } from '../data/evidence';
 import { Mic, Volume2, Pause, RotateCcw, Disc, FileText } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
 
+// Associe aqui os arquivos reais de áudio às evidências correspondentes.
+// O BASE_URL mantém o caminho correto tanto no GitHub Pages quanto em outros deploys Vite.
+const EVIDENCE_AUDIO: Record<string, string> = {
+  'E-01': `${import.meta.env.BASE_URL}assets/aistudio/EV1_e4d9c0c5.wav?v=2b2c9caaa98a93d443693908f5521ba3a1b41b35`,
+};
+
 interface ExamSheetProps {
   evidence: Evidence | null;
   sequence: string[];
@@ -27,21 +33,32 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
+  const audioSrc = evidence ? EVIDENCE_AUDIO[evidence.id] : undefined;
 
   // Rigid scroll lock on mobile & desktop
   useScrollLock(isOpen);
 
-  const duration = evidence ? Math.max(4, Math.round(evidence.desc.length / 15)) : 0;
+  const duration = audioSrc
+    ? audioDuration
+    : evidence
+      ? Math.max(4, Math.round(evidence.desc.length / 15))
+      : 0;
 
   const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
       timerRef.current = null;
     }
     setElapsed(0);
@@ -49,21 +66,14 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
   useEffect(() => {
     stopAudio();
+    setAudioDuration(0);
     return () => {
       stopAudio();
     };
   }, [evidence?.id, isOpen]);
 
-  const toggleAudio = () => {
-    if (!evidence) return;
-    if (isPlaying) {
-      stopAudio();
-      return;
-    }
-
-    if (typeof window === 'undefined' || !window.speechSynthesis) {
-      return;
-    }
+  const playSpeech = () => {
+    if (!evidence || typeof window === 'undefined' || !window.speechSynthesis) return;
 
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(evidence.desc);
@@ -74,26 +84,70 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
     utterance.onstart = () => {
       setIsPlaying(true);
       startTimeRef.current = Date.now();
+      if (timerRef.current !== null) window.clearInterval(timerRef.current);
       timerRef.current = window.setInterval(() => {
         const diff = (Date.now() - startTimeRef.current) / 1000;
-        if (diff >= duration) {
-          setElapsed(duration);
-        } else {
-          setElapsed(diff);
-        }
+        setElapsed(Math.min(diff, duration));
       }, 100);
     };
 
     utterance.onend = () => {
-      stopAudio();
+      setIsPlaying(false);
+      if (timerRef.current !== null) {
+        window.clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
       setElapsed(duration);
     };
 
     utterance.onerror = () => {
-      stopAudio();
+      setIsPlaying(false);
+      if (timerRef.current !== null) {
+        window.clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     };
 
     window.speechSynthesis.speak(utterance);
+  };
+
+  const toggleAudio = () => {
+    if (!evidence) return;
+
+    if (audioSrc && audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        if (audioRef.current.ended) audioRef.current.currentTime = 0;
+        void audioRef.current.play().catch((error) => {
+          console.error('Não foi possível reproduzir o áudio da evidência:', error);
+          setIsPlaying(false);
+        });
+      }
+      return;
+    }
+
+    if (isPlaying) {
+      stopAudio();
+      return;
+    }
+
+    playSpeech();
+  };
+
+  const restartAudio = () => {
+    if (audioSrc && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      setElapsed(0);
+      void audioRef.current.play().catch((error) => {
+        console.error('Não foi possível reiniciar o áudio da evidência:', error);
+        setIsPlaying(false);
+      });
+      return;
+    }
+
+    stopAudio();
+    playSpeech();
   };
 
   if (!isOpen || !evidence) return null;
@@ -179,7 +233,34 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
         <div className="p-[14px_14px] sm:p-[18px_20px] flex flex-col gap-[12px] sm:gap-[14px]">
           <div className="bg-[#16171b] border-2 border-[#2d3038] rounded-[14px] p-3.5 sm:p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_8px_20px_rgba(0,0,0,0.6)] relative overflow-hidden">
-            
+            {audioSrc && (
+              <audio
+                ref={audioRef}
+                src={audioSrc}
+                preload="metadata"
+                onLoadedMetadata={() => {
+                  const actualDuration = audioRef.current?.duration;
+                  if (actualDuration !== undefined && Number.isFinite(actualDuration)) {
+                    setAudioDuration(actualDuration);
+                  }
+                }}
+                onTimeUpdate={() => {
+                  if (audioRef.current) setElapsed(audioRef.current.currentTime);
+                }}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => {
+                  setIsPlaying(false);
+                  if (audioRef.current) setElapsed(audioRef.current.duration);
+                }}
+                onError={() => {
+                  console.error(`Falha ao carregar o arquivo de áudio: ${audioSrc}`);
+                  setIsPlaying(false);
+                }}
+                className="hidden"
+              />
+            )}
+
             <div className="flex items-center justify-between gap-2 pb-2.5 mb-3 border-b border-[#282b33]">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#111] border border-[#444] flex items-center justify-center">
@@ -254,10 +335,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
               <button
                 type="button"
-                onClick={() => {
-                  stopAudio();
-                  toggleAudio();
-                }}
+                onClick={restartAudio}
                 title="Reiniciar depoimento do início"
                 aria-label="Reiniciar depoimento do início"
                 className="h-[44px] px-3.5 rounded-[8px] bg-gradient-to-b from-[#2a2d36] to-[#1a1c22] border-t border-l border-t-[#3e4250] border-l-[#3e4250] border-r-[#101115] border-b-[#101115] text-[#9A9590] hover:text-[#F2EAE0] hover:from-[#323642] active:translate-y-[1px] flex items-center justify-center gap-1.5 font-mono-retro text-[11px] uppercase tracking-[0.05em] cursor-pointer transition-all flex-shrink-0 shadow-[0_3px_6px_rgba(0,0,0,0.4)]"

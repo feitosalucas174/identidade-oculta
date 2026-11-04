@@ -24,7 +24,7 @@ jobs:
       - name: Build project
         run: |
           npm run build
-          cp dist/index.html dist/200.html
+          cp docs/index.html docs/200.html
 
       - name: Deploy to Surge
-        run: npx surge dist identidade-oculta.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+        run: npx surge docs identidade-oculta.surge.sh --token ${{ secrets.SURGE_TOKEN }}
