@@ -40,11 +40,11 @@ export const PHOTOS: Record<string, string> = {
   'E-13': '/Tratadas/BILHETES%20CLAUDIO.jpg',
   'E-14': '/Tratadas/MARCOS%202.jpg',
   'E-15': '/Tratadas/DESPESAS_SAMUEL.jpg',
-  'E-16': '/Tratadas/MONICA%202.jpg',
+  'E-16': '/Tratadas/MONICA%203.jpg',
   'E-17': '/Tratadas/BOB.jpg',
   'E-18': '/Tratadas/ANOTA%C3%87%C3%95ES%20VERA.jpg',
   'E-19': '/Tratadas/PISTA%20VERA.jpg',
-  'E-20': '/Tratadas/MARCOS.jpg',
+  'E-20': '/Tratadas/MARCOS%203.jpg',
   'E-21': '/Tratadas/ANOTA%C3%87%C3%83O%20FINAL.jpg'
 };
 
