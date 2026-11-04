@@ -6,6 +6,7 @@ interface RetroBootScreenProps {
 }
 
 export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) => {
+  const BASE_URL = import.meta.env.BASE_URL;
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([
     'POLÍCIA CIVIL SP · DELEGACIA DE HOMICÍDIOS E INVESTIGAÇÕES GERAIS (1995)',
@@ -16,27 +17,27 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
 
   useEffect(() => {
     const assetsToLoad: string[] = [
-      ...Array.from({ length: 16 }, (_, i) => `/assets/detetive/frame_${String(i).padStart(2, '0')}.png`),
-      ...Array.from({ length: 8 }, (_, i) => `/assets/detetive_derrota/frame_${String(i).padStart(2, '0')}.png`),
-      '/assets/aistudio/Detetive_Pixelado_no_Ref_gio_Aconchegante_674d8c38.png',
-      '/assets/vhs_strip.png',
-      '/assets/claquete_strip.png',
-      '/assets/revolver_strip.png',
-      '/assets/ampulheta_strip.png',
-      '/assets/lupa_strip.png',
-      '/assets/aistudio/AG_FC_44a91d2b.jpg',
-      '/assets/aistudio/1_994dbf90.jpg',
-      '/assets/aistudio/2_d8fcfc06.jpg',
-      '/assets/aistudio/3_259d20ba.jpg',
-      '/assets/aistudio/4_88dd4e00.jpg',
-      '/assets/aistudio/5_666b334d.jpg',
-      '/assets/aistudio/6_5c870541.jpg',
-      '/assets/aistudio/7_aa3e89d6.jpg',
-      '/assets/aistudio/8_6ce7ced0.jpg',
-      '/assets/aistudio/9_467f2335.jpg',
-      '/assets/aistudio/10_df7bff44.jpg',
-      '/Tratadas/MARCOS 3.jpg',
-      '/Tratadas/MONICA 3.jpg',
+      ...Array.from({ length: 16 }, (_, i) => `${BASE_URL}assets/detetive/frame_${String(i).padStart(2, '0')}.png`),
+      ...Array.from({ length: 8 }, (_, i) => `${BASE_URL}assets/detetive_derrota/frame_${String(i).padStart(2, '0')}.png`),
+      `${BASE_URL}assets/aistudio/Detetive_Pixelado_no_Ref_gio_Aconchegante_674d8c38.png',
+      `${BASE_URL}assets/vhs_strip.png',
+      `${BASE_URL}assets/claquete_strip.png',
+      `${BASE_URL}assets/revolver_strip.png',
+      `${BASE_URL}assets/ampulheta_strip.png',
+      `${BASE_URL}assets/lupa_strip.png',
+      `${BASE_URL}assets/aistudio/AG_FC_44a91d2b.jpg',
+      `${BASE_URL}assets/aistudio/1_994dbf90.jpg',
+      `${BASE_URL}assets/aistudio/2_d8fcfc06.jpg',
+      `${BASE_URL}assets/aistudio/3_259d20ba.jpg',
+      `${BASE_URL}assets/aistudio/4_88dd4e00.jpg',
+      `${BASE_URL}assets/aistudio/5_666b334d.jpg',
+      `${BASE_URL}assets/aistudio/6_5c870541.jpg',
+      `${BASE_URL}assets/aistudio/7_aa3e89d6.jpg',
+      `${BASE_URL}assets/aistudio/8_6ce7ced0.jpg',
+      `${BASE_URL}assets/aistudio/9_467f2335.jpg',
+      `${BASE_URL}assets/aistudio/10_df7bff44.jpg',
+      `${BASE_URL}Tratadas/MARCOS 3.jpg',
+      `${BASE_URL}Tratadas/MONICA 3.jpg',
     ];
 
     let loadedCount = 0;
