@@ -8,6 +8,8 @@ interface DetectiveVictoryModalProps {
   onRestart: () => void;
 }
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
   isOpen,
   onReview,
@@ -21,7 +23,7 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
 
   useEffect(() => {
     const img = new Image();
-    img.src = '/assets/aistudio/Detetive_Pixelado_no_Ref_gio_Aconchegante_674d8c38.png';
+    img.src = `${BASE_URL}assets/aistudio/Detetive_Pixelado_no_Ref_gio_Aconchegante_674d8c38.png`;
     img.onload = () => {
       imgRef.current = img;
     };
