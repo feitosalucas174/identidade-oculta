@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shield, CheckCircle2, ChevronRight, FolderOpen, Search } from 'lucide-react';
+import { Shield, CheckCircle2, ChevronRight, FolderOpen, Search, Smartphone, Tablet, Monitor } from 'lucide-react';
+import { EV } from '../data/evidence';
+
+type AudioPlatform = 'mobile' | 'tablet' | 'desktop';
+
+function detectAudioPlatform(): AudioPlatform {
+  if (typeof navigator === 'undefined') return 'desktop';
+  const ua = navigator.userAgent || '';
+  if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua))) return 'tablet';
+  if (/Android/i.test(ua) && !/Mobile/i.test(ua)) return 'tablet';
+  if (/Android|iPhone|iPod|Mobile/i.test(ua)) return 'mobile';
+  return 'desktop';
+}
 
 interface RetroBootScreenProps {
   onComplete: () => void;
@@ -13,6 +25,18 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
     'ABRINDO INQUÉRITO POLICIAL 042/95 · RANCHO ESPERANÇA...',
   ]);
   const [isReady, setIsReady] = useState(false);
+  const [audioPlatform, setAudioPlatform] = useState<AudioPlatform>(() => {
+    try {
+      const saved = window.localStorage.getItem('identidade-oculta-audio-platform');
+      if (saved === 'mobile' || saved === 'tablet' || saved === 'desktop') return saved;
+    } catch { /* storage may be unavailable */ }
+    return detectAudioPlatform();
+  });
+
+  const selectAudioPlatform = (platform: AudioPlatform) => {
+    setAudioPlatform(platform);
+    try { window.localStorage.setItem('identidade-oculta-audio-platform', platform); } catch { /* storage may be unavailable */ }
+  };
   const hasFinishedRef = useRef(false);
 
   useEffect(() => {
@@ -68,7 +92,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
         );
       } else if (currentPct >= 95) {
         setLogs((prev) =>
-          prev.includes('[OK] INQUÉRITO COMPLETO · 21 EVIDÊNCIAS PRONTAS PARA ANÁLISE')
+          prev.includes(`[OK] INQUÉRITO COMPLETO · ${EV.length} FICHAS PRONTAS PARA ANÁLISE`)
             ? prev
             : [...prev, '[OK] INQUÉRITO COMPLETO · 21 EVIDÊNCIAS PRONTAS PARA ANÁLISE']
         );
@@ -192,6 +216,19 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
             <div className="bg-[#050608] border border-[#262830] rounded-lg p-2.5 text-center font-mono text-sm tracking-[2px] text-[#7DD5D8] select-none overflow-x-hidden">
               [{barString}]
             </div>
+          </div>
+
+          <div className="rounded-lg border border-[#262830] bg-[#090b0f] p-3 flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9A9590]">Perfil de áudio</span>
+              <span className="text-[9px] text-[#7DD5D8]">20 FICHAS · {EV.length} NO DOSSIÊ</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <button type="button" onClick={() => selectAudioPlatform('mobile')} aria-pressed={audioPlatform === 'mobile'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'mobile' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Smartphone className="w-3.5 h-3.5" /> Celular</button>
+              <button type="button" onClick={() => selectAudioPlatform('tablet')} aria-pressed={audioPlatform === 'tablet'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'tablet' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Tablet className="w-3.5 h-3.5" /> Tablet</button>
+              <button type="button" onClick={() => selectAudioPlatform('desktop')} aria-pressed={audioPlatform === 'desktop'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'desktop' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Monitor className="w-3.5 h-3.5" /> Computador</button>
+            </div>
+            <p className="text-[9px] leading-relaxed text-[#777d89]">Ajuste salvo neste navegador e aplicado aos áudios das fichas.</p>
           </div>
 
           <div className="pt-2 flex justify-end">
