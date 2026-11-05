@@ -94,7 +94,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
         setLogs((prev) =>
           prev.includes(`[OK] INQUÉRITO COMPLETO · ${EV.length} FICHAS PRONTAS PARA ANÁLISE`)
             ? prev
-            : [...prev, '[OK] INQUÉRITO COMPLETO · 21 EVIDÊNCIAS PRONTAS PARA ANÁLISE']
+            : [...prev, `[OK] INQUÉRITO COMPLETO · ${EV.length} FICHAS PRONTAS PARA ANÁLISE`
         );
       }
     };
@@ -221,7 +221,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
           <div className="rounded-lg border border-[#262830] bg-[#090b0f] p-3 flex flex-col gap-2">
             <div className="flex items-center justify-between gap-2">
               <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9A9590]">Perfil de áudio</span>
-              <span className="text-[9px] text-[#7DD5D8]">20 FICHAS · {EV.length} NO DOSSIÊ</span>
+              <span className="text-[9px] text-[#7DD5D8]">{EV.length} FICHAS NO DOSSIÊ</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <button type="button" onClick={() => selectAudioPlatform('mobile')} aria-pressed={audioPlatform === 'mobile'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'mobile' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Smartphone className="w-3.5 h-3.5" /> Celular</button>
