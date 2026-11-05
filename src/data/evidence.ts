@@ -154,7 +154,7 @@ export const EV: Evidence[] = [
   },
   {
     id: 'E-18',
-    tipo: 'Bastidor',
+    tipo: 'Documento',
     desc: 'O bloquinho de agenda de Vera. Letra em caneta vermelha, organizada. \'Rancho Esperança · 13/10/1995. 08h00 encontro da equipe. 08h30 marcado com o sr. Cláudio.\' Ela sabia quem Cláudio era antes de chegar. Planejou o encontro. A mancha na parte inferior do papel — não é tinta.'
   },
   {
