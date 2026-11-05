@@ -70,12 +70,12 @@ export const EV: Evidence[] = [
   {
     id: 'E-01',
     tipo: 'Bastidor',
-    desc: 'Interior do carro. Bancos do motorista e do passageiro vazios, porta aberta. Sangue na janela pelo lado de fora. Uma chave de carro no chão — e marcas de sangue no encosto de ambos os bancos. Alguém saiu daqui às pressas ou foi retirado à força. Este é o carro de Samuel — só ele tinha a chave. Quem estava aqui antes?'
+    desc: 'Interior do carro. Banco do motorista e do passageiro vazios. Porta aberta, sangue na janela pelo lado de fora. Uma chave de carro no chão — e marcas de sangue no encosto de ambos os bancos. Alguém saiu daqui às pressas ou foi retirado à força. Quem estava aqui antes?'
   },
   {
     id: 'E-02',
     tipo: 'Documento',
-    desc: 'Essa folha estava em cima da mesa. Marcador rosa — letra de Mônica. "Refazer. Ritmo. Cortar." E no lado direito: "Ninguém nessa cena até eu dizer que está pronta." A cena que ninguém podia tocar. Por que ela se importava tanto com isso?'
+    desc: 'Essa folha estava em cima da mesa. Marcador rosa — letra de Mônica. \'Refazer. Ritmo. Cortar.\' E no lado direito: \'Ninguém nessa cena até eu dizer que está pronta.\' A cena que ninguém podia tocar. Por que ela se importa tanto com isso?'
   },
   {
     id: 'E-03',
@@ -85,87 +85,87 @@ export const EV: Evidence[] = [
   {
     id: 'E-04',
     tipo: 'Documento',
-    desc: 'Um papel encontrado com Dênis. Uma lista — e todos os itens têm um ✓. Fone do Bob. Cinto. Alça da câmera. Chave. Ele não pegou por distração: ele rastreou, planejou, coletou. No canto inferior, um coração desenhado: "D+V". Dênis e Vera. Isso muda tudo sobre o motivo.'
+    desc: 'Um papel encontrado com Dênis. Uma lista — e todos os itens têm um tique. Fone do Bob. Cinto. Alça da câmera. Chave. Ele não pegou por distração: ele rastreou, planejou, coletou. No canto inferior, um coração desenhado: \'D+V\'. Dênis e Vera? '
   },
   {
     id: 'E-05',
     tipo: 'Laudo',
-    desc: 'Laudo em papel avulso, junto às fitas. Letra de quem anotava rápido no local. "Incisão fina e superficial no pescoço. Sem indícios de lâmina larga." Isso exclui a foice — exclui qualquer instrumento pesado. Lâmina pequena, precisa. Quem aqui carregava isso?'
+    desc: 'Laudo em papel avulso. Letra de quem anotava rápido no local. \'Incisão fina e superficial no pescoço. Sem indícios de lâmina larga.\' Isso exclui a foice — exclui qualquer instrumento pesado. Lâmina pequena, precisa. Quem aqui carregava isso?'
   },
   {
     id: 'E-06',
     tipo: 'Foto de Cena',
-    desc: 'Sala. A luz azulada do amanhecer entra pelas frestas. O relógio na parede parado em 5h40 marca a estimativa do confronto final. Há dois corpos no local: Dênis ao fundo, com sangue já seco da morte que ocorreu às 2h10, e a última vítima recente sob o lençol. Ao lado, dois objetos distintos: uma bengala e um bloquinho de notas — de pessoas diferentes. Não foi possível confirmar qual dos dois não sobreviveu. O laudo dirá o mesmo.'
+    desc: 'Sala há dois objetos distintos: uma bengala e um bloquinho de notas — de pessoas diferentes. Há indícios de Luta Corporal e disparo de arma de fogo, porém nenhum corpo foi encontrado. Vizinhos relatam o som de um disparo às 5h40 da manhã'
   },
   {
     id: 'E-07',
     tipo: 'Bastidor',
-    desc: 'A filmadora de Marcos. Panasonic, com a alça intacta. Esta foto é de bastidor, antes da noite — a câmera que ele carregava em toda gravação. Mais tarde, Marcos seria encontrado no matagal, mas a filmadora já não estava com ele: alguém a levou para dentro da casa (veja E-12 e E-20). A câmera que viu tudo.'
+    desc: 'A filmadora de Marcos. Panasonic, a câmera que ele carregava em toda gravação. Mais tarde, Marcos seria encontrado no matagal, mas a filmadora já não estava com ele: alguém a levou para dentro da casa.'
   },
   {
     id: 'E-08',
     tipo: 'Documento',
-    desc: 'O fone de Bob. Encontrado sobre a mochila dele, no quarto. Headphone simples, amortecedor desgastado de tanto uso. O bilhete na porta dizia pra ele tirar. Ele não tirou. Com esse fone no ouvido, Bob provavelmente não ouviu nada chegar.'
+    desc: 'O fone de Bob. Encontrado sobre a cama, no quarto. Headphone simples, amortecedor desgastado de tanto uso. Com esse fone no ouvido, Bob provavelmente não ouviu nada chegar.'
   },
   {
     id: 'E-09',
     tipo: 'Foto de Cena',
-    desc: 'Óculos caídos na terra batida, fora do rancho, perto do carro. Manchas de sangue na armação. Dênis e Marcos também usavam óculos, mas os de Marcos ficaram no matagal e Dênis estava na sala — estes pertenciam a Samuel. A armação está torcida: saíram do rosto com muita força. O relógio do painel marcava 3h52 quando a porta ficou aberta.'
+    desc: 'Óculos caídos na terra batida, fora do rancho, perto do carro. Manchas de sangue na armação. Dênis e Marcos também usavam óculos, mas os de Marcos ficaram no matagal e Dênis estava na sala — estes pertenciam a Samuel. A armação está torcida: saíram do rosto com muita força.'
   },
   {
     id: 'E-10',
     tipo: 'Bastidor',
-    desc: 'Óculos de leitura sobre um jornal. Papel amarelado, manchetes ilegíveis de longe — mas a data na dobra é dos anos 60. Esse jornal não é de 1995. Alguém guardou isso por décadas. Cláudio. A bengala, o casaco, os títulos de filmes antigos — e agora esse jornal. Ele conhecia este lugar antes de todos.'
+    desc: 'Óculos de leitura sobre um jornal. Papel amarelado, manchetes ilegíveis de longe — mas a data na dobra é dos anos 60. Esse jornal não é de 1995. Alguém guardou isso por décadas. Cláudio. A bengala, o casaco, os títulos de filmes antigos — e agora esse jornal.'
   },
   {
     id: 'E-11',
     tipo: 'Foto de Cena',
-    desc: 'Matagal. Uma corda de iluminação com manchas de sangue enrolada num galho baixo. No chão, manchas de tinta de maquiagem artística derramadas. O laudo confirmou: incisão fina e superficial no pescoço feita por lâmina pequena. Mônica foi atacada aqui enquanto buscava material de cena.'
+    desc: 'Matagal. Uma corda com manchas de sangue enrolada num galho baixo. No chão, manchas de tinta de maquiagem artística derramadas Segundo a autópsia confirmou: incisão fina e superficial no pescoço feita por lâmina pequena e o horário da morte estima se que ocorreu entre 17h e às 19h . Mônica carregava o material de maquiagem e figurino para preparar o cenário antes da gravação noturna.'
   },
   {
     id: 'E-12',
     tipo: 'Foto de Cena',
-    desc: 'Sala. A filmadora caída no chão, ao lado de um charco de sangue. Um relógio digital quebrado marcando 2h10 no chão da sala. Facadas múltiplas. Dênis carregava coisas que não eram dele: a câmera de Marcos, os objetos do mural. Tudo aqui. Essa cena fecha a linha do tempo de Dênis.'
+    desc: 'Sala. A filmadora caída no chão,porém sem fita dentro ao lado de um charco de sangue. Um relógio digital quebrado marcando 2h10 no chão da sala. Facadas múltiplas. Dênis carregava coisas que não eram dele: a câmera de Marcos, os objetos do mural. Tudo aqui. Essa cena fecha a linha do tempo de Dênis.'
   },
   {
     id: 'E-13',
     tipo: 'Documento',
-    desc: 'Um envelope com cartas dobradas, um esboço a lápis e uma fotografia em preto e branco. A mulher no desenho e na foto é a mesma. Pelos papéis amarelados, isso tem décadas. Cláudio guarda isso há trinta anos. Essa mulher é o motivo pelo qual ele voltou ao rancho.'
+    desc: 'Um envelope com cartas dobradas, um esboço a lápis e uma fotografia em preto e branco. A mulher no desenho e na foto é a mesma. Pelos papéis amarelados, isso tem décadas. Cláudio guarda isso há trinta anos. Qual a relação de Cláudio com essa Mulher?'
   },
   {
     id: 'E-14',
     tipo: 'Foto de Cena',
-    desc: 'Matagal. Marcas profundas de lâmina larga no chão e na vegetação — uma foice foi usada neste local. Perto dos galhos quebrados, rastros de sangue ligam o ponto de ataque de Marcos ao matagal denso. Mônica também estava nesta área, mas aqui a causa da morte foi o golpe de lâmina pesada.'
+    desc: 'Óculos caídos no matagal — com marcas de sangue na armação. Pertenciam a Marcos. Marcas profundas de lâmina larga no chão e na vegetação — uma foice foi usada neste local. Perto dos galhos quebrados, rastros de sangue ligam o ponto de ataque de Marcos ao matagal denso. Mônica também estava nesta área, mas o seu corpo já estava mais frio'
   },
   {
     id: 'E-15',
     tipo: 'Documento',
-    desc: 'Uma folha de despesas da produção. Gasolina, equipamento, alimentação. O total circulado em vermelho. Na margem, manuscrito: "Se esse filme não der dinheiro, meus pais vão me matar." Pressão séria. Motivo suficiente pra explodir.'
+    desc: 'Uma folha de despesas da produção encontrado no computador pessoal na casa de Samuel, durante uma perícia na casa da vítima. Gasolina, equipamento, alimentação. O total circulado em vermelho. Na margem, manuscrito: \'Se esse filme não der dinheiro, meus pais vão me matar.\' Pressão séria. Motivo suficiente pra explodir.'
   },
   {
     id: 'E-16',
     tipo: 'Bastidor',
-    desc: 'Pincel e frasco de tinta de efeitos do departamento de arte, cobertos por respingos de sangue nas raízes de uma árvore no matagal. Mônica carregava o material de maquiagem e figurino para preparar o cenário antes da gravação noturna. Este achado comprova que ela já estava no local preparando a cena antes do ataque.'
+    desc: 'Pincéis e acessórios caídos na grama no exterior da casa. Pertenciam a Mônica, porém foram encontrados longe do corpo — ela foi raptada em um local e, posteriormente, morta em outro.'
   },
   {
     id: 'E-17',
     tipo: 'Bastidor',
-    desc: 'Bolsa do gravador com o equipamento de áudio de Bob. Alguém retirou a bolsa do quarto e a deixou na sala. Perto dela, a fita desenrolada e o cabo grosso de microfone boom com manchas escuras na ponta. Este equipamento esteve no quarto e depois foi movido para a sala.'
+    desc: 'Equipamento de áudio de Bob. No quarto encontra-se o cabo de microfone boom com manchas de sangue em sua extensão. Alguém retirou a bolsa do gravador do quarto e a deixou na sala.'
   },
   {
     id: 'E-18',
     tipo: 'Bastidor',
-    desc: 'O bloquinho de agenda de Vera. Letra em caneta vermelha, organizada. "Rancho Esperança · 13/10/1995. 08h00 encontro da equipe. 08h30 marcado com o sr. Cláudio." Ela sabia quem Cláudio era antes de chegar. Planejou o encontro. A mancha na parte inferior do papel — não é tinta.'
+    desc: 'O bloquinho de agenda de Vera. Letra em caneta vermelha, organizada. \'Rancho Esperança · 13/10/1995. 08h00 encontro da equipe. 08h30 marcado com o sr. Cláudio.\' Ela sabia quem Cláudio era antes de chegar. Planejou o encontro. A mancha na parte inferior do papel — não é tinta.'
   },
   {
     id: 'E-19',
     tipo: 'Bastidor',
-    desc: 'Estojo de pó compacto de maquiagem com etiqueta manuscrita: "VERA". Encontrado com resíduos de pó espalhados perto do carro. Alguém utilizou este pó compacto durante o confronto dentro do veículo para desorientar o agressor antes de tentar escapar. A etiqueta confirma a presença de Vera durante a cena no carro.'
+    desc: 'Estojo de pó compacto de maquiagem com etiqueta manuscrita: \'VERA\'. Encontrado com resíduos de pó espalhados perto do carro. Alguém utilizou este pó compacto durante o confronto dentro do veículo para desorientar o agressor antes de tentar escapar. A etiqueta confirma a presença de Vera durante a cena no carro.'
   },
   {
     id: 'E-20',
     tipo: 'Detalhe',
-    desc: 'Óculos caídos no matagal — com marcas de sangue na armação. Pertenciam a Marcos. Ao redor, galhos quebrados e marcas no solo indicam um ataque violento no escuro. A filmadora Panasonic que ele carregava sumiu — só o encaixe da alça vazio ficou no chão. A câmera foi separada dele à força.'
+    desc: 'Caderno de anotações encontrado em uma mochila, na sala. Na página marcada, há uma lista de equipamentos e alguns rabiscos. “Equipamentos. Câmera Panasonic. Câmera JVC. Tripé. Bateria extra.”. Pelo desenho no canto direito, este caderno pertencia a Marcos.'
   },
   {
     id: 'E-21',
