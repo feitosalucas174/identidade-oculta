@@ -23,7 +23,6 @@ export const SVGS: Record<string, string> = {
   'E-18': `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="28" y="18" width="5" height="160" fill="#333" opacity=".5"/><ellipse cx="150" cy="52" rx="18" ry="20" fill="#252525" stroke="#444"/><rect x="124" y="70" width="52" height="82" rx="8" fill="#252525" stroke="#3a3a3a"/><line x1="124" y1="86" x2="103" y2="118" stroke="#252525" stroke-width="12" stroke-linecap="round"/><rect x="76" y="110" width="32" height="42" rx="3" fill="#1a1a1a" stroke="#555"/><line x1="78" y1="113" x2="78" y2="152" stroke="#444" stroke-width="1.5"/><circle cx="88" cy="110" r="4" fill="#c0392b"/><text x="8" y="14" fill="#d94f4f" font-size="8" font-family="monospace">BASTIDOR · BLOQUINHO</text></svg>`,
   'E-19': `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="1" y="1" width="298" height="183" fill="none" stroke="#b89a3e" stroke-width="1.5"/><ellipse cx="150" cy="42" rx="18" ry="20" fill="#252525" stroke="#555"/><rect x="124" y="60" width="52" height="92" rx="8" fill="#252525" stroke="#555"/><path d="M108 72 Q150 65 192 72" stroke="#5b8dd9" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="110" cy="71" r="8" fill="#0a0a0a" stroke="#5b8dd9" stroke-width="2"/><circle cx="190" cy="71" r="8" fill="#0a0a0a" stroke="#5b8dd9" stroke-width="2"/><rect x="106" y="96" width="88" height="14" rx="4" fill="#1a1a1a" stroke="#c06ec0" stroke-width="1.5"/><line x1="116" y1="98" x2="116" y2="109" stroke="#c06ec0"/><line x1="128" y1="98" x2="128" y2="109" stroke="#c06ec0"/><line x1="140" y1="98" x2="140" y2="109" stroke="#c06ec0"/><path d="M176 65 Q196 48 212 68" stroke="#5baa7e" stroke-width="3" fill="none" stroke-linecap="round"/><text x="8" y="14" fill="#b89a3e" font-size="8" font-family="monospace">BASTIDOR · 3 OBJETOS</text></svg>`,
   'E-20': `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#030803"/><rect x="48" y="38" width="178" height="112" rx="10" fill="#1e1e1e" stroke="#333" transform="rotate(-10 137 94)"/><rect x="52" y="42" width="148" height="92" rx="8" fill="#141414" stroke="#222" transform="rotate(-10 126 88)"/><circle cx="128" cy="93" r="20" fill="#0a0a0a" stroke="#2a2a2a" transform="rotate(-10 128 93)"/><circle cx="128" cy="93" r="8" fill="#111" stroke="#333"/><line x1="192" y1="48" x2="212" y2="28" stroke="#9e3228" stroke-width="2.5" stroke-linecap="round"/><line x1="212" y1="48" x2="192" y2="28" stroke="#9e3228" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="82" cy="73" rx="10" ry="7" fill="#5a008a" opacity=".7" transform="rotate(-10 82 73)"/><ellipse cx="162" cy="118" rx="8" ry="5" fill="#003a8a" opacity=".6" transform="rotate(-10 162 118)"/><text x="8" y="14" fill="#5baa7e" font-size="8" font-family="monospace">DETALHE · SEM ALCA</text></svg>`,
-  'E-21': `<svg viewBox="0 0 300 185" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="185" fill="#0d0d0d"/><rect x="24" y="10" width="252" height="166" rx="2" fill="#f0ece0" stroke="#ccc"/><rect x="34" y="18" width="122" height="11" rx="2" fill="#ddd"/><line x1="34" y1="42" x2="264" y2="42" stroke="#bbb"/><line x1="34" y1="56" x2="252" y2="56" stroke="#bbb"/><line x1="34" y1="70" x2="260" y2="70" stroke="#bbb"/><rect x="30" y="84" width="242" height="20" rx="2" fill="#fff8e8" stroke="#b89a3e"/><text x="38" y="98" fill="#6a5000" font-size="8.5" font-family="monospace">Corpo sem condicoes de identificacao.</text><rect x="30" y="112" width="242" height="20" rx="2" fill="#ffe8e8" stroke="#c0392b"/><text x="38" y="126" fill="#8a1a1a" font-size="8.5" font-family="monospace">Nao foi possivel confirmar qual morreu.</text><text x="218" y="170" fill="#666" font-size="42" font-family="monospace" opacity=".18">?</text><text x="8" y="14" fill="#666" font-size="8" font-family="monospace">LAUDO INCONCLUSIVO</text></svg>`
 };
 
 export const PHOTOS: Record<string, string> = {
@@ -47,7 +46,6 @@ export const PHOTOS: Record<string, string> = {
   'E-18': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%95ES%20VERA.jpg`,
   'E-19': `${BASE_URL}Tratadas/PISTA%20VERA.jpg`,
   'E-20': `${BASE_URL}Tratadas/MARCOS%203.jpg`,
-  'E-21': `${BASE_URL}Tratadas/ANOTA%C3%87%C3%83O%20FINAL.jpg`
 };
 
 export function shuffle<T>(array: T[]): T[] {
@@ -167,11 +165,6 @@ export const EV: Evidence[] = [
     tipo: 'Detalhe',
     desc: 'Caderno de anotações encontrado em uma mochila, na sala. Na página marcada, há uma lista de equipamentos e alguns rabiscos. “Equipamentos. Câmera Panasonic. Câmera JVC. Tripé. Bateria extra.”. Pelo desenho no canto direito, este caderno pertencia a Marcos.'
   },
-  {
-    id: 'E-21',
-    tipo: 'Laudo',
-    desc: 'A última anotação. Papel avulso, junto à fita final, como se precisasse que isso ficasse registrado. "Corpo sem condições de identificação. Não foi possível dizer quem morreu." E um ponto de interrogação, manuscrito. O antigo detetive do caso ainda estava procurando. Agora eu também.'
-  }
 ];
 
 export const PERS: Character[] = [
@@ -428,11 +421,11 @@ export const MOCK_SEQ = [
   'E-10',
   'E-13',
   'E-06',
-  'E-21'
+
 ];
 
 export const MOCK_SEQ_WRONG = [
-  'E-21',
+
   'E-20',
   'E-19',
   'E-18',
@@ -487,13 +480,13 @@ export const HINTS: Record<string, Record<FieldKey, string>> = {
     como: 'E-01 e E-09 indicam facadas no veículo.'
   },
   Vera: {
-    ordem: 'E-06 e E-21 confirmam que a vítima final às 5h40 é ambígua (Vera ou Cláudio).',
+    ordem: 'E-06 indica o confronto final às 5h40 na sala.',
     local: 'E-06 indica a sala no confronto final.',
     quando: 'E-06 marca o amanhecer (5h40).',
     como: 'E-06 indica disparo de arma de fogo.'
   },
   Claudio: {
-    ordem: 'E-06 e E-21 confirmam que a vítima final às 5h40 é ambígua (Vera ou Cláudio).',
+    ordem: 'E-06 indica o confronto final às 5h40 na sala.',
     local: 'E-06 indica a sala no confronto final.',
     quando: 'E-06 marca o amanhecer (5h40).',
     como: 'E-06 indica disparo de arma de fogo.'
