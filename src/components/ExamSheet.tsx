@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Evidence } from '../types';
 import { formatTime, PHOTOS, SVGS } from '../data/evidence';
-import { Mic, Volume2, Pause, RotateCcw, Disc, FileText, Monitor, Smartphone, Tablet } from 'lucide-react';
+import { Mic, Volume2, Pause, RotateCcw, Disc, FileText } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
 
 // Associe aqui os arquivos reais de áudio às evidências correspondentes.
@@ -74,12 +74,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
     } else if (audioRef.current) {
       audioRef.current.volume = 1;
     }
-  };
-
-  const selectAudioPlatform = (platform: AudioPlatform) => {
-    setAudioPlatform(platform);
-    try { window.localStorage.setItem('identidade-oculta-audio-platform', platform); } catch { /* ignore storage restrictions */ }
-    applyAudioProfile(platform);
   };
 
   const prepareAudioOutput = async () => {
@@ -404,19 +398,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                   })}
                 </div>
               </div>
-            </div>
-
-            <div className="mb-3 rounded-[8px] border border-[#2b3039] bg-[#0b0c0e] p-2.5">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <span className="font-mono-retro text-[10px] uppercase tracking-[0.12em] text-[#9A9590]">Perfil de áudio do dispositivo</span>
-                <span className="font-mono-retro text-[9px] text-[#7DD5D8]">AJUSTE AUTOMÁTICO</span>
-              </div>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button type="button" onClick={() => selectAudioPlatform('mobile')} aria-pressed={audioPlatform === 'mobile'} className={'min-h-[38px] rounded-[6px] border px-1.5 flex items-center justify-center gap-1.5 font-mono-retro text-[10px] uppercase transition-colors ' + (audioPlatform === 'mobile' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]')}><Smartphone className="h-3.5 w-3.5" /> Celular</button>
-                <button type="button" onClick={() => selectAudioPlatform('tablet')} aria-pressed={audioPlatform === 'tablet'} className={'min-h-[38px] rounded-[6px] border px-1.5 flex items-center justify-center gap-1.5 font-mono-retro text-[10px] uppercase transition-colors ' + (audioPlatform === 'tablet' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]')}><Tablet className="h-3.5 w-3.5" /> Tablet</button>
-                <button type="button" onClick={() => selectAudioPlatform('desktop')} aria-pressed={audioPlatform === 'desktop'} className={'min-h-[38px] rounded-[6px] border px-1.5 flex items-center justify-center gap-1.5 font-mono-retro text-[10px] uppercase transition-colors ' + (audioPlatform === 'desktop' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]')}><Monitor className="h-3.5 w-3.5" /> Computador</button>
-              </div>
-              <p className="mt-2 font-mono-retro text-[9px] leading-relaxed text-[#777d89]">O perfil selecionado fica salvo neste navegador.</p>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
