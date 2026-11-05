@@ -228,7 +228,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
 
                           {isAmb && (
                             <div className="mt-2 bg-[#120f06] border border-[#604f25] p-2 rounded-[6px] text-[11px] text-[#ffd699] leading-[1.5] italic">
-                              ⚠ Evidência E-21 confirma dupla possibilidade aceita.
+                              ⚠ As evidências disponíveis não permitem distinguir qual dos dois foi a vítima do confronto final.
                             </div>
                           )}
                         </div>
@@ -238,7 +238,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
 
                   {especial && (
                     <div className="bg-[#141208] border-t border-[#3d3315] p-3 text-[11px] text-[#ffd899] font-mono-retro italic leading-[1.6]">
-                      ⚠ A morte de {p.nome} é intencionalmente ambígua conforme o laudo pericial final (Evidência E-21). Tanto Vera quanto Cláudio são aceitos como resposta válida para o confronto das 5h40.
+                      ⚠ A morte de {p.nome} é intencionalmente ambígua conforme as evidências disponíveis. Tanto Vera quanto Cláudio são aceitos como resposta válida para o confronto das 5h40.
                     </div>
                   )}
                 </div>
