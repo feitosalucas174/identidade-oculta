@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Hash, MapPin, Clock, AlertOctagon, UserCheck, ShieldAlert } from 'lucide-react';
+import { Hash, MapPin, Clock, AlertOctagon, UserCheck } from 'lucide-react';
 import { AllAnswers, FieldKey } from '../types';
 import { GAB, OPCOES, PERS } from '../data/evidence';
 import { DossierDropdown } from './DossierDropdown';
@@ -78,7 +78,6 @@ export const FichasTab: React.FC<FichasTabProps> = ({
       {/* Grid of Dossier Character Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
         {shuffledPers.map(p => {
-          const isEsp = GAB[p.id]?.especial;
           const pAns = answers[p.id] || {};
           let count = 0;
           if (pAns.ordem) count++;
@@ -114,12 +113,6 @@ export const FichasTab: React.FC<FichasTabProps> = ({
                       </div>
                       <div className="font-mono-retro text-[11px] text-[#9A9590] mt-1 flex items-center gap-2">
                         <span>{p.idade} anos</span>
-                        {isEsp && (
-                          <span className="flex items-center gap-1 text-[#FFB74D] text-[10px] uppercase font-bold bg-[#FFB74D]/10 px-1.5 py-0.5 rounded border border-[#FFB74D]/25">
-                            <ShieldAlert className="w-3 h-3" />
-                            Ambíguo
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
