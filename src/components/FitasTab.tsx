@@ -28,12 +28,12 @@ export const FitasTab: React.FC<FitasTabProps> = ({
             <span>ARQUIVO POLICIAL · FITAS VHS & OBJETOS DE CENA</span>
           </div>
           <h2 className="font-brunson text-[26px] sm:text-[32px] uppercase tracking-[0.03em] text-[#F2EAE0] leading-none mt-1">
-            Pasta de 21 Evidências
+            Pasta de {deck.length} Evidências
           </h2>
         </div>
 
         <div className="font-mono-retro text-[12px] text-[#9A9590] bg-[#14151c] px-3 py-1.5 rounded-[8px] border border-[#262832]">
-          {vistas.size} de 21 evidências examinadas
+          {vistas.size} de {deck.length} evidências examinadas
         </div>
       </div>
 
