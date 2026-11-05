@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Hash, MapPin, Clock, AlertOctagon, UserCheck } from 'lucide-react';
 import { AllAnswers, FieldKey } from '../types';
-import { GAB, OPCOES, PERS } from '../data/evidence';
+import { OPCOES, PERS } from '../data/evidence';
 import { DossierDropdown } from './DossierDropdown';
 
 interface FichasTabProps {
