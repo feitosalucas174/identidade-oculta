@@ -59,17 +59,17 @@ Object.entries(PHOTOS).forEach(([evId, photoPath]) => {
 });
 
 if (missingPhotosCount === 0) {
-  console.log('   ✓ Todas as 21 imagens de evidências foram validadas no disco.');
+  console.log('   ✓ Todas as 20 imagens de evidências foram validadas no disco.');
 }
 
 // ── 2. AUDITORIA DE DADOS E COERÊNCIA ─────────────────────────────────────────
 console.log('\n📊 [2/4] Auditando consistência de dados, gabarito e opções...');
 
 // Verify EV length
-if (EV.length !== 21) {
-  logIssue('ERROR', 'Data', `Esperado 21 evidências em EV, encontrado: ${EV.length}`);
+if (EV.length !== 20) {
+  logIssue('ERROR', 'Data', `Esperado 20 evidências em EV, encontrado: ${EV.length}`);
 } else {
-  console.log('   ✓ EV contém exatamente 21 evidências.');
+  console.log('   ✓ EV contém exatamente 20 evidências.');
 }
 
 // Verify every EV has SVG fallback
@@ -101,8 +101,8 @@ PERS.forEach(p => {
 
 // Verify Sequence arrays
 const checkSequenceArray = (seqName: string, seq: string[]) => {
-  if (seq.length !== 21) {
-    logIssue('ERROR', 'Sequence', `${seqName} tem tamanho ${seq.length}, esperado 21.`);
+  if (seq.length !== 20) {
+    logIssue('ERROR', 'Sequence', `${seqName} tem tamanho ${seq.length}, esperado 20.`);
   }
   const unique = new Set(seq);
   if (unique.size !== seq.length) {
@@ -117,7 +117,7 @@ const checkSequenceArray = (seqName: string, seq: string[]) => {
 
 checkSequenceArray('MOCK_SEQ', MOCK_SEQ);
 checkSequenceArray('MOCK_SEQ_WRONG', MOCK_SEQ_WRONG);
-console.log('   ✓ Sequências MOCK_SEQ e MOCK_SEQ_WRONG validadas (21 itens, sem duplicatas).');
+console.log('   ✓ Sequências MOCK_SEQ e MOCK_SEQ_WRONG validadas (20 itens, sem duplicatas).');
 
 // Verify Option values in OPCOES
 (['ordem', 'local', 'quando', 'como'] as FieldKey[]).forEach(field => {
