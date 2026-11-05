@@ -19,7 +19,7 @@ export const SequenciaTab: React.FC<SequenciaTabProps> = ({
   onRemoveFromSeq,
   onClearSeq,
 }) => {
-  const totalTapes = 21;
+  const totalTapes = EV.length;
   const progressPct = Math.round((sequence.length / totalTapes) * 100);
 
   return (
