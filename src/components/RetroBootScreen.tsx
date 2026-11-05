@@ -151,7 +151,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
   const barString = '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#07080a] text-[#F2EAE0] flex flex-col items-center justify-center p-4 select-none font-mono-retro">
+    <div className="fixed inset-0 z-[9999] bg-[#07080a] text-[#F2EAE0] flex flex-col items-center justify-start sm:justify-center overflow-y-auto overscroll-y-contain p-3 sm:p-4 select-none font-mono-retro">
       <div
         className="absolute inset-0 pointer-events-none opacity-25"
         style={{
@@ -161,7 +161,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
         }}
       />
 
-      <div className="relative w-full max-w-[620px] bg-[#0c0e12] border-2 border-[#262830] rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col">
+      <div className="relative my-auto w-full max-w-[620px] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain bg-[#0c0e12] border-2 border-[#262830] rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.95)] flex flex-col">
         <div className="bg-[#14161d] border-b border-[#242730] px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-[#7DD5D8]" />
@@ -223,8 +223,8 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
               <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9A9590]">Perfil de áudio</span>
               <span className="text-[9px] text-[#7DD5D8]">{EV.length} FICHAS NO DOSSIÊ</span>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <button type="button" onClick={() => selectAudioPlatform('mobile')} aria-pressed={audioPlatform === 'mobile'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'mobile' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Smartphone className="w-3.5 h-3.5" /> Celular</button>
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-2">
+              <button type="button" onClick={() => selectAudioPlatform('mobile')} aria-pressed={audioPlatform === 'mobile'} className={`w-full min-w-0 min-h-[42px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase whitespace-nowrap transition-colors ${audioPlatform === 'mobile' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Smartphone className="w-3.5 h-3.5" /> Celular</button>
               <button type="button" onClick={() => selectAudioPlatform('tablet')} aria-pressed={audioPlatform === 'tablet'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'tablet' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Tablet className="w-3.5 h-3.5" /> Tablet</button>
               <button type="button" onClick={() => selectAudioPlatform('desktop')} aria-pressed={audioPlatform === 'desktop'} className={`min-h-[38px] rounded border px-2 flex items-center justify-center gap-1.5 text-[10px] uppercase transition-colors ${audioPlatform === 'desktop' ? 'border-[#7DD5D8] bg-[#173033] text-[#7DD5D8]' : 'border-[#30343d] bg-[#17191e] text-[#9A9590]'}`}><Monitor className="w-3.5 h-3.5" /> Computador</button>
             </div>
