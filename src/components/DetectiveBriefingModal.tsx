@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, FastForward, Search, ShieldAlert, Sparkles } from 'lucide-react';
-import { useScrollLock } from '../hooks/useScrollLock';
 
 interface BriefingSlide {
   title: string;
@@ -18,8 +17,8 @@ const BRIEFING_SLIDES: BriefingSlide[] = [
   },
   {
     badge: 'EVIDÊNCIAS COLETADAS',
-    title: 'As 21 Fitas e Achados',
-    text: 'Recuperamos 20 evidências e fitas gravadas durante aquela noite. Cada fotografia de cena, documento e áudio gravado contém detalhes valiosos para reconstruir o que realmente aconteceu no rancho.',
+    title: 'As 20 Evidências e Achados',
+    text: 'Recuperamos 20 evidências gravadas durante aquela noite. Cada fotografia de cena, documento e áudio gravado contém detalhes valiosos para reconstruir o que realmente aconteceu no rancho.',
     frames: [4, 5, 6, 7],
   },
   {
@@ -49,9 +48,6 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
 }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentFrameInSlide, setCurrentFrameInSlide] = useState(0);
-
-  // Rigid scroll lock on all mobile & desktop viewports
-  useScrollLock(isOpen);
 
   // Always reset to the first card when the report is opened
   useEffect(() => {
@@ -100,17 +96,12 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[2000] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto overscroll-contain touch-pan-y animate-fadeIn"
+      className="fixed inset-0 z-[2000] bg-black/85 backdrop-blur-md flex items-start sm:items-center justify-center p-3 sm:p-5 overflow-y-auto overscroll-y-contain touch-pan-y [webkit-overflow-scrolling:touch] animate-fadeIn"
       role="dialog"
       aria-modal="true"
       aria-label="Relatório Inicial do Detetive"
-      onTouchMove={(e) => {
-        if (e.target === e.currentTarget) {
-          e.preventDefault();
-        }
-      }}
     >
-      <div className="w-full max-w-[620px] bg-[#16171b] border-2 border-[#2d3038] rounded-[16px] shadow-[0_12px_50px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col my-auto relative">
+      <div className="w-full max-w-[620px] bg-[#16171b] border-2 border-[#2d3038] rounded-[16px] shadow-[0_12px_50px_rgba(0,0,0,0.85)] flex flex-col my-0 sm:my-auto relative shrink-0">
         
         {/* Header Bar */}
         <div className="bg-[#0f1013] border-b border-[#282b33] p-[12px_16px] flex items-center justify-between gap-3">
