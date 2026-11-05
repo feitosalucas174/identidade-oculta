@@ -57,7 +57,7 @@ export const App: React.FC = () => {
 
   // Counters
   const vistasCount = vistas.size;
-  const unseenCount = 21 - vistasCount;
+  const unseenCount = EV.length - vistasCount;
   let camposCount = 0;
   PERS.forEach(p => {
     const pAns = answers[p.id];
