@@ -250,10 +250,10 @@ export const OPCOES: Record<FieldKey, FieldOption[]> = {
   ],
   local: [
     { v: '', l: '— escolha —' },
-    { v: 'quarto dentro', l: 'Quarto (dentro)' },
-    { v: 'sala dentro', l: 'Sala (dentro)' },
-    { v: 'matagal fora mata', l: 'Matagal (fora)' },
-    { v: 'carro fora', l: 'Perto do carro (fora)' }
+    { v: 'quarto dentro', l: 'Quarto (interno)' },
+    { v: 'sala dentro', l: 'Sala (interno)' },
+    { v: 'matagal fora mata', l: 'Matagal (externo)' },
+    { v: 'carro fora', l: 'Perto do carro (externo)' }
   ],
   quando: [
     { v: '', l: '— escolha —' },
