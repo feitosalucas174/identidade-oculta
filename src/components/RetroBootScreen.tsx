@@ -94,7 +94,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
         setLogs((prev) =>
           prev.includes(`[OK] INQUÉRITO COMPLETO · ${EV.length} FICHAS PRONTAS PARA ANÁLISE`)
             ? prev
-            : [...prev, `[OK] INQUÉRITO COMPLETO · ${EV.length} FICHAS PRONTAS PARA ANÁLISE`
+            : [...prev, `[OK] INQUÉRITO COMPLETO · ${EV.length} FICHAS PRONTAS PARA ANÁLISE`]
         );
       }
     };
