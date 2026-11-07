@@ -18,13 +18,13 @@ const BRIEFING_SLIDES: BriefingSlide[] = [
   {
     badge: 'EVIDÊNCIAS COLETADAS',
     title: 'As 20 Evidências e Achados',
-    text: 'Recuperamos 20 evidências gravadas durante aquela noite. Cada fotografia de cena, documento e áudio gravado contém detalhes valiosos para reconstruir o que realmente aconteceu no rancho.',
+    text: 'Encontramos 20 evidências naquela noite e gravamos fitas para auxiliar na investigação. Cada fotografia de cena, documento e áudio gravado contém detalhes valiosos para reconstruir o que realmente aconteceu naquele rancho.',
     frames: [4, 5, 6, 7],
   },
   {
     badge: 'DIRETRIZES DA MISSÃO',
     title: 'Seu Objetivo Investigativo',
-    text: 'Sua missão é dupla: primeiro, ordenar as 20 fitas na Linha do Tempo cronológica. Segundo, preencher as fichas dos 7 personagens determinando a ordem da morte, local, horário e causa precisa.',
+    text: 'Sua Missão é dupla: primeiro, ordenar as 20 fitas na Linha do Tempo cronológica. Segundo, preencher as fichas das 7 vítimas determinando a ordem da morte, local, horário e causa precisa.',
     frames: [8, 9, 10, 11],
   },
   {
