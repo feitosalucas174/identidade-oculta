@@ -192,7 +192,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     Ouça as fitas periciais
                   </h3>
                   <p className="font-mono-retro text-[12px] sm:text-[13px] text-[#b0b0be] leading-[1.65]">
-                    Examine cada evidência na aba <strong className="text-[#F2EAE0]">Fitas</strong>. Leia a descrição e acione o <strong className="text-[#D4AF37]">Gravador Policial</strong> para escutar o áudio original do caso.
+                    Examine cada evidência na aba <strong className="text-[#F2EAE0]">Fitas</strong> e leia sua descrição. Quando houver um áudio gravado, utilize o <strong className="text-[#D4AF37]">Gravador Policial</strong>; nas demais, você pode ouvir a descrição pela leitura em voz alta.
                   </p>
                 </div>
               </div>
@@ -207,7 +207,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     Monte a sequência de fita VHS
                   </h3>
                   <p className="font-mono-retro text-[12px] sm:text-[13px] text-[#b0b0be] leading-[1.65]">
-                    Dentro da fita, clique em <strong className="text-[#F2EAE0]">+ Adicionar à sequência</strong>. Na aba <strong className="text-[#F2EAE0]">Sequência</strong>, ordene as fitas cronologicamente.
+                    Na tela da evidência, clique em <strong className="text-[#F2EAE0]">+ Adicionar à sequência</strong>. Depois, na aba <strong className="text-[#F2EAE0]">Sequência</strong>, organize as 20 evidências em ordem cronológica.
                   </p>
                 </div>
               </div>
@@ -237,7 +237,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     Conclua a investigação
                   </h3>
                   <p className="font-mono-retro text-[12px] sm:text-[13px] text-[#b0b0be] leading-[1.65]">
-                    Ao preencher, clique em <strong className="text-[#D94040]">Concluir Investigação 🔍</strong>. O laudo oficial revelará se o caso foi solucionado com sucesso ou arquivado.
+                    Depois de preencher as fichas, clique em <strong className="text-[#D94040]">Concluir Investigação 🔍</strong>. O laudo oficial apresentará o resultado da análise: caso resolvido, resposta parcial, insuficiente ou inconclusiva. Se necessário, você poderá revisar suas respostas e tentar novamente.
                   </p>
                 </div>
               </div>
