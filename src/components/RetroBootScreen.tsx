@@ -178,7 +178,7 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
         <div className="p-4 sm:p-6 flex flex-col gap-4 text-xs sm:text-[13px] leading-relaxed">
           <div className="border-b border-[#1c1e26] pb-3 text-[#9A9590] flex flex-col gap-0.5">
             <div className="text-[#F2EAE0] font-bold tracking-wider">
-              INQUÉRITO POLICIAL #1995-1013 · CASO ALICE GUY [RANCHO ESPERANÇA]
+              INQUÉRITO POLICIAL #1995-1013 · CASO RANCHO ESPERANÇA
             </div>
             <div className="text-[11px] text-[#7DD5D8]/80">
               DOSSIÊ CONFIDENCIAL: RECONSTITUIÇÃO DOS FATOS, FITAS E SUSPEITOS
