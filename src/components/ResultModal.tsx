@@ -99,7 +99,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
                     </div>
                     <div className="flex items-center gap-2 text-[#7DD5D8]">
                       <span className="w-2 h-2 rounded-full bg-[#7DD5D8] flex-shrink-0" />
-                      <span><strong className="text-[#F2EAE0]">{result.seqHits} de 21</strong> fitas na Sequência</span>
+                      <span><strong className="text-[#F2EAE0]">{result.seqHits} de 20</strong> fitas na Sequência</span>
                     </div>
                   </div>
                 </div>
