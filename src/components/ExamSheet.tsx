@@ -253,7 +253,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
         role="dialog"
         aria-modal="true"
         aria-label="Exame de evidência"
-        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] overflow-y-auto overscroll-contain touch-pan-y sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-6 sm:pb-8 transition-transform duration-300 animate-fadeup"
+        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] max-h-[92dvh] overflow-y-auto overscroll-y-contain touch-pan-y [-webkit-overflow-scrolling:touch] sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8 transition-transform duration-300 animate-fadeup"
       >
         <div className="sticky top-0 z-[2] bg-[#222222] flex items-center justify-between p-[14px_20px_12px] border-b border-[#303030]">
           <div className="w-[36px] h-[4px] rounded-[2px] bg-[#303030] absolute top-[10px] left-1/2 -translate-x-1/2" aria-hidden="true" />
