@@ -34,6 +34,7 @@ interface ExamSheetProps {
   sequence: string[];
   isOpen: boolean;
   onClose: () => void;
+  onNavigateEvidence: (direction: -1 | 1) => void;
   onAddToSeq: (evId: string) => void;
   onMoveSeq: (evId: string, dir: number) => void;
   onRemoveFromSeq: (evId: string) => void;
@@ -45,6 +46,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
   sequence,
   isOpen,
   onClose,
+  onNavigateEvidence,
   onAddToSeq,
   onMoveSeq,
   onRemoveFromSeq,
@@ -253,29 +255,35 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
         role="dialog"
         aria-modal="true"
         aria-label="Exame de evidência"
-        className="fixed bottom-0 left-0 right-0 z-[300] bg-[#222222] rounded-t-[20px] max-h-[92vh] max-h-[92dvh] overflow-y-auto overscroll-y-contain touch-pan-y [-webkit-overflow-scrolling:touch] sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8 transition-transform duration-300 animate-fadeup"
+        className="fixed inset-x-0 top-[env(safe-area-inset-top,0px)] bottom-0 z-[300] bg-[#222222] rounded-t-[20px] h-[calc(100dvh-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-env(safe-area-inset-top,0px))] overflow-y-auto overscroll-y-contain touch-pan-y [-webkit-overflow-scrolling:touch] sm:top-auto sm:bottom-0 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[620px] sm:h-auto sm:max-h-[92vh] sm:rounded-t-[20px] sm:shadow-[0_-8px_40px_rgba(0,0,0,0.7)] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8 transition-transform duration-300 animate-fadeup"
       >
-        <div className="sticky top-0 z-[2] bg-[#222222] flex items-center justify-between p-[14px_20px_12px] border-b border-[#303030]">
-          <div className="w-[36px] h-[4px] rounded-[2px] bg-[#303030] absolute top-[10px] left-1/2 -translate-x-1/2" aria-hidden="true" />
-          <div className="text-center flex-1">
-            <div className="font-mono-retro text-[12px] tracking-[0.14em] text-[#9A9590] uppercase">
+        <div className="sticky top-0 z-[20] bg-[#222222] flex items-center justify-between gap-2 px-3 sm:px-5 pt-[max(14px,env(safe-area-inset-top))] pb-3 border-b border-[#303030] shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
+          <button
+            type="button"
+            onClick={() => { stopAudio(); onNavigateEvidence(-1); }}
+            aria-label="Abrir evidência anterior"
+            className="w-[42px] h-[42px] flex-shrink-0 rounded-lg border border-[#454545] bg-[#2C2626] text-[#F2EAE0] text-xl flex items-center justify-center disabled:opacity-25"
+          >‹</button>
+          <div className="text-center flex-1 min-w-0">
+            <div className="font-mono-retro text-[11px] sm:text-[12px] tracking-[0.14em] text-[#9A9590] uppercase">
               EVIDÊNCIA {evidence.id}
             </div>
-            <div className="font-brunson text-[26px] uppercase tracking-[0.04em] leading-none text-[#F2EAE0]">
+            <div className="font-brunson text-[22px] sm:text-[26px] uppercase tracking-[0.04em] leading-tight text-[#F2EAE0] truncate">
               {evidence.tipo}
             </div>
           </div>
           <button
             type="button"
-            onClick={() => {
-              stopAudio();
-              onClose();
-            }}
+            onClick={() => { stopAudio(); onNavigateEvidence(1); }}
+            aria-label="Abrir próxima evidência"
+            className="w-[42px] h-[42px] flex-shrink-0 rounded-lg border border-[#454545] bg-[#2C2626] text-[#F2EAE0] text-xl flex items-center justify-center"
+          >›</button>
+          <button
+            type="button"
+            onClick={() => { stopAudio(); onClose(); }}
             aria-label="Fechar"
-            className="w-[40px] h-[40px] rounded-full bg-[#2C2626] border border-[#303030] text-[#F2EAE0] text-[22px] cursor-pointer flex items-center justify-center hover:bg-[#3A1010] transition-colors flex-shrink-0 leading-none"
-          >
-            ×
-          </button>
+            className="w-[42px] h-[42px] flex-shrink-0 rounded-full bg-[#3A1010] border border-[#704040] text-white text-[22px] flex items-center justify-center leading-none"
+          >×</button>
         </div>
 
         <div className="relative overflow-hidden bg-[#0D0D0D] border-b border-[#222222]">
