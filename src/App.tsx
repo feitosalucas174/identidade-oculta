@@ -122,6 +122,22 @@ export const App: React.FC = () => {
     setExamIdx(null);
   };
 
+  const handleNavigateEvidence = (direction: -1 | 1) => {
+    setExamIdx(current => {
+      if (current === null) return current;
+      const nextIdx = Math.max(0, Math.min(deck.length - 1, current + direction));
+      const nextEvidence = deck[nextIdx];
+      if (nextEvidence) {
+        setVistas(prev => {
+          const next = new Set(prev);
+          next.add(nextEvidence.id);
+          return next;
+        });
+      }
+      return nextIdx;
+    });
+  };
+
   const handleAddToSeq = (evId: string) => {
     setSequence(prev => {
       if (prev.includes(evId)) return prev;
@@ -371,6 +387,7 @@ export const App: React.FC = () => {
             sequence={sequence}
             isOpen={examIdx !== null}
             onClose={handleCloseExam}
+            onNavigateEvidence={handleNavigateEvidence}
             onAddToSeq={handleAddToSeq}
             onMoveSeq={handleMoveSeq}
             onRemoveFromSeq={handleRemoveFromSeq}
