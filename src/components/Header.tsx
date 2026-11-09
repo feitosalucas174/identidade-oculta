@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ vistasCount, camposCount, onGoHo
       </div>
 
       <div className="flex flex-col items-end gap-[2px] font-mono-retro text-[10px] sm:text-[12px] text-[#9A9590] text-right flex-shrink-0" aria-live="polite">
-        <span>{vistasCount}/21 ouvidas</span>
+        <span>{vistasCount}/20 ouvidas</span>
         <span>{camposCount}/28 campos</span>
       </div>
     </header>
