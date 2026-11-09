@@ -9,7 +9,6 @@ let originalBodyStyles: {
   right: string;
   width: string;
   overflow: string;
-  touchAction: string;
 } | null = null;
 let originalHtmlOverflow = '';
 
@@ -29,7 +28,6 @@ export function useScrollLock(isLocked: boolean = true) {
         right: body.style.right,
         width: body.style.width,
         overflow: body.style.overflow,
-        touchAction: body.style.touchAction,
       };
       originalHtmlOverflow = html.style.overflow;
 
@@ -39,7 +37,6 @@ export function useScrollLock(isLocked: boolean = true) {
       body.style.right = '0';
       body.style.width = '100%';
       body.style.overflow = 'hidden';
-      body.style.touchAction = 'none';
 
       html.style.overflow = 'hidden';
     }
@@ -60,7 +57,6 @@ export function useScrollLock(isLocked: boolean = true) {
           body.style.right = originalBodyStyles.right;
           body.style.width = originalBodyStyles.width;
           body.style.overflow = originalBodyStyles.overflow;
-          body.style.touchAction = originalBodyStyles.touchAction;
           originalBodyStyles = null;
         } else {
           body.style.position = '';
@@ -69,7 +65,6 @@ export function useScrollLock(isLocked: boolean = true) {
           body.style.right = '';
           body.style.width = '';
           body.style.overflow = '';
-          body.style.touchAction = '';
         }
 
         html.style.overflow = originalHtmlOverflow;
