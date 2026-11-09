@@ -29,17 +29,35 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build GitHub Pages output
-        run: npm run build
-
-      - name: Commit generated docs for GitHub Pages
+      - name: Build and publish generated docs to repository
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs
-          if git diff --cached --quiet; then
-            echo "No generated docs changes."
-          else
+
+          # Rebuild against the latest master on every attempt. This avoids
+          # pushing stale docs when another workflow updates the branch.
+          for attempt in 1 2 3 4 5; do
+            echo "Build/push attempt $attempt of 5"
+            git fetch origin master
+            git reset --hard origin/master
+            npm run build
+            git add docs
+
+            if git diff --cached --quiet; then
+              echo "Generated docs are already up to date."
+              exit 0
+            fi
+
             git commit -m "Build GitHub Pages output"
-            git push origin HEAD:master
-          fi
+            if git push origin HEAD:master; then
+              echo "Generated docs pushed successfully."
+              exit 0
+            fi
+
+            echo "Push raced with another update; retrying from latest master..."
+            sleep 2
+          done
+
+          echo "Could not push generated docs after 5 attempts."
+          exit 1
