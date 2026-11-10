@@ -472,7 +472,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               Diretora
             </p>
             <div className="mx-auto mt-2 flex h-[min(62vh,390px)] items-center justify-center">
-              <img src={BASE_URL + 'assets/juliana_diretora.gif'} alt="Animação pixel art de Juliana Naka dirigindo uma produção" className="w-[min(72vw,280px)] max-h-full h-auto object-contain [image-rendering:pixelated]" />
+              <img src={BASE_URL + 'assets/juliana_diretora_hd.webp'} alt="Animação pixel art de Juliana Naka dirigindo uma produção" className="w-[min(72vw,280px)] max-h-full h-auto object-contain" />
             </div>
             <p className="font-mono-retro text-[9px] text-[#777785] uppercase tracking-wider">
               Direção · Ação · Câmera
