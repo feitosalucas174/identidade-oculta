@@ -69,6 +69,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onRestart,
 }) => {
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
+  const [julianaOpen, setJulianaOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -375,7 +376,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 {CREW.map((member, idx) => (
                   <div
                     key={idx}
-                    className="bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md"
+                    role={idx === 0 ? 'button' : undefined}
+                    tabIndex={idx === 0 ? 0 : undefined}
+                    onClick={idx === 0 ? () => setJulianaOpen(true) : undefined}
+                    onKeyDown={idx === 0 ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setJulianaOpen(true); } } : undefined}
+                    aria-label={idx === 0 ? 'Ver animação de Juliana Naka' : undefined}
+                    className={idx === 0 ? "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4AF37]" : "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md"}
                   >
                     {/* 35mm Frame Top Tag */}
                     <div className="flex items-center justify-between px-1 pb-1 mb-1.5 border-b border-[#202028]">
@@ -397,6 +403,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
+                      {idx === 0 && (
+                        <span className="absolute bottom-2 right-2 rounded bg-black/80 border border-[#D4AF37]/60 px-1.5 py-1 font-mono-retro text-[8px] uppercase tracking-wider text-[#D4AF37]">
+                          ▶ Ver animação
+                        </span>
+                      )}
                     </div>
 
                     <div className="p-2 flex flex-col justify-center flex-1 text-left">
@@ -429,6 +440,46 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {julianaOpen && (
+        <div
+          className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          role="presentation"
+          onClick={() => setJulianaOpen(false)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="juliana-animation-title"
+            className="relative w-full max-w-[420px] rounded-[14px] border-2 border-[#D4AF37]/70 bg-[#101013] px-5 pt-5 pb-4 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setJulianaOpen(false)}
+              aria-label="Fechar animação"
+              className="absolute right-3 top-3 z-10 w-9 h-9 rounded-full border border-[#4a4140] bg-[#1b1717] text-[#F2EAE0] text-xl hover:border-[#D4AF37] hover:text-[#D4AF37]"
+            >
+              ×
+            </button>
+            <div className="font-mono-retro text-[9px] uppercase tracking-[0.2em] text-[#D4AF37] mb-1">
+              Alice Guy · Ficha da equipe
+            </div>
+            <h2 id="juliana-animation-title" className="font-brunson text-[30px] uppercase tracking-wide text-[#F2EAE0]">
+              Juliana Naka
+            </h2>
+            <p className="font-mono-retro text-[10px] uppercase tracking-[0.15em] text-[#D4AF37]">
+              Diretora
+            </p>
+            <div className="mx-auto mt-2 flex h-[min(62vh,390px)] items-center justify-center">
+              <img src={BASE_URL + 'assets/juliana_diretora.gif'} alt="Animação pixel art de Juliana Naka dirigindo uma produção" className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />
+            </div>
+            <p className="font-mono-retro text-[9px] text-[#777785] uppercase tracking-wider">
+              Direção · Ação · Câmera
+            </p>
+          </section>
+        </div>
+      )}
     </div>
   );
-};
+}
