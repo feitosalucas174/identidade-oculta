@@ -497,8 +497,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 fetchPriority="high"
                 width={384}
                 height={512}
-                className="block h-auto w-auto max-h-[min(58dvh,400px)] max-w-[min(82vw,384px)] object-contain"
-                style={{ imageRendering: 'pixelated' }}
+                className="block h-auto w-[min(82vw,300px)] max-h-[min(58dvh,400px)] object-contain"
               />
             </div>
             <p className="font-mono-retro text-[9px] text-[#777785] uppercase tracking-wider">
