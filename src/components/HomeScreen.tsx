@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 interface HomeScreenProps {
   isOpen: boolean;
@@ -70,59 +70,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [julianaOpen, setJulianaOpen] = useState(false);
-  const [julianaFrame, setJulianaFrame] = useState(0);
-  const [julianaReady, setJulianaReady] = useState(false);
-  const julianaCanvasRef = useRef<HTMLCanvasElement>(null);
-  const julianaSheetRef = useRef<HTMLCanvasElement | null>(null);
 
-  useEffect(() => {
-    if (!julianaOpen) return;
-    setJulianaFrame(0);
-    setJulianaReady(false);
-    const image = new Image();
-    image.src = BASE_URL + 'assets/aistudio/image_28eba799.png';
-    image.onload = () => {
-      const sheet = document.createElement('canvas');
-      sheet.width = image.naturalWidth;
-      sheet.height = image.naturalHeight;
-      const ctx = sheet.getContext('2d', { willReadFrequently: true });
-      if (!ctx) return;
-      ctx.drawImage(image, 0, 0);
-      const pixels = ctx.getImageData(0, 0, sheet.width, sheet.height);
-      const data = pixels.data;
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i] > 242 && data[i + 1] > 242 && data[i + 2] > 242) data[i + 3] = 0;
-      }
-      ctx.putImageData(pixels, 0, 0);
-      julianaSheetRef.current = sheet;
-      setJulianaReady(true);
-    };
-    image.onerror = () => { julianaSheetRef.current = null; };
-    return () => { image.onload = null; image.onerror = null; };
-  }, [julianaOpen]);
-
-  useEffect(() => {
-    if (!julianaOpen) return;
-    const timer = window.setInterval(() => setJulianaFrame((frame) => (frame + 1) % 8), 220);
-    return () => window.clearInterval(timer);
-  }, [julianaOpen]);
-
-  useEffect(() => {
-    const sheet = julianaSheetRef.current;
-    const canvas = julianaCanvasRef.current;
-    if (!julianaOpen || !julianaReady || !sheet || !canvas) return;
-    const frameW = sheet.width / 4;
-    const frameH = sheet.height / 2;
-    const col = julianaFrame % 4;
-    const row = Math.floor(julianaFrame / 4);
-    canvas.width = frameW;
-    canvas.height = frameH;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.imageSmoothingEnabled = false;
-    ctx.clearRect(0, 0, frameW, frameH);
-    ctx.drawImage(sheet, col * frameW, row * frameH, frameW, frameH, 0, 0, frameW, frameH);
-  }, [julianaOpen, julianaReady, julianaFrame]);
 
   if (!isOpen) return null;
 
@@ -525,11 +473,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               Diretora
             </p>
             <div className="mx-auto my-4 flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden">
-              <canvas
-                ref={julianaCanvasRef}
-                role="img"
-                aria-label="Animação pixel art de Juliana Naka dirigindo uma produção"
-                className="block h-auto w-auto max-h-[min(58dvh,520px)] max-w-full object-contain"
+              <img
+                src={BASE_URL + 'assets/juliana_diretora.gif'}
+                alt="Animação pixel art de Juliana Naka dirigindo uma produção"
+                width={64}
+                height={86}
+                className="block h-auto w-auto max-h-[min(58dvh,320px)] max-w-[min(70vw,240px)] object-contain"
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
