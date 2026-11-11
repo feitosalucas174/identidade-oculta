@@ -451,7 +451,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby="juliana-animation-title"
-            className="relative w-full max-w-[420px] rounded-[14px] border-2 border-[#D4AF37]/70 bg-[#101013] px-5 pt-5 pb-4 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center"
+            className="relative w-full max-w-[260px] rounded-[12px] border-2 border-[#D4AF37]/70 bg-[#101013] px-3 pt-4 pb-3 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -465,14 +465,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <div className="font-mono-retro text-[9px] uppercase tracking-[0.2em] text-[#D4AF37] mb-1">
               Alice Guy · Ficha da equipe
             </div>
-            <h2 id="juliana-animation-title" className="font-brunson text-[30px] uppercase tracking-wide text-[#F2EAE0]">
+            <h2 id="juliana-animation-title" className="font-brunson text-[24px] uppercase tracking-wide text-[#F2EAE0]">
               Juliana Naka
             </h2>
             <p className="font-mono-retro text-[10px] uppercase tracking-[0.15em] text-[#D4AF37]">
               Diretora
             </p>
-            <div className="mx-auto mt-2 flex h-[min(62vh,390px)] items-center justify-center">
-              <img src={BASE_URL + 'assets/juliana_diretora.gif'} alt="Animação pixel art de Juliana Naka dirigindo uma produção" className="w-[min(72vw,280px)] max-h-full h-auto object-contain" />
+            <div className="mx-auto mt-2 flex h-[86px] w-[64px] items-center justify-center">
+              <img
+                src={BASE_URL + 'assets/juliana_diretora.gif'}
+                alt="Animação pixel art de Juliana Naka dirigindo uma produção"
+                width={64}
+                height={86}
+                className="block h-[86px] w-[64px] max-h-[86px] max-w-[64px] object-contain"
+                style={{ imageRendering: 'auto' }}
+              />
             </div>
             <p className="font-mono-retro text-[9px] text-[#777785] uppercase tracking-wider">
               Direção · Ação · Câmera
