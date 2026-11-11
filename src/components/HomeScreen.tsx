@@ -491,6 +491,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <img
                 src={BASE_URL + 'assets/' + activeCrewMember.animacao}
                 alt={`Animação pixel art de ${activeCrewMember.nome}: ${activeCrewMember.cargo}`}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 width={384}
                 height={512}
                 className="block h-auto w-auto max-h-[min(58dvh,400px)] max-w-[min(82vw,384px)] object-contain"
