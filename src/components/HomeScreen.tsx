@@ -10,16 +10,20 @@ interface HomeScreenProps {
 
 const BASE_URL = import.meta.env.BASE_URL;
 
-const CREW = [
+type CrewMember = { nome: string; cargo: string; foto: string; animacao?: string; };
+
+const CREW: CrewMember[] = [
   {
     nome: 'Juliana Naka',
     cargo: 'Diretora',
     foto: `${BASE_URL}assets/aistudio/1_994dbf90.jpg`,
+    animacao: 'juliana_diretora.gif',
   },
   {
     nome: 'Karen Ialago',
     cargo: 'Assistente de Direção',
     foto: `${BASE_URL}assets/aistudio/2_d8fcfc06.jpg`,
+    animacao: 'karen_assistente.png',
   },
   {
     nome: 'Davi Vieira',
@@ -70,17 +74,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onRestart,
 }) => {
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
-  const [julianaOpen, setJulianaOpen] = useState(false);
-  useScrollLock(julianaOpen);
+  const [activeCrewMember, setActiveCrewMember] = useState<CrewMember | null>(null);
+  useScrollLock(Boolean(activeCrewMember));
 
   useEffect(() => {
-    if (!julianaOpen) return;
+    if (!activeCrewMember) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setJulianaOpen(false);
+      if (event.key === 'Escape') setActiveCrewMember(null);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [julianaOpen]);
+  }, [activeCrewMember]);
 
 
   if (!isOpen) return null;
@@ -388,12 +392,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 {CREW.map((member, idx) => (
                   <div
                     key={idx}
-                    role={idx === 0 ? 'button' : undefined}
-                    tabIndex={idx === 0 ? 0 : undefined}
-                    onClick={idx === 0 ? () => setJulianaOpen(true) : undefined}
-                    onKeyDown={idx === 0 ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setJulianaOpen(true); } } : undefined}
-                    aria-label={idx === 0 ? 'Ver animação de Juliana Naka' : undefined}
-                    className={idx === 0 ? "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4AF37]" : "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md"}
+                    role={idx <= 1 ? 'button' : undefined}
+                    tabIndex={idx <= 1 ? 0 : undefined}
+                    onClick={idx <= 1 ? () => setActiveCrewMember(member) : undefined}
+                    onKeyDown={idx <= 1 ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveCrewMember(member); } } : undefined}
+                    aria-label={idx <= 1 ? `Ver animação de ${member.nome}` : undefined}
+                    className={idx <= 1 ? "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4AF37]" : "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md"}
                   >
                     {/* 35mm Frame Top Tag */}
                     <div className="flex items-center justify-between px-1 pb-1 mb-1.5 border-b border-[#202028]">
@@ -415,7 +419,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      {idx === 0 && (
+                      {idx <= 1 && (
                         <span className="absolute bottom-2 right-2 rounded bg-black/80 border border-[#D4AF37]/60 px-1.5 py-1 font-mono-retro text-[8px] uppercase tracking-wider text-[#D4AF37]">
                           ▶ Ver animação
                         </span>
@@ -453,22 +457,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </div>
 
-      {julianaOpen && (
+      {activeCrewMember && (
         <div
           className="fixed inset-0 z-[1200] flex items-center justify-center overflow-y-auto overscroll-contain touch-pan-y bg-black/90 backdrop-blur-sm px-3 py-4 sm:p-6"
           role="presentation"
-          onClick={() => setJulianaOpen(false)}
+          onClick={() => setActiveCrewMember(null)}
         >
           <section
             role="dialog"
             aria-modal="true"
-            aria-labelledby="juliana-animation-title"
+            aria-labelledby="crew-animation-title"
             className="relative my-auto w-full max-w-[560px] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-[14px] border-2 border-[#1e4840] bg-[#0c0d10] px-4 sm:px-5 pt-5 pb-5 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center flex flex-col"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
-              onClick={() => setJulianaOpen(false)}
+              onClick={() => setActiveCrewMember(null)}
               aria-label="Fechar animação"
               className="absolute right-3 top-3 z-10 w-9 h-9 rounded-full border border-[#4a4140] bg-[#1b1717] text-[#F2EAE0] text-xl hover:border-[#D4AF37] hover:text-[#D4AF37]"
             >
@@ -477,16 +481,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <div className="font-mono-retro text-[9px] uppercase tracking-[0.2em] text-[#D4AF37] mb-1">
               Alice Guy · Ficha da equipe
             </div>
-            <h2 id="juliana-animation-title" className="font-brunson text-[30px] uppercase tracking-wide text-[#F2EAE0]">
-              Juliana Naka
+            <h2 id="crew-animation-title" className="font-brunson text-[30px] uppercase tracking-wide text-[#F2EAE0]">
+              {activeCrewMember.nome}
             </h2>
             <p className="font-mono-retro text-[10px] uppercase tracking-[0.15em] text-[#D4AF37]">
-              Diretora
+              {activeCrewMember.cargo}
             </p>
             <div className="relative mx-auto my-3 flex min-h-[min(58dvh,420px)] w-full items-center justify-center overflow-hidden rounded-[12px] border border-[#20222a] bg-[#000]">
               <img
-                src={BASE_URL + 'assets/juliana_diretora.gif'}
-                alt="Animação pixel art de Juliana Naka dirigindo uma produção"
+                src={BASE_URL + 'assets/' + activeCrewMember.animacao}
+                alt={`Animação pixel art de ${activeCrewMember.nome}: ${activeCrewMember.cargo}`}
                 width={384}
                 height={512}
                 className="block h-auto w-auto max-h-[min(58dvh,400px)] max-w-[min(82vw,384px)] object-contain"
