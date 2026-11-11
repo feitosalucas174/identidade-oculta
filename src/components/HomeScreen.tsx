@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface HomeScreenProps {
   isOpen: boolean;
@@ -70,6 +71,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [julianaOpen, setJulianaOpen] = useState(false);
+  useScrollLock(julianaOpen);
+
+  useEffect(() => {
+    if (!julianaOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setJulianaOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [julianaOpen]);
 
 
   if (!isOpen) return null;
@@ -444,7 +455,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {julianaOpen && (
         <div
-          className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[1200] flex items-center justify-center overflow-y-auto overscroll-contain touch-pan-y bg-black/90 backdrop-blur-sm px-3 py-4 sm:p-6"
           role="presentation"
           onClick={() => setJulianaOpen(false)}
         >
@@ -452,7 +463,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby="juliana-animation-title"
-            className="relative w-full max-w-[560px] min-h-[min(82dvh,760px)] rounded-[14px] border-2 border-[#D4AF37]/70 bg-[#101013] px-5 pt-5 pb-5 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center flex flex-col justify-between"
+            className="relative my-auto w-full max-w-[560px] max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-[14px] border-2 border-[#1e4840] bg-[#0c0d10] px-4 sm:px-5 pt-5 pb-5 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center flex flex-col"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -472,13 +483,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <p className="font-mono-retro text-[10px] uppercase tracking-[0.15em] text-[#D4AF37]">
               Diretora
             </p>
-            <div className="mx-auto my-4 flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden">
+            <div className="relative mx-auto my-3 flex min-h-[min(58dvh,420px)] w-full items-center justify-center overflow-hidden rounded-[12px] border border-[#20222a] bg-[#000]">
               <img
                 src={BASE_URL + 'assets/juliana_diretora.gif'}
                 alt="Animação pixel art de Juliana Naka dirigindo uma produção"
-                width={64}
-                height={86}
-                className="block h-auto w-auto max-h-[min(58dvh,320px)] max-w-[min(70vw,240px)] object-contain"
+                width={384}
+                height={512}
+                className="block h-auto w-auto max-h-[min(58dvh,400px)] max-w-[min(82vw,384px)] object-contain"
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
