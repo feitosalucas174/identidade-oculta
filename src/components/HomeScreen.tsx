@@ -26,9 +26,10 @@ const CREW: CrewMember[] = [
     animacao: 'karen_assistente.png',
   },
   {
-    nome: 'Davi Vieira',
+    nome: 'Davi Barbosa',
     cargo: 'Produtor e Roteirista',
     foto: `${BASE_URL}assets/aistudio/3_259d20ba.jpg`,
+    animacao: 'davi_barbosa.webp',
   },
   {
     nome: 'Lucas Feitosa',
@@ -392,12 +393,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 {CREW.map((member, idx) => (
                   <div
                     key={idx}
-                    role={idx <= 1 ? 'button' : undefined}
-                    tabIndex={idx <= 1 ? 0 : undefined}
-                    onClick={idx <= 1 ? () => setActiveCrewMember(member) : undefined}
-                    onKeyDown={idx <= 1 ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveCrewMember(member); } } : undefined}
-                    aria-label={idx <= 1 ? `Ver animação de ${member.nome}` : undefined}
-                    className={idx <= 1 ? "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4AF37]" : "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md"}
+                    role={idx <= 2 ? 'button' : undefined}
+                    tabIndex={idx <= 2 ? 0 : undefined}
+                    onClick={idx <= 2 ? () => setActiveCrewMember(member) : undefined}
+                    onKeyDown={idx <= 2 ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveCrewMember(member); } } : undefined}
+                    aria-label={idx <= 2 ? `Ver animação de ${member.nome}` : undefined}
+                    className={idx <= 2 ? "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4AF37]" : "bg-[#09090b] border-2 border-[#25252e] rounded-[10px] p-2 overflow-hidden flex flex-col group hover:border-[#D4AF37] transition-all shadow-md"}
                   >
                     {/* 35mm Frame Top Tag */}
                     <div className="flex items-center justify-between px-1 pb-1 mb-1.5 border-b border-[#202028]">
@@ -419,7 +420,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      {idx <= 1 && (
+                      {idx <= 2 && (
                         <span className="absolute bottom-2 right-2 rounded bg-black/80 border border-[#D4AF37]/60 px-1.5 py-1 font-mono-retro text-[8px] uppercase tracking-wider text-[#D4AF37]">
                           ▶ Ver animação
                         </span>
