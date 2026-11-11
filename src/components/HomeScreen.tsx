@@ -71,12 +71,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [julianaOpen, setJulianaOpen] = useState(false);
   const [julianaFrame, setJulianaFrame] = useState(0);
+  const [julianaReady, setJulianaReady] = useState(false);
   const julianaCanvasRef = useRef<HTMLCanvasElement>(null);
   const julianaSheetRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (!julianaOpen) return;
     setJulianaFrame(0);
+    setJulianaReady(false);
     const image = new Image();
     image.src = BASE_URL + 'assets/aistudio/image_28eba799.png';
     image.onload = () => {
@@ -93,7 +95,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       }
       ctx.putImageData(pixels, 0, 0);
       julianaSheetRef.current = sheet;
-      setJulianaFrame(0);
+      setJulianaReady(true);
     };
     image.onerror = () => { julianaSheetRef.current = null; };
     return () => { image.onload = null; image.onerror = null; };
@@ -108,7 +110,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   useEffect(() => {
     const sheet = julianaSheetRef.current;
     const canvas = julianaCanvasRef.current;
-    if (!julianaOpen || !sheet || !canvas) return;
+    if (!julianaOpen || !julianaReady || !sheet || !canvas) return;
     const frameW = sheet.width / 4;
     const frameH = sheet.height / 2;
     const col = julianaFrame % 4;
@@ -120,7 +122,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, frameW, frameH);
     ctx.drawImage(sheet, col * frameW, row * frameH, frameW, frameH, 0, 0, frameW, frameH);
-  }, [julianaOpen, julianaFrame]);
+  }, [julianaOpen, julianaReady, julianaFrame]);
 
   if (!isOpen) return null;
 
