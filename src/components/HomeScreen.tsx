@@ -17,13 +17,13 @@ const CREW: CrewMember[] = [
     nome: 'Juliana Naka',
     cargo: 'Diretora',
     foto: `${BASE_URL}assets/aistudio/1_994dbf90.jpg`,
-    animacao: 'juliana_diretora.gif',
+    animacao: 'juliana_diretora.webp',
   },
   {
     nome: 'Karen Ialago',
     cargo: 'Assistente de Direção',
     foto: `${BASE_URL}assets/aistudio/2_d8fcfc06.jpg`,
-    animacao: 'karen_assistente.png',
+    animacao: 'karen_assistente.webp',
   },
   {
     nome: 'Davi Barbosa',
@@ -46,16 +46,19 @@ const CREW: CrewMember[] = [
     nome: 'Vinícius Oliveira',
     cargo: 'Cinegrafista',
     foto: `${BASE_URL}assets/aistudio/6_5c870541.jpg`,
+    animacao: 'vinicius_oliveira.webp',
   },
   {
     nome: 'Pietra Notarberardino',
     cargo: 'Diretora de Arte',
     foto: `${BASE_URL}assets/aistudio/7_aa3e89d6.jpg`,
+    animacao: 'pietra_notarberardino.webp',
   },
   {
     nome: 'Izzy Donatella',
     cargo: 'Maquiadora e Figurinista',
     foto: `${BASE_URL}assets/aistudio/8_6ce7ced0.jpg`,
+    animacao: 'izzy_donatella.webp',
   },
   {
     nome: 'Gabriel Elias',
@@ -66,6 +69,7 @@ const CREW: CrewMember[] = [
     nome: 'Marcello Araújo',
     cargo: 'Sonoplasta',
     foto: `${BASE_URL}assets/aistudio/10_df7bff44.jpg`,
+    animacao: 'marcello_araujo.webp',
   },
 ];
 
