@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   AllAnswers,
   CharacterVerificationResult,
@@ -55,6 +55,40 @@ export const App: React.FC = () => {
   const [timelineAnimTrigger, setTimelineAnimTrigger] = useState(0);
   const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('vhs');
 
+  // Trilha principal: toca durante a investigação e silencia nos finais.
+  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
+    music.loop = true;
+    music.volume = 0.24;
+    backgroundMusicRef.current = music;
+
+    return () => {
+      music.pause();
+      music.currentTime = 0;
+      backgroundMusicRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const music = backgroundMusicRef.current;
+    if (!music) return;
+
+    if (isDefeatOpen || isVictoryOpen) {
+      music.pause();
+      music.currentTime = 0;
+      return;
+    }
+
+    if (!isBooting) {
+      void music.play().catch(() => {
+        // Navegadores podem bloquear autoplay; handleStart tenta novamente
+        // diretamente na interação do jogador.
+      });
+    }
+  }, [isBooting, isDefeatOpen, isVictoryOpen]);
+
   // Counters
   const vistasCount = vistas.size;
   const unseenCount = EV.length - vistasCount;
@@ -77,6 +111,12 @@ export const App: React.FC = () => {
   };
 
   const handleStart = () => {
+    const music = backgroundMusicRef.current;
+    if (music && !isDefeatOpen && !isVictoryOpen) {
+      void music.play().catch(() => {
+        // O navegador pode exigir uma nova interação para liberar o áudio.
+      });
+    }
     setIsHomeOpen(false);
     if (!hasProgress()) {
       setIsBriefingOpen(true);
