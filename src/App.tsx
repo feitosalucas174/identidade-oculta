@@ -61,6 +61,7 @@ const AppContent: React.FC = () => {
   // Isso mantém o loop contínuo sem precisar alterar o arquivo original.
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
   const musicLoopTimerRef = useRef<number | null>(null);
+  const musicFadeTimerRef = useRef<number | null>(null);
 
   const startBackgroundMusic = () => {
     let music = backgroundMusicRef.current;
@@ -88,10 +89,37 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     const music = backgroundMusicRef.current;
-    if (music) {
-      const baseVolume = settings.music / 100;
-      music.volume = baseVolume * (isAudioFocused ? 0.025 : 1);
+    if (!music) return;
+
+    if (musicFadeTimerRef.current !== null) {
+      window.clearInterval(musicFadeTimerRef.current);
+      musicFadeTimerRef.current = null;
     }
+
+    const startVolume = music.volume;
+    const targetVolume = (settings.music / 100) * (isAudioFocused ? 0.025 : 1);
+    const fadeDuration = 450;
+    const startedAt = performance.now();
+
+    const updateFade = () => {
+      const progress = Math.min((performance.now() - startedAt) / fadeDuration, 1);
+      music.volume = Math.max(0, Math.min(1, startVolume + (targetVolume - startVolume) * progress));
+
+      if (progress >= 1 && musicFadeTimerRef.current !== null) {
+        window.clearInterval(musicFadeTimerRef.current);
+        musicFadeTimerRef.current = null;
+      }
+    };
+
+    updateFade();
+    musicFadeTimerRef.current = window.setInterval(updateFade, 20);
+
+    return () => {
+      if (musicFadeTimerRef.current !== null) {
+        window.clearInterval(musicFadeTimerRef.current);
+        musicFadeTimerRef.current = null;
+      }
+    };
   }, [settings.music, isAudioFocused]);
 
   useEffect(() => {
@@ -104,6 +132,10 @@ const AppContent: React.FC = () => {
       if (musicLoopTimerRef.current !== null) {
         window.clearInterval(musicLoopTimerRef.current);
         musicLoopTimerRef.current = null;
+      }
+      if (musicFadeTimerRef.current !== null) {
+        window.clearInterval(musicFadeTimerRef.current);
+        musicFadeTimerRef.current = null;
       }
       backgroundMusicRef.current = null;
     };

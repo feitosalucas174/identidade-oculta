@@ -167,7 +167,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
     utterance.onstart = () => {
       setIsPlaying(true);
-      setAudioFocus(true);
       startTimeRef.current = Date.now();
       if (timerRef.current !== null) window.clearInterval(timerRef.current);
       timerRef.current = window.setInterval(() => {
@@ -195,7 +194,10 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       }
     };
 
-    window.speechSynthesis.speak(utterance);
+    void (async () => {
+      await setAudioFocus(true);
+      window.speechSynthesis.speak(utterance);
+    })();
   };
 
   const toggleAudio = () => {
@@ -207,11 +209,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       } else {
         if (audioRef.current.ended) audioRef.current.currentTime = 0;
         void (async () => {
+          await setAudioFocus(true);
           await prepareAudioOutput();
           await audioRef.current?.play();
         })().catch((error) => {
           console.error('Não foi possível reproduzir o áudio da evidência:', error);
           setIsPlaying(false);
+          setAudioFocus(false);
         });
       }
       return;
@@ -230,11 +234,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       audioRef.current.currentTime = 0;
       setElapsed(0);
       void (async () => {
+        await setAudioFocus(true);
         await prepareAudioOutput();
         await audioRef.current?.play();
       })().catch((error) => {
         console.error('Não foi possível reiniciar o áudio da evidência:', error);
         setIsPlaying(false);
+        setAudioFocus(false);
       });
       return;
     }
@@ -360,7 +366,6 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                 }}
                 onPlay={() => {
                   setIsPlaying(true);
-                  setAudioFocus(true);
                 }}
                 onPause={() => {
                   setIsPlaying(false);

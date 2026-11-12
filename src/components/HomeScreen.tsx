@@ -226,9 +226,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">{description}</p>
                     </div>
                   ))}
-                  <p className="font-mono-retro text-[9px] text-[#8A8D99] leading-relaxed mt-3">
-                    Durante a reprodução de gravações ou falas, a trilha sonora é reduzida automaticamente e retorna ao nível escolhido ao terminar.
-                  </p>
                 </section>
               )}
             </div>

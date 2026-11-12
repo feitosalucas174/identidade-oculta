@@ -12,7 +12,7 @@ interface AudioSettingsContextValue {
   settings: AudioSettings;
   setVolume: (category: AudioCategory, value: number) => void;
   isAudioFocused: boolean;
-  setAudioFocus: (active: boolean) => void;
+  setAudioFocus: (active: boolean) => Promise<void>;
 }
 
 const STORAGE_KEY = 'identidade-oculta-audio-settings';
@@ -55,8 +55,15 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
     }));
   }, []);
 
-  const setAudioFocus = useCallback((active: boolean) => {
+  const setAudioFocus = useCallback((active: boolean): Promise<void> => {
     setIsAudioFocused(active);
+    return new Promise((resolve) => {
+      if (typeof window === 'undefined') {
+        resolve();
+        return;
+      }
+      window.setTimeout(resolve, 450);
+    });
   }, []);
 
   useEffect(() => {
