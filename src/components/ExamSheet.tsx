@@ -3,6 +3,7 @@ import { Evidence } from '../types';
 import { formatTime, PHOTOS, SVGS } from '../data/evidence';
 import { Mic, Volume2, Pause, RotateCcw, Disc, FileText } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
+import { useAudioSettings } from '../contexts/AudioSettingsContext';
 
 // Associe aqui os arquivos reais de áudio às evidências correspondentes.
 // O BASE_URL mantém o caminho correto tanto no GitHub Pages quanto em outros deploys Vite.
@@ -52,6 +53,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
   onRemoveFromSeq,
   onOpenRetroSheet,
 }) => {
+  const { settings, setAudioFocus } = useAudioSettings();
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
@@ -71,18 +73,20 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
   const audioSrc = evidence ? EVIDENCE_AUDIO[evidence.id] : undefined;
 
   const applyAudioProfile = (platform: AudioPlatform) => {
+    const voiceGain = settings.voices / 100;
     if (gainRef.current && audioContextRef.current) {
-      gainRef.current.gain.setTargetAtTime(AUDIO_PROFILE_GAIN[platform], audioContextRef.current.currentTime, 0.08);
+      gainRef.current.gain.setTargetAtTime(AUDIO_PROFILE_GAIN[platform] * voiceGain, audioContextRef.current.currentTime, 0.08);
     } else if (audioRef.current) {
-      audioRef.current.volume = 1;
+      audioRef.current.volume = voiceGain;
     }
   };
 
   const prepareAudioOutput = async () => {
     const audio = audioRef.current;
     if (!audio || typeof window === 'undefined') return;
+    const voiceGain = settings.voices / 100;
     const AudioContextCtor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextCtor) { audio.volume = 1; return; }
+    if (!AudioContextCtor) { audio.volume = voiceGain; return; }
     try {
       const context = audioContextRef.current || new AudioContextCtor();
       audioContextRef.current = context;
@@ -91,7 +95,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
         const gain = gainRef.current || context.createGain();
         const compressor = context.createDynamicsCompressor();
         gainRef.current = gain;
-        gain.gain.value = AUDIO_PROFILE_GAIN[audioPlatform];
+        gain.gain.value = AUDIO_PROFILE_GAIN[audioPlatform] * voiceGain;
         compressor.threshold.value = -18;
         compressor.knee.value = 18;
         compressor.ratio.value = 4;
@@ -106,9 +110,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       applyAudioProfile(audioPlatform);
     } catch (error) {
       console.warn('Processamento de áudio indisponível; usando saída padrão.', error);
-      audio.volume = 1;
+      audio.volume = voiceGain;
     }
   };
+
+  useEffect(() => {
+    applyAudioProfile(audioPlatform);
+  }, [settings.voices, audioPlatform]);
 
   // Rigid scroll lock on mobile & desktop
   useScrollLock(isOpen);
@@ -128,6 +136,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
+    setAudioFocus(false);
     if (timerRef.current !== null) {
       window.clearInterval(timerRef.current);
       timerRef.current = null;
@@ -149,11 +158,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(evidence.desc);
     utterance.lang = 'pt-BR';
+    utterance.volume = settings.voices / 100;
     utterance.rate = 0.88;
     utterance.pitch = 0.92;
 
     utterance.onstart = () => {
       setIsPlaying(true);
+      setAudioFocus(true);
       startTimeRef.current = Date.now();
       if (timerRef.current !== null) window.clearInterval(timerRef.current);
       timerRef.current = window.setInterval(() => {
@@ -164,6 +175,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
     utterance.onend = () => {
       setIsPlaying(false);
+      setAudioFocus(false);
       if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
         timerRef.current = null;
@@ -173,6 +185,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
     utterance.onerror = () => {
       setIsPlaying(false);
+      setAudioFocus(false);
       if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
         timerRef.current = null;
@@ -342,10 +355,17 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                     if (Number.isFinite(audio.duration)) setAudioDuration(audio.duration);
                   }
                 }}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
+                onPlay={() => {
+                  setIsPlaying(true);
+                  setAudioFocus(true);
+                }}
+                onPause={() => {
+                  setIsPlaying(false);
+                  setAudioFocus(false);
+                }}
                 onEnded={() => {
                   setIsPlaying(false);
+                  setAudioFocus(false);
                   const audio = audioRef.current;
                   if (audio) {
                     setElapsed(audio.duration);
@@ -355,6 +375,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                 onError={() => {
                   console.error(`Falha ao carregar o arquivo de áudio: ${audioSrc}`);
                   setIsPlaying(false);
+                  setAudioFocus(false);
                 }}
                 className="hidden"
               />

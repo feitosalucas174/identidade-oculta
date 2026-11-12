@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useScrollLock } from '../hooks/useScrollLock';
+import { Settings2, Volume2, Music2, MessageCircle } from 'lucide-react';
+import { useAudioSettings, type AudioCategory } from '../contexts/AudioSettingsContext';
 
 interface HomeScreenProps {
   isOpen: boolean;
@@ -79,6 +81,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStart,
   onRestart,
 }) => {
+  const { settings, setVolume } = useAudioSettings();
+  const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [activeCrewMember, setActiveCrewMember] = useState<CrewMember | null>(null);
   useScrollLock(Boolean(activeCrewMember));
@@ -173,6 +177,59 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 >
                   Reiniciar Caso (Limpar Progresso)
                 </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsAudioSettingsOpen((open) => !open)}
+                aria-expanded={isAudioSettingsOpen}
+                className="w-full max-w-[300px] min-h-[42px] px-4 py-2 rounded-[10px] bg-[#17191e] text-[#C7C7D2] border border-[#343744] font-mono-retro text-[11px] uppercase tracking-[0.08em] cursor-pointer hover:border-[#7DD5D8] hover:text-[#7DD5D8] transition-colors flex items-center justify-center gap-2"
+              >
+                <Settings2 className="w-4 h-4" />
+                {isAudioSettingsOpen ? 'Fechar configurações de áudio' : 'Configurações de áudio'}
+              </button>
+
+              {isAudioSettingsOpen && (
+                <section
+                  aria-label="Configurações de áudio"
+                  className="w-full max-w-[360px] mt-1 rounded-[12px] border border-[#343744] bg-[#101216] p-4 text-left shadow-inner"
+                >
+                  <div className="flex items-center justify-between border-b border-[#2a2d36] pb-2 mb-3">
+                    <h2 className="font-mono-retro text-[11px] uppercase tracking-[0.12em] text-[#7DD5D8] font-bold">
+                      Mixagem de áudio
+                    </h2>
+                    <span className="font-mono-retro text-[9px] text-[#777d89]">SALVO NESTE NAVEGADOR</span>
+                  </div>
+
+                  {([
+                    { key: 'effects', label: 'Efeitos sonoros', description: 'Sons de interface e ações', icon: Volume2 },
+                    { key: 'music', label: 'Trilha sonora', description: 'Música de fundo da investigação', icon: Music2 },
+                    { key: 'voices', label: 'Vozes e diálogos', description: 'Gravações e leitura falada', icon: MessageCircle },
+                  ] as { key: AudioCategory; label: string; description: string; icon: typeof Volume2 }[]).map(({ key, label, description, icon: Icon }) => (
+                    <div key={key} className="py-2.5 border-b border-[#242730] last:border-b-0">
+                      <div className="flex items-center justify-between gap-3 mb-1.5">
+                        <label htmlFor={`audio-setting-${key}`} className="flex items-center gap-2 text-[11px] text-[#F2EAE0] font-bold">
+                          <Icon className="w-4 h-4 text-[#D4AF37]" />
+                          {label}
+                        </label>
+                        <span className="font-mono-retro text-[11px] text-[#7DD5D8] tabular-nums">{settings[key]}%</span>
+                      </div>
+                      <input
+                        id={`audio-setting-${key}`}
+                        type="range"
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={settings[key]}
+                        onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
+                        className="w-full accent-[#7DD5D8] cursor-pointer"
+                      />
+                      <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">{description}</p>
+                    </div>
+                  ))}
+                  <p className="font-mono-retro text-[9px] text-[#8A8D99] leading-relaxed mt-3">
+                    Durante a reprodução de gravações ou falas, a trilha sonora é reduzida automaticamente e retorna ao nível escolhido ao terminar.
+                  </p>
+                </section>
               )}
             </div>
           </div>

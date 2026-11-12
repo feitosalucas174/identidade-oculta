@@ -33,8 +33,10 @@ import { DetectiveBriefingModal } from './components/DetectiveBriefingModal';
 import { DetectiveDefeatModal } from './components/DetectiveDefeatModal';
 import { DetectiveVictoryModal } from './components/DetectiveVictoryModal';
 import { RetroBootScreen } from './components/RetroBootScreen';
+import { AudioSettingsProvider, useAudioSettings } from './contexts/AudioSettingsContext';
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { settings, isAudioFocused } = useAudioSettings();
   // Game state
   const [isBooting, setIsBooting] = useState(true);
   const [deck, setDeck] = useState(() => shuffle(EV));
@@ -55,18 +57,26 @@ export const App: React.FC = () => {
   const [timelineAnimTrigger, setTimelineAnimTrigger] = useState(0);
   const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('vhs');
 
-  // A trilha começa no primeiro clique da tela de loading (gesto do usuário),
-  // para não depender do autoplay que os navegadores costumam bloquear.
+  // A trilha volta ao início antes do silêncio gravado no fim do WAV (23,26 s).
+  // Isso mantém o loop contínuo sem precisar alterar o arquivo original.
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const musicLoopTimerRef = useRef<number | null>(null);
 
   const startBackgroundMusic = () => {
     let music = backgroundMusicRef.current;
     if (!music) {
       music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
-      music.loop = true;
-      music.volume = 0.24;
+      music.loop = false;
+      music.volume = (settings.music / 100) * (isAudioFocused ? 0.025 : 1);
       music.preload = 'auto';
       backgroundMusicRef.current = music;
+
+      musicLoopTimerRef.current = window.setInterval(() => {
+        if (!music || music.paused) return;
+        if (music.currentTime >= 23.26) {
+          music.currentTime = 0;
+        }
+      }, 50);
     }
 
     if (music.paused) {
@@ -77,11 +87,23 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    const music = backgroundMusicRef.current;
+    if (music) {
+      const baseVolume = settings.music / 100;
+      music.volume = baseVolume * (isAudioFocused ? 0.025 : 1);
+    }
+  }, [settings.music, isAudioFocused]);
+
+  useEffect(() => {
     return () => {
       const music = backgroundMusicRef.current;
       if (music) {
         music.pause();
         music.currentTime = 0;
+      }
+      if (musicLoopTimerRef.current !== null) {
+        window.clearInterval(musicLoopTimerRef.current);
+        musicLoopTimerRef.current = null;
       }
       backgroundMusicRef.current = null;
     };
@@ -520,5 +542,11 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+export const App: React.FC = () => (
+  <AudioSettingsProvider>
+    <AppContent />
+  </AudioSettingsProvider>
+);
 
 export default App;
