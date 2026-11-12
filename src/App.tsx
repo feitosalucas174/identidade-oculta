@@ -55,39 +55,51 @@ export const App: React.FC = () => {
   const [timelineAnimTrigger, setTimelineAnimTrigger] = useState(0);
   const [timelineAnimType, setTimelineAnimType] = useState<TimelineAnimationType>('vhs');
 
-  // Trilha principal: toca durante a investigação e silencia nos finais.
+  // A trilha começa no primeiro clique da tela de loading (gesto do usuário),
+  // para não depender do autoplay que os navegadores costumam bloquear.
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    const music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
-    music.loop = true;
-    music.volume = 0.24;
-    backgroundMusicRef.current = music;
+  const startBackgroundMusic = () => {
+    let music = backgroundMusicRef.current;
+    if (!music) {
+      music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
+      music.loop = true;
+      music.volume = 0.24;
+      music.preload = 'auto';
+      backgroundMusicRef.current = music;
+    }
 
+    if (music.paused) {
+      void music.play().catch(() => {
+        // Se o navegador ainda bloquear a reprodução, a próxima interação tenta novamente.
+      });
+    }
+  };
+
+  useEffect(() => {
     return () => {
-      music.pause();
-      music.currentTime = 0;
+      const music = backgroundMusicRef.current;
+      if (music) {
+        music.pause();
+        music.currentTime = 0;
+      }
       backgroundMusicRef.current = null;
     };
   }, []);
 
   useEffect(() => {
+    if (!isDefeatOpen && !isVictoryOpen) return;
     const music = backgroundMusicRef.current;
-    if (!music) return;
-
-    if (isDefeatOpen || isVictoryOpen) {
+    if (music) {
       music.pause();
       music.currentTime = 0;
-      return;
     }
+  }, [isDefeatOpen, isVictoryOpen]);
 
-    if (!isBooting) {
-      void music.play().catch(() => {
-        // Navegadores podem bloquear autoplay; handleStart tenta novamente
-        // diretamente na interação do jogador.
-      });
-    }
-  }, [isBooting, isDefeatOpen, isVictoryOpen]);
+  const handleBootComplete = () => {
+    startBackgroundMusic();
+    setIsBooting(false);
+  };
 
   // Counters
   const vistasCount = vistas.size;
@@ -111,12 +123,7 @@ export const App: React.FC = () => {
   };
 
   const handleStart = () => {
-    const music = backgroundMusicRef.current;
-    if (music && !isDefeatOpen && !isVictoryOpen) {
-      void music.play().catch(() => {
-        // O navegador pode exigir uma nova interação para liberar o áudio.
-      });
-    }
+    startBackgroundMusic();
     setIsHomeOpen(false);
     if (!hasProgress()) {
       setIsBriefingOpen(true);
@@ -129,6 +136,7 @@ export const App: React.FC = () => {
   };
 
   const handleGoHome = () => {
+    startBackgroundMusic();
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
@@ -316,6 +324,7 @@ export const App: React.FC = () => {
 
   const handleReviewFromDefeat = () => {
     setIsDefeatOpen(false);
+    startBackgroundMusic();
   };
 
   const handleRestartFromDefeat = () => {
@@ -324,6 +333,7 @@ export const App: React.FC = () => {
   };
 
   const handleRestart = () => {
+    startBackgroundMusic();
     setDeck(shuffle(EV));
     setVistas(new Set());
     setSequence([]);
@@ -352,7 +362,7 @@ export const App: React.FC = () => {
   const currentExamEv = examIdx !== null ? deck[examIdx] : null;
 
   if (isBooting) {
-    return <RetroBootScreen onComplete={() => setIsBooting(false)} />;
+    return <RetroBootScreen onComplete={handleBootComplete} />;
   }
 
   return (
@@ -444,7 +454,10 @@ export const App: React.FC = () => {
           {/* Detective Victory Modal on Solved Investigation */}
           <DetectiveVictoryModal
             isOpen={isVictoryOpen}
-            onReview={() => setIsVictoryOpen(false)}
+            onReview={() => {
+              setIsVictoryOpen(false);
+              startBackgroundMusic();
+            }}
             onRestart={handleRestart}
           />
 

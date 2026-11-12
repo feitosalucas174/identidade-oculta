@@ -129,15 +129,6 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
     return () => clearTimeout(timeout);
   }, []);
 
-  useEffect(() => {
-    if (progress >= 100 && !isReady) {
-      setIsReady(true);
-      const timer = setTimeout(() => {
-        handleProceed();
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [progress, isReady]);
 
   const handleProceed = () => {
     if (hasFinishedRef.current) return;
@@ -235,14 +226,15 @@ export const RetroBootScreen: React.FC<RetroBootScreenProps> = ({ onComplete }) 
             <button
               type="button"
               onClick={handleProceed}
+              disabled={!isReady}
               className={`px-4 py-2 rounded border text-xs font-bold tracking-wider uppercase transition-all duration-200 flex items-center gap-2 ${
                 isReady
                   ? 'bg-[#7DD5D8] text-black border-[#7DD5D8] shadow-[0_0_15px_rgba(125,213,216,0.4)] animate-pulse cursor-pointer'
-                  : 'bg-[#15171e] text-[#6b7280] border-[#22242c] hover:text-[#9A9590] cursor-pointer'
+                  : 'bg-[#15171e] text-[#6b7280] border-[#22242c] cursor-not-allowed opacity-60'
               }`}
             >
               <Search className="w-3.5 h-3.5" />
-              <span>{isReady ? 'INICIAR INVESTIGAÇÃO' : 'ACESSAR INQUÉRITO'}</span>
+              <span>{isReady ? 'ATIVAR ÁUDIO E INICIAR' : 'PREPARANDO DOSSIÊ...'}</span>
               <span className="font-mono text-[10px] opacity-75">[ENTER ↵]</span>
             </button>
           </div>
