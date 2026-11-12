@@ -75,6 +75,9 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
   const applyAudioProfile = (platform: AudioPlatform) => {
     const voiceGain = settings.voices / 100;
     if (gainRef.current && audioContextRef.current) {
+      // Com Web Audio ativo, o volume HTML fica em 100%; o ganho é controlado
+      // exclusivamente pelo GainNode para não aplicar a regulagem duas vezes.
+      if (audioRef.current) audioRef.current.volume = 1;
       gainRef.current.gain.setTargetAtTime(AUDIO_PROFILE_GAIN[platform] * voiceGain, audioContextRef.current.currentTime, 0.08);
     } else if (audioRef.current) {
       audioRef.current.volume = voiceGain;
