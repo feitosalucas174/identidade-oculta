@@ -65,6 +65,9 @@ const AppContent: React.FC = () => {
   const victoryAudioRef = useRef<HTMLAudioElement | null>(null);
   const musicLoopTimerRef = useRef<number | null>(null);
   const musicPausedForEvidenceRef = useRef(false);
+  // Tracks playback intent independently from HTMLMediaElement.paused.
+  // Safari can report transient media-state changes while its Web Audio graph resumes.
+  const backgroundMusicShouldPlayRef = useRef(false);
 
   const stopGameOverAudio = () => {
     const audio = gameOverAudioRef.current;
@@ -120,6 +123,7 @@ const AppContent: React.FC = () => {
 
   const pauseBackgroundMusic = () => {
     const music = backgroundMusicRef.current;
+    backgroundMusicShouldPlayRef.current = false;
     musicPausedForEvidenceRef.current = false;
     if (!music) return;
     music.pause();
@@ -128,7 +132,8 @@ const AppContent: React.FC = () => {
 
   const pauseMusicForEvidence = () => {
     const music = backgroundMusicRef.current;
-    if (!music || music.paused) return;
+    // Do not rely on Safari's transient .paused value; use the app's playback intent.
+    if (!music || !backgroundMusicShouldPlayRef.current) return;
     musicPausedForEvidenceRef.current = true;
     music.pause();
   };
@@ -138,14 +143,15 @@ const AppContent: React.FC = () => {
     if (!musicPausedForEvidenceRef.current) return;
     musicPausedForEvidenceRef.current = false;
 
-    if (!music || !music.paused || isDefeatOpen || isVictoryOpen) return;
+    if (!music || !backgroundMusicShouldPlayRef.current || isDefeatOpen || isVictoryOpen) return;
     void resumeAudioOutput();
     void music.play().catch(() => {
-      // A subsequent user interaction can retry if the browser blocks playback.
+      // Keep the intent so the next explicit play action can retry.
     });
   };
 
   const startBackgroundMusic = () => {
+    backgroundMusicShouldPlayRef.current = true;
     let music = backgroundMusicRef.current;
     if (!music) {
       music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
@@ -165,13 +171,31 @@ const AppContent: React.FC = () => {
     if (music.paused) {
       void resumeAudioOutput();
       void music.play().catch(() => {
-        // Se o navegador ainda bloquear a reprodução, a próxima interação tenta novamente.
+        // Se o navegador bloquear a reprodução, a próxima interação pode tentar novamente.
       });
     }
   };
 
   useEffect(() => {
+    // Preload os dois finais durante a investigação para evitar atraso no primeiro play,
+    // especialmente no Safari, que pode iniciar WAVs grandes somente após baixar dados.
+    if (!gameOverAudioRef.current) {
+      const audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/game_over.wav`);
+      audio.preload = 'auto';
+      audio.loop = false;
+      audio.load();
+      gameOverAudioRef.current = audio;
+    }
+    if (!victoryAudioRef.current) {
+      const audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/ganhou_jogo.wav`);
+      audio.preload = 'auto';
+      audio.loop = false;
+      audio.load();
+      victoryAudioRef.current = audio;
+    }
+
     return () => {
+      backgroundMusicShouldPlayRef.current = false;
       const music = backgroundMusicRef.current;
       if (music) {
         music.pause();
@@ -192,14 +216,6 @@ const AppContent: React.FC = () => {
       pauseBackgroundMusic();
     }
   }, [isDefeatOpen, isVictoryOpen]);
-
-  useEffect(() => {
-    const volume = settings.musicMuted ? 0 : settings.music / 100;
-    const gameOver = gameOverAudioRef.current;
-    if (gameOver && !gameOver.paused) gameOver.volume = volume;
-    const victory = victoryAudioRef.current;
-    if (victory && !victory.paused) victory.volume = volume;
-  }, [settings.music, settings.musicMuted]);
 
   const handleBootComplete = () => {
     startBackgroundMusic();
