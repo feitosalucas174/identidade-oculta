@@ -97,7 +97,7 @@ const AppContent: React.FC = () => {
     }
 
     const startVolume = music.volume;
-    const targetVolume = (settings.music / 100) * (isAudioFocused ? 0.025 : 1);
+    const targetVolume = (settings.musicMuted ? 0 : settings.music / 100) * (isAudioFocused ? 0.025 : 1);
     const fadeDuration = 450;
     const startedAt = performance.now();
 
