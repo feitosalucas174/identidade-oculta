@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { Settings2, Volume2, Music2, MessageCircle } from 'lucide-react';
 import { useAudioSettings, type AudioCategory } from '../contexts/AudioSettingsContext';
@@ -85,52 +85,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [activeCrewMember, setActiveCrewMember] = useState<CrewMember | null>(null);
-  const sliderPointerRef = useRef<{ pointerId: number; category: AudioCategory; min: number; max: number } | null>(null);
   useScrollLock(Boolean(activeCrewMember) || isAudioSettingsOpen);
-
-  const setSliderFromPointer = (
-    category: AudioCategory,
-    min: number,
-    max: number,
-    clientX: number,
-    element: HTMLInputElement,
-  ) => {
-    const rect = element.getBoundingClientRect();
-    if (rect.width <= 0) return;
-    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    const nextValue = min + Math.round(ratio * (max - min));
-    setVolume(category, nextValue);
-  };
-
-  const handleSliderPointerDown = (
-    category: AudioCategory,
-    min: number,
-    max: number,
-    event: React.PointerEvent<HTMLInputElement>,
-  ) => {
-    event.preventDefault();
-    sliderPointerRef.current = { pointerId: event.pointerId, category, min, max };
-    event.currentTarget.focus({ preventScroll: true });
-    try {
-      event.currentTarget.setPointerCapture(event.pointerId);
-    } catch {
-      // Some older mobile browsers do not implement pointer capture on form controls.
-    }
-    setSliderFromPointer(category, min, max, event.clientX, event.currentTarget);
-  };
-
-  const handleSliderPointerMove = (event: React.PointerEvent<HTMLInputElement>) => {
-    const active = sliderPointerRef.current;
-    if (!active || active.pointerId !== event.pointerId) return;
-    event.preventDefault();
-    setSliderFromPointer(active.category, active.min, active.max, event.clientX, event.currentTarget);
-  };
-
-  const handleSliderPointerEnd = (event: React.PointerEvent<HTMLInputElement>) => {
-    if (sliderPointerRef.current?.pointerId === event.pointerId) {
-      sliderPointerRef.current = null;
-    }
-  };
 
   useEffect(() => {
     if (!activeCrewMember) return;
@@ -283,11 +238,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                             step={1}
                             value={settings[key]}
                             onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
-                            onPointerDown={(event) => handleSliderPointerDown(key, key === 'voices' ? 40 : 0, 100, event)}
-                            onPointerMove={handleSliderPointerMove}
-                            onPointerUp={handleSliderPointerEnd}
-                            onPointerCancel={handleSliderPointerEnd}
-                            onLostPointerCapture={handleSliderPointerEnd}
                             className="audio-range cursor-pointer"
                           />
                         </div>
