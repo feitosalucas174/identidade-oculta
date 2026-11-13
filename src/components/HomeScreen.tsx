@@ -81,7 +81,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStart,
   onRestart,
 }) => {
-  const { settings, setVolume } = useAudioSettings();
+  const { settings, setVolume, setMuted } = useAudioSettings();
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [activeCrewMember, setActiveCrewMember] = useState<CrewMember | null>(null);
@@ -216,13 +216,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       <input
                         id={`audio-setting-${key}`}
                         type="range"
-                        min={0}
+                        min={key === 'voices' ? 40 : 0}
                         max={100}
                         step={1}
                         value={settings[key]}
                         onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
-                        className="w-full accent-[#7DD5D8] cursor-pointer"
+                        className="audio-range w-full accent-[#7DD5D8] cursor-pointer"
                       />
+                      {(key === 'effects' || key === 'music') && (
+                        <label className="mt-2 inline-flex min-h-[36px] items-center gap-2.5 font-mono-retro text-[10px] text-[#C7C7D2] cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={key === 'effects' ? settings.effectsMuted : settings.musicMuted}
+                            onChange={(event) => setMuted(key, event.currentTarget.checked)}
+                            className="audio-mute-checkbox"
+                          />
+                          {key === 'effects' ? 'Silenciar todos os efeitos sonoros' : 'Silenciar trilha sonora do jogo'}
+                        </label>
+                      )}
+                      {key === 'voices' && (
+                        <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">Mínimo permitido: 40%</p>
+                      )}
                       <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">{description}</p>
                     </div>
                   ))}
