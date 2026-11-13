@@ -73,7 +73,9 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
         resolve();
         return;
       }
-      window.setTimeout(resolve, 450);
+      // Yield one task so React can commit the focus change before playback,
+      // without the long delay that can expire mobile browser user activation.
+      window.setTimeout(resolve, 0);
     });
   }, []);
 
