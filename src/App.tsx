@@ -68,7 +68,7 @@ const AppContent: React.FC = () => {
     if (!music) {
       music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
       music.loop = false;
-      music.volume = (settings.music / 100) * (isAudioFocused ? 0.025 : 1);
+      music.volume = (settings.musicMuted ? 0 : settings.music / 100) * (isAudioFocused ? 0.025 : 1);
       music.preload = 'auto';
       backgroundMusicRef.current = music;
 
