@@ -237,6 +237,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                             max={100}
                             step={1}
                             value={settings[key]}
+                            // Safari dispatches native input events continuously while dragging.
+                            // Keep onChange as a fallback for browsers that commit only on release.
+                            onInput={(event) => setVolume(key, Number(event.currentTarget.value))}
                             onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
                             className="audio-range cursor-pointer"
                           />
