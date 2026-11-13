@@ -64,6 +64,7 @@ const AppContent: React.FC = () => {
   const victoryAudioRef = useRef<HTMLAudioElement | null>(null);
   const musicLoopTimerRef = useRef<number | null>(null);
   const musicFadeTimerRef = useRef<number | null>(null);
+  const musicPausedForEvidenceRef = useRef(false);
 
   const stopGameOverAudio = () => {
     const audio = gameOverAudioRef.current;
@@ -127,7 +128,7 @@ const AppContent: React.FC = () => {
     if (!music) {
       music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
       music.loop = false;
-      music.volume = (settings.musicMuted ? 0 : settings.music / 100) * (isAudioFocused ? 0.025 : 1);
+      music.volume = settings.musicMuted ? 0 : settings.music / 100;
       music.preload = 'auto';
       backgroundMusicRef.current = music;
 
@@ -155,9 +156,32 @@ const AppContent: React.FC = () => {
       musicFadeTimerRef.current = null;
     }
 
+    // Depoimentos e leitura em voz alta têm prioridade: pause the soundtrack
+    // completely, preserving currentTime so it resumes at the exact same point.
+    if (isAudioFocused) {
+      if (!music.paused) {
+        musicPausedForEvidenceRef.current = true;
+        music.pause();
+      }
+      return;
+    }
+
+    if (musicPausedForEvidenceRef.current) {
+      musicPausedForEvidenceRef.current = false;
+      if (!isDefeatOpen && !isVictoryOpen) {
+        music.volume = settings.musicMuted ? 0 : settings.music / 100;
+        void music.play().catch(() => {
+          // The browser may require another user interaction to resume playback.
+        });
+      }
+      return;
+    }
+
+    if (music.paused) return;
+
     const startVolume = music.volume;
-    const targetVolume = (settings.musicMuted ? 0 : settings.music / 100) * (isAudioFocused ? 0.025 : 1);
-    const fadeDuration = 450;
+    const targetVolume = settings.musicMuted ? 0 : settings.music / 100;
+    const fadeDuration = 250;
     const startedAt = performance.now();
 
     const updateFade = () => {
@@ -179,7 +203,7 @@ const AppContent: React.FC = () => {
         musicFadeTimerRef.current = null;
       }
     };
-  }, [settings.music, settings.musicMuted, isAudioFocused]);
+  }, [settings.music, settings.musicMuted, isAudioFocused, isDefeatOpen, isVictoryOpen]);
 
   useEffect(() => {
     return () => {
