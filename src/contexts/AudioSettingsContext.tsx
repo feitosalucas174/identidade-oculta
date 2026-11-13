@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { setAudioChannelVolume } from '../audio/audioBus';
 
 export type AudioCategory = 'effects' | 'music' | 'voices';
 
@@ -15,7 +16,7 @@ interface AudioSettingsContextValue {
   setVolume: (category: AudioCategory, value: number) => void;
   setMuted: (category: 'effects' | 'music', muted: boolean) => void;
   isAudioFocused: boolean;
-  setAudioFocus: (active: boolean) => Promise<void>;
+  setAudioFocus: (active: boolean) => void;
 }
 
 const STORAGE_KEY = 'identidade-oculta-audio-settings';
@@ -66,20 +67,19 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
     setSettings((current) => ({ ...current, [category === 'effects' ? 'effectsMuted' : 'musicMuted']: muted }));
   }, []);
 
-  const setAudioFocus = useCallback((active: boolean): Promise<void> => {
+  const setAudioFocus = useCallback((active: boolean): void => {
+    // This state update must remain synchronous with the user's tap. Delaying
+    // playback by a timer can consume iOS Safari's transient audio permission.
     setIsAudioFocused(active);
-    return new Promise((resolve) => {
-      if (typeof window === 'undefined') {
-        resolve();
-        return;
-      }
-      // Yield one task so React can commit the focus change before playback,
-      // without the long delay that can expire mobile browser user activation.
-      window.setTimeout(resolve, 0);
-    });
   }, []);
 
   useEffect(() => {
+    // Channel gains are handled by Web Audio so mute/volume also work on
+    // iOS and iPadOS, where HTMLMediaElement.volume is not reliably writable.
+    setAudioChannelVolume('music', settings.musicMuted ? 0 : settings.music / 100);
+    setAudioChannelVolume('voices', settings.voices / 100);
+    setAudioChannelVolume('effects', settings.effectsMuted ? 0 : settings.effects / 100);
+
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     } catch {
