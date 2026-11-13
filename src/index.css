@@ -214,51 +214,118 @@ body {
 }
 
 
-/* Controles de áudio acessíveis por toque em celulares */
+/* Controles de áudio: trilho e thumb sem cortes, inclusive em telas touch */
+.audio-range-wrap {
+  width: 100%;
+  padding: 0 12px;
+  overflow: visible;
+}
+
 .audio-range {
   display: block;
   width: 100%;
-  min-height: 34px;
-  margin: 2px 0;
-  padding: 8px 0;
-  touch-action: none;
+  height: 38px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0;
+  touch-action: pan-y;
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
+  overflow: visible;
+  cursor: pointer;
 }
+
+.audio-range:focus {
+  outline: none;
+}
+
+.audio-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px #101216, 0 0 0 5px #7DD5D8;
+}
+
+.audio-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px #101216, 0 0 0 5px #7DD5D8;
+}
+
 .audio-range::-webkit-slider-runnable-track {
   height: 7px;
+  border: 0;
   border-radius: 999px;
-  background: #343744;
+  background: linear-gradient(90deg, #52636b, #343744);
 }
+
 .audio-range::-moz-range-track {
   height: 7px;
+  border: 0;
   border-radius: 999px;
-  background: #343744;
+  background: linear-gradient(90deg, #52636b, #343744);
 }
+
 .audio-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
-  margin-top: -7.5px;
+  width: 20px;
+  height: 20px;
+  margin-top: -6.5px;
   border: 2px solid #101216;
   border-radius: 50%;
   background: #7DD5D8;
-  box-shadow: 0 0 0 2px #7DD5D8;
+  box-shadow: 0 0 0 2px #7DD5D8, 0 2px 7px rgba(0,0,0,0.55);
 }
+
 .audio-range::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid #101216;
   border-radius: 50%;
   background: #7DD5D8;
-  box-shadow: 0 0 0 2px #7DD5D8;
+  box-shadow: 0 0 0 2px #7DD5D8, 0 2px 7px rgba(0,0,0,0.55);
 }
+
+.audio-mute-option:has(.audio-mute-checkbox:checked) {
+  border-color: rgba(125, 213, 216, 0.65);
+  background: rgba(125, 213, 216, 0.09);
+}
+
 .audio-mute-checkbox {
-  width: 19px;
-  height: 19px;
-  flex: 0 0 19px;
-  accent-color: #7DD5D8;
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-content: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin: 0;
+  border: 1px solid #69717e;
+  border-radius: 5px;
+  background: #0d0f13;
   cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.audio-mute-checkbox::before {
+  content: "";
+  width: 10px;
+  height: 6px;
+  border: solid #101216;
+  border-width: 0 0 2px 2px;
+  transform: rotate(-45deg) scale(0);
+  transform-origin: center;
+  transition: transform 120ms ease-in-out;
+}
+
+.audio-mute-checkbox:checked {
+  border-color: #7DD5D8;
+  background: #7DD5D8;
+  box-shadow: 0 0 0 2px rgba(125, 213, 216, 0.13);
+}
+
+.audio-mute-checkbox:checked::before {
+  transform: rotate(-45deg) scale(1);
+}
+
+.audio-mute-checkbox:focus-visible {
+  outline: 2px solid #D4AF37;
+  outline-offset: 3px;
 }
