@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { Settings2, Volume2, Music2, MessageCircle } from 'lucide-react';
 import { useAudioSettings, type AudioCategory } from '../contexts/AudioSettingsContext';
@@ -85,7 +85,52 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [activeCrewMember, setActiveCrewMember] = useState<CrewMember | null>(null);
+  const sliderPointerRef = useRef<{ pointerId: number; category: AudioCategory; min: number; max: number } | null>(null);
   useScrollLock(Boolean(activeCrewMember) || isAudioSettingsOpen);
+
+  const setSliderFromPointer = (
+    category: AudioCategory,
+    min: number,
+    max: number,
+    clientX: number,
+    element: HTMLInputElement,
+  ) => {
+    const rect = element.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const nextValue = min + Math.round(ratio * (max - min));
+    setVolume(category, nextValue);
+  };
+
+  const handleSliderPointerDown = (
+    category: AudioCategory,
+    min: number,
+    max: number,
+    event: React.PointerEvent<HTMLInputElement>,
+  ) => {
+    event.preventDefault();
+    sliderPointerRef.current = { pointerId: event.pointerId, category, min, max };
+    event.currentTarget.focus({ preventScroll: true });
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Some older mobile browsers do not implement pointer capture on form controls.
+    }
+    setSliderFromPointer(category, min, max, event.clientX, event.currentTarget);
+  };
+
+  const handleSliderPointerMove = (event: React.PointerEvent<HTMLInputElement>) => {
+    const active = sliderPointerRef.current;
+    if (!active || active.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    setSliderFromPointer(active.category, active.min, active.max, event.clientX, event.currentTarget);
+  };
+
+  const handleSliderPointerEnd = (event: React.PointerEvent<HTMLInputElement>) => {
+    if (sliderPointerRef.current?.pointerId === event.pointerId) {
+      sliderPointerRef.current = null;
+    }
+  };
 
   useEffect(() => {
     if (!activeCrewMember) return;
@@ -238,20 +283,28 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                             step={1}
                             value={settings[key]}
                             onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
-                            onInput={(event) => setVolume(key, Number(event.currentTarget.value))}
+                            onPointerDown={(event) => handleSliderPointerDown(key, key === 'voices' ? 40 : 0, 100, event)}
+                            onPointerMove={handleSliderPointerMove}
+                            onPointerUp={handleSliderPointerEnd}
+                            onPointerCancel={handleSliderPointerEnd}
+                            onLostPointerCapture={handleSliderPointerEnd}
                             className="audio-range cursor-pointer"
                           />
                         </div>
                         {(key === 'effects' || key === 'music') && (
-                          <label className="audio-mute-option mt-2 flex min-h-[42px] items-center gap-3 rounded-[9px] border border-[#303541] bg-[#171a20] px-3 font-mono-retro text-[10px] leading-relaxed text-[#D4D5DE] cursor-pointer select-none transition-colors hover:border-[#7DD5D8]/70 hover:bg-[#1b2027]">
-                            <input
-                              type="checkbox"
-                              checked={key === 'effects' ? settings.effectsMuted : settings.musicMuted}
-                              onChange={(event) => setMuted(key, event.currentTarget.checked)}
-                              className="audio-mute-checkbox"
+                          <button
+                            type="button"
+                            role="checkbox"
+                            aria-checked={key === 'effects' ? settings.effectsMuted : settings.musicMuted}
+                            onClick={() => setMuted(key, !(key === 'effects' ? settings.effectsMuted : settings.musicMuted))}
+                            className="audio-mute-option mt-2 flex min-h-[44px] w-full items-center gap-3 rounded-[9px] border border-[#303541] bg-[#171a20] px-3 text-left font-mono-retro text-[10px] leading-relaxed text-[#D4D5DE] cursor-pointer select-none transition-colors hover:border-[#7DD5D8]/70 hover:bg-[#1b2027] active:bg-[#202832]"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className={`audio-mute-checkbox ${(key === 'effects' ? settings.effectsMuted : settings.musicMuted) ? 'is-checked' : ''}`}
                             />
-                            {key === 'effects' ? 'Silenciar todos os efeitos sonoros' : 'Silenciar trilha sonora do jogo'}
-                          </label>
+                            <span>{key === 'effects' ? 'Silenciar todos os efeitos sonoros' : 'Silenciar trilha sonora do jogo'}</span>
+                          </button>
                         )}
                         {key === 'voices' && (
                           <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">Mínimo permitido: 40%</p>
