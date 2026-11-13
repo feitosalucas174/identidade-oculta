@@ -33,11 +33,10 @@ import { DetectiveBriefingModal } from './components/DetectiveBriefingModal';
 import { DetectiveDefeatModal } from './components/DetectiveDefeatModal';
 import { DetectiveVictoryModal } from './components/DetectiveVictoryModal';
 import { RetroBootScreen } from './components/RetroBootScreen';
-import { AudioSettingsProvider, useAudioSettings } from './contexts/AudioSettingsContext';
+import { AudioSettingsProvider } from './contexts/AudioSettingsContext';
 import { connectAudioElement, resumeAudioOutput } from './audio/audioBus';
 
 const AppContent: React.FC = () => {
-  const { settings } = useAudioSettings();
   // Game state
   const [isBooting, setIsBooting] = useState(true);
   const [deck, setDeck] = useState(() => shuffle(EV));
