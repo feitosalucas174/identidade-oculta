@@ -61,6 +61,7 @@ const AppContent: React.FC = () => {
   // Isso mantém o loop contínuo sem precisar alterar o arquivo original.
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
   const gameOverAudioRef = useRef<HTMLAudioElement | null>(null);
+  const victoryAudioRef = useRef<HTMLAudioElement | null>(null);
   const musicLoopTimerRef = useRef<number | null>(null);
   const musicFadeTimerRef = useRef<number | null>(null);
 
@@ -69,6 +70,31 @@ const AppContent: React.FC = () => {
     if (!audio) return;
     audio.pause();
     audio.currentTime = 0;
+  };
+
+  const stopVictoryAudio = () => {
+    const audio = victoryAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  };
+
+  const playVictoryAudio = () => {
+    let audio = victoryAudioRef.current;
+    if (!audio) {
+      audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/ganhou_jogo.wav`);
+      audio.preload = 'auto';
+      audio.loop = false;
+      victoryAudioRef.current = audio;
+    }
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = settings.musicMuted ? 0 : settings.music / 100;
+    // Start immediately from the successful submit interaction for mobile browser compatibility.
+    void audio.play().catch(() => {
+      // Playback can still be denied by browser/device autoplay restrictions.
+    });
   };
 
   const playGameOverAudio = () => {
@@ -163,6 +189,7 @@ const AppContent: React.FC = () => {
         music.currentTime = 0;
       }
       stopGameOverAudio();
+      stopVictoryAudio();
       if (musicLoopTimerRef.current !== null) {
         window.clearInterval(musicLoopTimerRef.current);
         musicLoopTimerRef.current = null;
@@ -182,10 +209,11 @@ const AppContent: React.FC = () => {
   }, [isDefeatOpen, isVictoryOpen]);
 
   useEffect(() => {
-    const audio = gameOverAudioRef.current;
-    if (audio && !audio.paused) {
-      audio.volume = settings.musicMuted ? 0 : settings.music / 100;
-    }
+    const volume = settings.musicMuted ? 0 : settings.music / 100;
+    const gameOver = gameOverAudioRef.current;
+    if (gameOver && !gameOver.paused) gameOver.volume = volume;
+    const victory = victoryAudioRef.current;
+    if (victory && !victory.paused) victory.volume = volume;
   }, [settings.music, settings.musicMuted]);
 
   const handleBootComplete = () => {
@@ -408,9 +436,11 @@ const AppContent: React.FC = () => {
     if (endingKey === 'total') {
       stopGameOverAudio();
       pauseBackgroundMusic();
+      playVictoryAudio();
       setIsVictoryOpen(true);
       setIsDefeatOpen(false);
     } else {
+      stopVictoryAudio();
       pauseBackgroundMusic();
       playGameOverAudio();
       setIsVictoryOpen(false);
@@ -431,6 +461,7 @@ const AppContent: React.FC = () => {
 
   const handleRestart = () => {
     stopGameOverAudio();
+    stopVictoryAudio();
     startBackgroundMusic();
     setDeck(shuffle(EV));
     setVistas(new Set());
@@ -553,6 +584,7 @@ const AppContent: React.FC = () => {
           <DetectiveVictoryModal
             isOpen={isVictoryOpen}
             onReview={() => {
+              stopVictoryAudio();
               setIsVictoryOpen(false);
               startBackgroundMusic();
             }}
