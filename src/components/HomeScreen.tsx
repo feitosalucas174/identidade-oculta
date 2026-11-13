@@ -66,6 +66,7 @@ const CREW: CrewMember[] = [
     nome: 'Gabriel Elias',
     cargo: 'Editor',
     foto: `${BASE_URL}assets/aistudio/9_467f2335.jpg`,
+    animacao: 'gabriel_elias_editor.webp',
   },
   {
     nome: 'Marcello Araújo',
