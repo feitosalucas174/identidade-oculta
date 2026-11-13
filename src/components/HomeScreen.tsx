@@ -229,19 +229,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           </label>
                           <span className="font-mono-retro text-[12px] text-[#7DD5D8] tabular-nums">{settings[key]}%</span>
                         </div>
-                        <input
-                          id={`audio-setting-${key}`}
-                          type="range"
-                          min={key === 'voices' ? 40 : 0}
-                          max={100}
-                          step={1}
-                          value={settings[key]}
-                          onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
-                          onInput={(event) => setVolume(key, Number(event.currentTarget.value))}
-                          className="audio-range w-full cursor-pointer"
-                        />
+                        <div className="audio-range-wrap">
+                          <input
+                            id={`audio-setting-${key}`}
+                            type="range"
+                            min={key === 'voices' ? 40 : 0}
+                            max={100}
+                            step={1}
+                            value={settings[key]}
+                            onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
+                            onInput={(event) => setVolume(key, Number(event.currentTarget.value))}
+                            className="audio-range cursor-pointer"
+                          />
+                        </div>
                         {(key === 'effects' || key === 'music') && (
-                          <label className="mt-2 inline-flex min-h-[40px] items-center gap-2.5 font-mono-retro text-[10px] text-[#C7C7D2] cursor-pointer select-none">
+                          <label className="audio-mute-option mt-2 flex min-h-[42px] items-center gap-3 rounded-[9px] border border-[#303541] bg-[#171a20] px-3 font-mono-retro text-[10px] leading-relaxed text-[#D4D5DE] cursor-pointer select-none transition-colors hover:border-[#7DD5D8]/70 hover:bg-[#1b2027]">
                             <input
                               type="checkbox"
                               checked={key === 'effects' ? settings.effectsMuted : settings.musicMuted}
