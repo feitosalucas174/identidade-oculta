@@ -85,7 +85,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [homeTab, setHomeTab] = useState<'intro' | 'how' | 'alice'>('intro');
   const [activeCrewMember, setActiveCrewMember] = useState<CrewMember | null>(null);
-  useScrollLock(Boolean(activeCrewMember));
+  useScrollLock(Boolean(activeCrewMember) || isAudioSettingsOpen);
 
   useEffect(() => {
     if (!activeCrewMember) return;
@@ -180,69 +180,92 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               )}
               <button
                 type="button"
-                onClick={() => setIsAudioSettingsOpen((open) => !open)}
+                onClick={() => setIsAudioSettingsOpen(true)}
                 aria-expanded={isAudioSettingsOpen}
                 className="w-full max-w-[300px] min-h-[42px] px-4 py-2 rounded-[10px] bg-[#17191e] text-[#C7C7D2] border border-[#343744] font-mono-retro text-[11px] uppercase tracking-[0.08em] cursor-pointer hover:border-[#7DD5D8] hover:text-[#7DD5D8] transition-colors flex items-center justify-center gap-2"
               >
                 <Settings2 className="w-4 h-4" />
-                {isAudioSettingsOpen ? 'Fechar configurações de áudio' : 'Configurações de áudio'}
+                Configurações de áudio
               </button>
 
               {isAudioSettingsOpen && (
-                <section
-                  aria-label="Configurações de áudio"
-                  className="w-full max-w-[360px] mt-1 rounded-[12px] border border-[#343744] bg-[#101216] p-4 text-left shadow-inner"
+                <div
+                  className="fixed inset-0 z-[1300] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-6"
+                  onClick={() => setIsAudioSettingsOpen(false)}
+                  role="presentation"
                 >
-                  <div className="flex items-center justify-between border-b border-[#2a2d36] pb-2 mb-3">
-                    <h2 className="font-mono-retro text-[11px] uppercase tracking-[0.12em] text-[#7DD5D8] font-bold">
-                      Mixagem de áudio
-                    </h2>
-                    <span className="font-mono-retro text-[9px] text-[#777d89]">SALVO NESTE NAVEGADOR</span>
-                  </div>
-
-                  {([
-                    { key: 'effects', label: 'Efeitos sonoros', description: 'Sons de interface e ações', icon: Volume2 },
-                    { key: 'music', label: 'Trilha sonora', description: 'Música de fundo da investigação', icon: Music2 },
-                    { key: 'voices', label: 'Vozes e diálogos', description: 'Gravações e leitura falada', icon: MessageCircle },
-                  ] as { key: AudioCategory; label: string; description: string; icon: typeof Volume2 }[]).map(({ key, label, description, icon: Icon }) => (
-                    <div key={key} className="py-2.5 border-b border-[#242730] last:border-b-0">
-                      <div className="flex items-center justify-between gap-3 mb-1.5">
-                        <label htmlFor={`audio-setting-${key}`} className="flex items-center gap-2 text-[11px] text-[#F2EAE0] font-bold">
-                          <Icon className="w-4 h-4 text-[#D4AF37]" />
-                          {label}
-                        </label>
-                        <span className="font-mono-retro text-[11px] text-[#7DD5D8] tabular-nums">{settings[key]}%</span>
+                  <section
+                    aria-label="Configurações de áudio"
+                    aria-modal="true"
+                    role="dialog"
+                    className="w-full max-w-[420px] max-h-[min(88dvh,680px)] overflow-y-auto overscroll-contain rounded-[14px] border border-[#343744] bg-[#101216] p-4 text-left shadow-[0_18px_60px_rgba(0,0,0,0.8)]"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-between gap-3 border-b border-[#2a2d36] pb-3 mb-3">
+                      <div>
+                        <h2 className="font-mono-retro text-[12px] uppercase tracking-[0.12em] text-[#7DD5D8] font-bold">
+                          Mixagem de áudio
+                        </h2>
+                        <span className="font-mono-retro text-[9px] text-[#777d89]">SALVO NESTE NAVEGADOR</span>
                       </div>
-                      <input
-                        id={`audio-setting-${key}`}
-                        type="range"
-                        min={key === 'voices' ? 40 : 0}
-                        max={100}
-                        step={1}
-                        value={settings[key]}
-                        onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
-                        className="audio-range w-full accent-[#7DD5D8] cursor-pointer"
-                      />
-                      {(key === 'effects' || key === 'music') && (
-                        <label className="mt-2 inline-flex min-h-[36px] items-center gap-2.5 font-mono-retro text-[10px] text-[#C7C7D2] cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={key === 'effects' ? settings.effectsMuted : settings.musicMuted}
-                            onChange={(event) => setMuted(key, event.currentTarget.checked)}
-                            className="audio-mute-checkbox"
-                          />
-                          {key === 'effects' ? 'Silenciar todos os efeitos sonoros' : 'Silenciar trilha sonora do jogo'}
-                        </label>
-                      )}
-                      {key === 'voices' && (
-                        <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">Mínimo permitido: 40%</p>
-                      )}
-                      <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">{description}</p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAudioSettingsOpen(false)}
+                        aria-label="Fechar configurações de áudio"
+                        className="w-10 h-10 flex-shrink-0 rounded-full border border-[#704040] bg-[#3A1010] text-white text-[22px] leading-none"
+                      >×</button>
                     </div>
-                  ))}
-                </section>
+
+                    {([
+                      { key: 'effects', label: 'Efeitos sonoros', description: 'Sons de interface e ações', icon: Volume2 },
+                      { key: 'music', label: 'Trilha sonora', description: 'Música de fundo da investigação', icon: Music2 },
+                      { key: 'voices', label: 'Vozes e diálogos', description: 'Gravações e leitura falada', icon: MessageCircle },
+                    ] as { key: AudioCategory; label: string; description: string; icon: typeof Volume2 }[]).map(({ key, label, description, icon: Icon }) => (
+                      <div key={key} className="py-3 border-b border-[#242730] last:border-b-0">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <label htmlFor={`audio-setting-${key}`} className="flex items-center gap-2 text-[12px] text-[#F2EAE0] font-bold">
+                            <Icon className="w-4 h-4 text-[#D4AF37]" />
+                            {label}
+                          </label>
+                          <span className="font-mono-retro text-[12px] text-[#7DD5D8] tabular-nums">{settings[key]}%</span>
+                        </div>
+                        <input
+                          id={`audio-setting-${key}`}
+                          type="range"
+                          min={key === 'voices' ? 40 : 0}
+                          max={100}
+                          step={1}
+                          value={settings[key]}
+                          onChange={(event) => setVolume(key, Number(event.currentTarget.value))}
+                          onInput={(event) => setVolume(key, Number(event.currentTarget.value))}
+                          className="audio-range w-full cursor-pointer"
+                        />
+                        {(key === 'effects' || key === 'music') && (
+                          <label className="mt-2 inline-flex min-h-[40px] items-center gap-2.5 font-mono-retro text-[10px] text-[#C7C7D2] cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={key === 'effects' ? settings.effectsMuted : settings.musicMuted}
+                              onChange={(event) => setMuted(key, event.currentTarget.checked)}
+                              className="audio-mute-checkbox"
+                            />
+                            {key === 'effects' ? 'Silenciar todos os efeitos sonoros' : 'Silenciar trilha sonora do jogo'}
+                          </label>
+                        )}
+                        {key === 'voices' && (
+                          <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">Mínimo permitido: 40%</p>
+                        )}
+                        <p className="font-mono-retro text-[9px] text-[#777d89] mt-1">{description}</p>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setIsAudioSettingsOpen(false)}
+                      className="mt-4 w-full min-h-[44px] rounded-[9px] bg-[#D94040] text-white font-mono-retro text-[11px] uppercase tracking-[0.1em]"
+                    >Fechar</button>
+                  </section>
+                </div>
               )}
-            </div>
+</div>
           </div>
         )}
 
