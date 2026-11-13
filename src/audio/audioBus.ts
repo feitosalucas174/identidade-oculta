@@ -96,8 +96,9 @@ export function setAudioChannelVolume(channel: AudioChannel, volume: number): vo
   if (!context || !node || context.state === 'closed') return;
 
   const now = context.currentTime;
+  // Apply immediately while the user is dragging an iOS Safari range control.
   node.gain.cancelScheduledValues(now);
-  node.gain.setTargetAtTime(safeVolume, now, 0.015);
+  node.gain.setValueAtTime(safeVolume, now);
 }
 
 export function resumeAudioOutput(): Promise<void> {
