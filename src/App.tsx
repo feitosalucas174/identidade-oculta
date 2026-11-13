@@ -120,7 +120,7 @@ const AppContent: React.FC = () => {
         musicFadeTimerRef.current = null;
       }
     };
-  }, [settings.music, isAudioFocused]);
+  }, [settings.music, settings.musicMuted, isAudioFocused]);
 
   useEffect(() => {
     return () => {
