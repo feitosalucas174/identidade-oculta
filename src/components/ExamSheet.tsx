@@ -335,7 +335,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                 }}
                 onEnded={() => {
                   setIsPlaying(false);
-                  setAudioFocus(false);
+                  endAudioFocus();
                   const audio = audioRef.current;
                   if (audio) {
                     setElapsed(audio.duration);
@@ -345,7 +345,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                 onError={() => {
                   console.error(`Falha ao carregar o arquivo de áudio: ${audioSrc}`);
                   setIsPlaying(false);
-                  setAudioFocus(false);
+                  endAudioFocus();
                 }}
                 className="hidden"
               />
