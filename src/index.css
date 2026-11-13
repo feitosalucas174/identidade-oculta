@@ -228,7 +228,8 @@ body {
   min-height: 42px;
   margin: 0;
   padding: 0;
-  touch-action: pan-y;
+  /* Let iOS Safari handle the native range gesture instead of reserving it for page panning. */
+  touch-action: auto;
   -webkit-user-select: none;
   pointer-events: auto;
   user-select: none;
