@@ -34,9 +34,10 @@ import { DetectiveDefeatModal } from './components/DetectiveDefeatModal';
 import { DetectiveVictoryModal } from './components/DetectiveVictoryModal';
 import { RetroBootScreen } from './components/RetroBootScreen';
 import { AudioSettingsProvider, useAudioSettings } from './contexts/AudioSettingsContext';
+import { connectAudioElement, resumeAudioOutput } from './audio/audioBus';
 
 const AppContent: React.FC = () => {
-  const { settings, isAudioFocused } = useAudioSettings();
+  const { settings } = useAudioSettings();
   // Game state
   const [isBooting, setIsBooting] = useState(true);
   const [deck, setDeck] = useState(() => shuffle(EV));
@@ -63,7 +64,6 @@ const AppContent: React.FC = () => {
   const gameOverAudioRef = useRef<HTMLAudioElement | null>(null);
   const victoryAudioRef = useRef<HTMLAudioElement | null>(null);
   const musicLoopTimerRef = useRef<number | null>(null);
-  const musicFadeTimerRef = useRef<number | null>(null);
   const musicPausedForEvidenceRef = useRef(false);
 
   const stopGameOverAudio = () => {
@@ -91,7 +91,8 @@ const AppContent: React.FC = () => {
 
     audio.pause();
     audio.currentTime = 0;
-    audio.volume = settings.musicMuted ? 0 : settings.music / 100;
+    connectAudioElement(audio, 'music');
+    void resumeAudioOutput();
     // Start immediately from the successful submit interaction for mobile browser compatibility.
     void audio.play().catch(() => {
       // Playback can still be denied by browser/device autoplay restrictions.
@@ -109,7 +110,8 @@ const AppContent: React.FC = () => {
 
     audio.pause();
     audio.currentTime = 0;
-    audio.volume = settings.musicMuted ? 0 : settings.music / 100;
+    connectAudioElement(audio, 'music');
+    void resumeAudioOutput();
     // Called directly from the submit click so mobile browsers retain user activation.
     void audio.play().catch(() => {
       // Playback can still be denied by browser/device autoplay restrictions.
@@ -118,9 +120,29 @@ const AppContent: React.FC = () => {
 
   const pauseBackgroundMusic = () => {
     const music = backgroundMusicRef.current;
+    musicPausedForEvidenceRef.current = false;
     if (!music) return;
     music.pause();
     music.currentTime = 0;
+  };
+
+  const pauseMusicForEvidence = () => {
+    const music = backgroundMusicRef.current;
+    if (!music || music.paused) return;
+    musicPausedForEvidenceRef.current = true;
+    music.pause();
+  };
+
+  const resumeMusicAfterEvidence = () => {
+    const music = backgroundMusicRef.current;
+    if (!musicPausedForEvidenceRef.current) return;
+    musicPausedForEvidenceRef.current = false;
+
+    if (!music || !music.paused || isDefeatOpen || isVictoryOpen) return;
+    void resumeAudioOutput();
+    void music.play().catch(() => {
+      // A subsequent user interaction can retry if the browser blocks playback.
+    });
   };
 
   const startBackgroundMusic = () => {
@@ -128,8 +150,8 @@ const AppContent: React.FC = () => {
     if (!music) {
       music = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/trilha_principal_10d9fdf3.wav`);
       music.loop = false;
-      music.volume = settings.musicMuted ? 0 : settings.music / 100;
       music.preload = 'auto';
+      connectAudioElement(music, 'music');
       backgroundMusicRef.current = music;
 
       musicLoopTimerRef.current = window.setInterval(() => {
@@ -141,69 +163,12 @@ const AppContent: React.FC = () => {
     }
 
     if (music.paused) {
+      void resumeAudioOutput();
       void music.play().catch(() => {
         // Se o navegador ainda bloquear a reprodução, a próxima interação tenta novamente.
       });
     }
   };
-
-  useEffect(() => {
-    const music = backgroundMusicRef.current;
-    if (!music) return;
-
-    if (musicFadeTimerRef.current !== null) {
-      window.clearInterval(musicFadeTimerRef.current);
-      musicFadeTimerRef.current = null;
-    }
-
-    // Depoimentos e leitura em voz alta têm prioridade: pause the soundtrack
-    // completely, preserving currentTime so it resumes at the exact same point.
-    if (isAudioFocused) {
-      if (!music.paused) {
-        musicPausedForEvidenceRef.current = true;
-        music.pause();
-      }
-      return;
-    }
-
-    if (musicPausedForEvidenceRef.current) {
-      musicPausedForEvidenceRef.current = false;
-      if (!isDefeatOpen && !isVictoryOpen) {
-        music.volume = settings.musicMuted ? 0 : settings.music / 100;
-        void music.play().catch(() => {
-          // The browser may require another user interaction to resume playback.
-        });
-      }
-      return;
-    }
-
-    if (music.paused) return;
-
-    const startVolume = music.volume;
-    const targetVolume = settings.musicMuted ? 0 : settings.music / 100;
-    const fadeDuration = 250;
-    const startedAt = performance.now();
-
-    const updateFade = () => {
-      const progress = Math.min((performance.now() - startedAt) / fadeDuration, 1);
-      music.volume = Math.max(0, Math.min(1, startVolume + (targetVolume - startVolume) * progress));
-
-      if (progress >= 1 && musicFadeTimerRef.current !== null) {
-        window.clearInterval(musicFadeTimerRef.current);
-        musicFadeTimerRef.current = null;
-      }
-    };
-
-    updateFade();
-    musicFadeTimerRef.current = window.setInterval(updateFade, 20);
-
-    return () => {
-      if (musicFadeTimerRef.current !== null) {
-        window.clearInterval(musicFadeTimerRef.current);
-        musicFadeTimerRef.current = null;
-      }
-    };
-  }, [settings.music, settings.musicMuted, isAudioFocused, isDefeatOpen, isVictoryOpen]);
 
   useEffect(() => {
     return () => {
@@ -217,10 +182,6 @@ const AppContent: React.FC = () => {
       if (musicLoopTimerRef.current !== null) {
         window.clearInterval(musicLoopTimerRef.current);
         musicLoopTimerRef.current = null;
-      }
-      if (musicFadeTimerRef.current !== null) {
-        window.clearInterval(musicFadeTimerRef.current);
-        musicFadeTimerRef.current = null;
       }
       backgroundMusicRef.current = null;
     };
@@ -594,6 +555,10 @@ const AppContent: React.FC = () => {
             onAddToSeq={handleAddToSeq}
             onMoveSeq={handleMoveSeq}
             onRemoveFromSeq={handleRemoveFromSeq}
+            onAudioFocusChange={(active) => {
+              if (active) pauseMusicForEvidence();
+              else resumeMusicAfterEvidence();
+            }}
             onOpenRetroSheet={() => setIsRetroSheetOpen(true)}
           />
 
