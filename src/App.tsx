@@ -60,6 +60,7 @@ const AppContent: React.FC = () => {
   // A trilha volta ao início antes do silêncio gravado no fim do WAV (23,26 s).
   // Isso mantém o loop contínuo sem precisar alterar o arquivo original.
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const gameOverAudioRef = useRef<HTMLAudioElement | null>(null);
   const musicLoopTimerRef = useRef<number | null>(null);
   const musicFadeTimerRef = useRef<number | null>(null);
 
@@ -129,6 +130,11 @@ const AppContent: React.FC = () => {
         music.pause();
         music.currentTime = 0;
       }
+      const gameOver = gameOverAudioRef.current;
+      if (gameOver) {
+        gameOver.pause();
+        gameOver.currentTime = 0;
+      }
       if (musicLoopTimerRef.current !== null) {
         window.clearInterval(musicLoopTimerRef.current);
         musicLoopTimerRef.current = null;
@@ -148,6 +154,31 @@ const AppContent: React.FC = () => {
       music.pause();
       music.currentTime = 0;
     }
+
+    if (isDefeatOpen) {
+      if (!gameOverAudioRef.current) {
+        gameOverAudioRef.current = new Audio(
+          `${import.meta.env.BASE_URL}assets/aistudio/game_over.wav`
+        );
+        gameOverAudioRef.current.preload = 'auto';
+        gameOverAudioRef.current.loop = false;
+      }
+      const gameOver = gameOverAudioRef.current;
+      gameOver.pause();
+      gameOver.currentTime = 0;
+      gameOver.volume = settings.musicMuted ? 0 : settings.music / 100;
+      void gameOver.play().catch(() => {
+        // O navegador pode bloquear áudio até uma interação do usuário.
+      });
+    }
+
+    return () => {
+      const gameOver = gameOverAudioRef.current;
+      if (gameOver) {
+        gameOver.pause();
+        gameOver.currentTime = 0;
+      }
+    };
   }, [isDefeatOpen, isVictoryOpen]);
 
   const handleBootComplete = () => {
