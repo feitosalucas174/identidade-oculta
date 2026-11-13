@@ -64,6 +64,38 @@ const AppContent: React.FC = () => {
   const musicLoopTimerRef = useRef<number | null>(null);
   const musicFadeTimerRef = useRef<number | null>(null);
 
+  const stopGameOverAudio = () => {
+    const audio = gameOverAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  };
+
+  const playGameOverAudio = () => {
+    let audio = gameOverAudioRef.current;
+    if (!audio) {
+      audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/game_over.wav`);
+      audio.preload = 'auto';
+      audio.loop = false;
+      gameOverAudioRef.current = audio;
+    }
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = settings.musicMuted ? 0 : settings.music / 100;
+    // Called directly from the submit click so mobile browsers retain user activation.
+    void audio.play().catch(() => {
+      // Playback can still be denied by browser/device autoplay restrictions.
+    });
+  };
+
+  const pauseBackgroundMusic = () => {
+    const music = backgroundMusicRef.current;
+    if (!music) return;
+    music.pause();
+    music.currentTime = 0;
+  };
+
   const startBackgroundMusic = () => {
     let music = backgroundMusicRef.current;
     if (!music) {
@@ -130,11 +162,7 @@ const AppContent: React.FC = () => {
         music.pause();
         music.currentTime = 0;
       }
-      const gameOver = gameOverAudioRef.current;
-      if (gameOver) {
-        gameOver.pause();
-        gameOver.currentTime = 0;
-      }
+      stopGameOverAudio();
       if (musicLoopTimerRef.current !== null) {
         window.clearInterval(musicLoopTimerRef.current);
         musicLoopTimerRef.current = null;
@@ -148,38 +176,17 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isDefeatOpen && !isVictoryOpen) return;
-    const music = backgroundMusicRef.current;
-    if (music) {
-      music.pause();
-      music.currentTime = 0;
+    if (isDefeatOpen || isVictoryOpen) {
+      pauseBackgroundMusic();
     }
-
-    if (isDefeatOpen) {
-      if (!gameOverAudioRef.current) {
-        gameOverAudioRef.current = new Audio(
-          `${import.meta.env.BASE_URL}assets/aistudio/game_over.wav`
-        );
-        gameOverAudioRef.current.preload = 'auto';
-        gameOverAudioRef.current.loop = false;
-      }
-      const gameOver = gameOverAudioRef.current;
-      gameOver.pause();
-      gameOver.currentTime = 0;
-      gameOver.volume = settings.musicMuted ? 0 : settings.music / 100;
-      void gameOver.play().catch(() => {
-        // O navegador pode bloquear áudio até uma interação do usuário.
-      });
-    }
-
-    return () => {
-      const gameOver = gameOverAudioRef.current;
-      if (gameOver) {
-        gameOver.pause();
-        gameOver.currentTime = 0;
-      }
-    };
   }, [isDefeatOpen, isVictoryOpen]);
+
+  useEffect(() => {
+    const audio = gameOverAudioRef.current;
+    if (audio && !audio.paused) {
+      audio.volume = settings.musicMuted ? 0 : settings.music / 100;
+    }
+  }, [settings.music, settings.musicMuted]);
 
   const handleBootComplete = () => {
     startBackgroundMusic();
@@ -399,15 +406,20 @@ const AppContent: React.FC = () => {
 
     // Show victory or defeat modal depending on result
     if (endingKey === 'total') {
+      stopGameOverAudio();
+      pauseBackgroundMusic();
       setIsVictoryOpen(true);
       setIsDefeatOpen(false);
     } else {
+      pauseBackgroundMusic();
+      playGameOverAudio();
       setIsVictoryOpen(false);
       setIsDefeatOpen(true);
     }
   };
 
   const handleReviewFromDefeat = () => {
+    stopGameOverAudio();
     setIsDefeatOpen(false);
     startBackgroundMusic();
   };
@@ -418,6 +430,7 @@ const AppContent: React.FC = () => {
   };
 
   const handleRestart = () => {
+    stopGameOverAudio();
     startBackgroundMusic();
     setDeck(shuffle(EV));
     setVistas(new Set());
