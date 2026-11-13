@@ -228,8 +228,9 @@ body {
   min-height: 42px;
   margin: 0;
   padding: 0;
-  touch-action: none;
+  touch-action: pan-y;
   -webkit-user-select: none;
+  pointer-events: auto;
   user-select: none;
   -webkit-appearance: none;
   appearance: none;
