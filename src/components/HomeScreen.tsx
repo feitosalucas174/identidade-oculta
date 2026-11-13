@@ -37,6 +37,7 @@ const CREW: CrewMember[] = [
     nome: 'Lucas Feitosa',
     cargo: 'Diretor de Elenco e Roteirista',
     foto: `${BASE_URL}assets/aistudio/4_88dd4e00.jpg`,
+    animacao: 'lucas_feitosa.webp',
   },
   {
     nome: 'Lucas Batista',
