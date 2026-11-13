@@ -4,6 +4,7 @@ import { formatTime, PHOTOS, SVGS } from '../data/evidence';
 import { Mic, Volume2, Pause, RotateCcw, Disc, FileText } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useAudioSettings } from '../contexts/AudioSettingsContext';
+import { connectAudioElement, resumeAudioOutput } from '../audio/audioBus';
 
 // Associe aqui os arquivos reais de áudio às evidências correspondentes.
 // O BASE_URL mantém o caminho correto tanto no GitHub Pages quanto em outros deploys Vite.
@@ -17,19 +18,6 @@ const EVIDENCE_AUDIO: Record<string, string> = {
   'E-20': `${import.meta.env.BASE_URL}assets/aistudio/EV20.wav`,
 };
 
-type AudioPlatform = 'mobile' | 'tablet' | 'desktop';
-const AUDIO_PROFILE_GAIN: Record<AudioPlatform, number> = { mobile: 1.12, tablet: 1.32, desktop: 1.58 };
-const audioSourceNodes = new WeakMap<HTMLAudioElement, MediaElementAudioSourceNode>();
-
-function detectAudioPlatform(): AudioPlatform {
-  if (typeof window === 'undefined') return 'desktop';
-  const ua = navigator.userAgent || '';
-  if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua))) return 'tablet';
-  if (/Android/i.test(ua) && !/Mobile/i.test(ua)) return 'tablet';
-  if (/Android|iPhone|iPod|Mobile/i.test(ua)) return 'mobile';
-  return 'desktop';
-}
-
 interface ExamSheetProps {
   evidence: Evidence | null;
   sequence: string[];
@@ -39,6 +27,7 @@ interface ExamSheetProps {
   onAddToSeq: (evId: string) => void;
   onMoveSeq: (evId: string, dir: number) => void;
   onRemoveFromSeq: (evId: string) => void;
+  onAudioFocusChange?: (active: boolean) => void;
   onOpenRetroSheet?: () => void;
 }
 
@@ -51,75 +40,47 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
   onAddToSeq,
   onMoveSeq,
   onRemoveFromSeq,
+  onAudioFocusChange,
   onOpenRetroSheet,
 }) => {
   const { settings, setAudioFocus } = useAudioSettings();
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
-  const [audioPlatform, setAudioPlatform] = useState<AudioPlatform>(() => {
-    if (typeof window === 'undefined') return 'desktop';
-    try {
-      const saved = window.localStorage.getItem('identidade-oculta-audio-platform');
-      if (saved === 'mobile' || saved === 'tablet' || saved === 'desktop') return saved;
-    } catch { /* storage may be unavailable */ }
-    return detectAudioPlatform();
-  });
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
+  const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
   const audioSrc = evidence ? EVIDENCE_AUDIO[evidence.id] : undefined;
 
-  const applyAudioProfile = (platform: AudioPlatform) => {
-    const voiceGain = settings.voices / 100;
-    if (gainRef.current && audioContextRef.current) {
-      // Com Web Audio ativo, o volume HTML fica em 100%; o ganho é controlado
-      // exclusivamente pelo GainNode para não aplicar a regulagem duas vezes.
-      if (audioRef.current) audioRef.current.volume = 1;
-      gainRef.current.gain.setTargetAtTime(AUDIO_PROFILE_GAIN[platform] * voiceGain, audioContextRef.current.currentTime, 0.08);
-    } else if (audioRef.current) {
-      audioRef.current.volume = voiceGain;
+  const prepareAudioOutput = () => {
+    const audio = audioRef.current;
+    if (!audio || typeof window === 'undefined') return Promise.resolve();
+
+    const context = connectAudioElement(audio, 'voices');
+    if (!context) {
+      // Fallback for browsers without Web Audio support.
+      audio.volume = settings.voices / 100;
+      return Promise.resolve();
     }
+    return resumeAudioOutput();
   };
 
-  const prepareAudioOutput = async () => {
-    const audio = audioRef.current;
-    if (!audio || typeof window === 'undefined') return;
-    const voiceGain = settings.voices / 100;
-    const AudioContextCtor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextCtor) { audio.volume = voiceGain; return; }
-    try {
-      const context = audioContextRef.current || new AudioContextCtor();
-      audioContextRef.current = context;
-      if (!audioSourceNodes.has(audio)) {
-        const source = context.createMediaElementSource(audio);
-        const gain = gainRef.current || context.createGain();
-        const compressor = context.createDynamicsCompressor();
-        gainRef.current = gain;
-        gain.gain.value = AUDIO_PROFILE_GAIN[audioPlatform] * voiceGain;
-        compressor.threshold.value = -18;
-        compressor.knee.value = 18;
-        compressor.ratio.value = 4;
-        compressor.attack.value = 0.006;
-        compressor.release.value = 0.22;
-        source.connect(gain);
-        gain.connect(compressor);
-        compressor.connect(context.destination);
-        audioSourceNodes.set(audio, source);
-      }
-      if (context.state === 'suspended') await context.resume();
-      applyAudioProfile(audioPlatform);
-    } catch (error) {
-      console.warn('Processamento de áudio indisponível; usando saída padrão.', error);
-      audio.volume = voiceGain;
-    }
+  const beginAudioFocus = () => {
+    setAudioFocus(true);
+    onAudioFocusChange?.(true);
+  };
+
+  const endAudioFocus = () => {
+    setAudioFocus(false);
+    onAudioFocusChange?.(false);
   };
 
   useEffect(() => {
-    applyAudioProfile(audioPlatform);
-  }, [settings.voices, audioPlatform]);
+    if (activeUtteranceRef.current) {
+      activeUtteranceRef.current.volume = settings.voices / 100;
+    }
+  }, [settings.voices]);
 
   // Rigid scroll lock on mobile & desktop
   useScrollLock(isOpen);
@@ -139,7 +100,8 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
-    setAudioFocus(false);
+    activeUtteranceRef.current = null;
+    endAudioFocus();
     if (timerRef.current !== null) {
       window.clearInterval(timerRef.current);
       timerRef.current = null;
@@ -162,6 +124,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
     const utterance = new SpeechSynthesisUtterance(evidence.desc);
     utterance.lang = 'pt-BR';
     utterance.volume = settings.voices / 100;
+    activeUtteranceRef.current = utterance;
     utterance.rate = 0.88;
     utterance.pitch = 0.92;
 
@@ -177,7 +140,8 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
     utterance.onend = () => {
       setIsPlaying(false);
-      setAudioFocus(false);
+      activeUtteranceRef.current = null;
+      endAudioFocus();
       if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
         timerRef.current = null;
@@ -187,17 +151,17 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
 
     utterance.onerror = () => {
       setIsPlaying(false);
-      setAudioFocus(false);
+      activeUtteranceRef.current = null;
+      endAudioFocus();
       if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
         timerRef.current = null;
       }
     };
 
-    void (async () => {
-      await setAudioFocus(true);
-      window.speechSynthesis.speak(utterance);
-    })();
+    beginAudioFocus();
+    // Start inside the user gesture; do not yield to a timer first.
+    window.speechSynthesis.speak(utterance);
   };
 
   const toggleAudio = () => {
@@ -208,14 +172,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
         audioRef.current.pause();
       } else {
         if (audioRef.current.ended) audioRef.current.currentTime = 0;
-        void (async () => {
-          await setAudioFocus(true);
-          await prepareAudioOutput();
-          await audioRef.current?.play();
-        })().catch((error) => {
+        beginAudioFocus();
+        const outputReady = prepareAudioOutput();
+        const playback = audioRef.current.play();
+        void Promise.all([outputReady, playback]).catch((error) => {
           console.error('Não foi possível reproduzir o áudio da evidência:', error);
           setIsPlaying(false);
-          setAudioFocus(false);
+          endAudioFocus();
         });
       }
       return;
@@ -233,14 +196,13 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
     if (audioSrc && audioRef.current) {
       audioRef.current.currentTime = 0;
       setElapsed(0);
-      void (async () => {
-        await setAudioFocus(true);
-        await prepareAudioOutput();
-        await audioRef.current?.play();
-      })().catch((error) => {
+      beginAudioFocus();
+      const outputReady = prepareAudioOutput();
+      const playback = audioRef.current.play();
+      void Promise.all([outputReady, playback]).catch((error) => {
         console.error('Não foi possível reiniciar o áudio da evidência:', error);
         setIsPlaying(false);
-        setAudioFocus(false);
+        endAudioFocus();
       });
       return;
     }
@@ -369,7 +331,7 @@ export const ExamSheet: React.FC<ExamSheetProps> = ({
                 }}
                 onPause={() => {
                   setIsPlaying(false);
-                  setAudioFocus(false);
+                  endAudioFocus();
                 }}
                 onEnded={() => {
                   setIsPlaying(false);
