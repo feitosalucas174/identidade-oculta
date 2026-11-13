@@ -6,11 +6,14 @@ export interface AudioSettings {
   effects: number;
   music: number;
   voices: number;
+  effectsMuted: boolean;
+  musicMuted: boolean;
 }
 
 interface AudioSettingsContextValue {
   settings: AudioSettings;
   setVolume: (category: AudioCategory, value: number) => void;
+  setMuted: (category: 'effects' | 'music', muted: boolean) => void;
   isAudioFocused: boolean;
   setAudioFocus: (active: boolean) => Promise<void>;
 }
@@ -20,6 +23,8 @@ const DEFAULT_SETTINGS: AudioSettings = {
   effects: 80,
   music: 24,
   voices: 100,
+  effectsMuted: false,
+  musicMuted: false,
 };
 
 const clampVolume = (value: unknown, fallback: number): number =>
@@ -35,7 +40,9 @@ function loadSavedSettings(): AudioSettings {
     return {
       effects: clampVolume(saved.effects, DEFAULT_SETTINGS.effects),
       music: clampVolume(saved.music, DEFAULT_SETTINGS.music),
-      voices: clampVolume(saved.voices, DEFAULT_SETTINGS.voices),
+      voices: Math.max(40, clampVolume(saved.voices, DEFAULT_SETTINGS.voices)),
+      effectsMuted: Boolean(saved.effectsMuted),
+      musicMuted: Boolean(saved.musicMuted),
     };
   } catch {
     return DEFAULT_SETTINGS;
@@ -51,8 +58,12 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
   const setVolume = useCallback((category: AudioCategory, value: number) => {
     setSettings((current) => ({
       ...current,
-      [category]: clampVolume(value, current[category]),
+      [category]: category === 'voices' ? Math.max(40, clampVolume(value, current[category])) : clampVolume(value, current[category]),
     }));
+  }, []);
+
+  const setMuted = useCallback((category: 'effects' | 'music', muted: boolean) => {
+    setSettings((current) => ({ ...current, [category === 'effects' ? 'effectsMuted' : 'musicMuted']: muted }));
   }, []);
 
   const setAudioFocus = useCallback((active: boolean): Promise<void> => {
@@ -75,7 +86,7 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
   }, [settings]);
 
   return (
-    <AudioSettingsContext.Provider value={{ settings, setVolume, isAudioFocused, setAudioFocus }}>
+    <AudioSettingsContext.Provider value={{ settings, setVolume, setMuted, isAudioFocused, setAudioFocus }}>
       {children}
     </AudioSettingsContext.Provider>
   );
