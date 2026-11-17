@@ -16,6 +16,7 @@ interface AudioSettingsContextValue {
   setVolume: (category: AudioCategory, value: number) => void;
   setMuted: (category: 'effects' | 'music', muted: boolean) => void;
   isAudioFocused: boolean;
+  setNarrationActive: (active: boolean) => void;
   setAudioFocus: (active: boolean) => void;
 }
 
@@ -54,6 +55,7 @@ const AudioSettingsContext = createContext<AudioSettingsContextValue | null>(nul
 
 export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<AudioSettings>(loadSavedSettings);
+  const [narrationActive, setNarrationActive] = useState(false);
   const [isAudioFocused, setIsAudioFocused] = useState(false);
 
   const setVolume = useCallback((category: AudioCategory, value: number) => {
@@ -76,7 +78,7 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
   useEffect(() => {
     // Channel gains are handled by Web Audio so mute/volume also work on
     // iOS and iPadOS, where HTMLMediaElement.volume is not reliably writable.
-    setAudioChannelVolume('music', settings.musicMuted ? 0 : settings.music / 100);
+    setAudioChannelVolume('music', settings.musicMuted ? 0 : settings.music / 100 * (narrationActive ? 0.4 : 1));
     setAudioChannelVolume('voices', settings.voices / 100);
     setAudioChannelVolume('effects', settings.effectsMuted ? 0 : settings.effects / 100);
 
@@ -85,10 +87,10 @@ export const AudioSettingsProvider: React.FC<{ children: ReactNode }> = ({ child
     } catch {
       // As configurações continuam funcionando durante a sessão se o storage estiver bloqueado.
     }
-  }, [settings]);
+  }, [settings, narrationActive]);
 
   return (
-    <AudioSettingsContext.Provider value={{ settings, setVolume, setMuted, isAudioFocused, setAudioFocus }}>
+    <AudioSettingsContext.Provider value={{ setNarrationActive, settings, setVolume, setMuted, isAudioFocused, setAudioFocus }}>
       {children}
     </AudioSettingsContext.Provider>
   );

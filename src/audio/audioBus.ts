@@ -57,6 +57,7 @@ function getChannelNode(context: AudioContext, channel: AudioChannel): GainNode 
 export function connectAudioElement(
   element: HTMLMediaElement,
   channel: AudioChannel,
+  gain = 1,
 ): AudioContext | null {
   const context = getContext();
   if (!context) return null;
@@ -72,7 +73,22 @@ export function connectAudioElement(
 
   try {
     const source = context.createMediaElementSource(element);
-    source.connect(getChannelNode(context, channel));
+    const trackGain = context.createGain();
+    trackGain.gain.value = gain;
+    source.connect(trackGain);
+    if (gain > 1) {
+      // Recorded speech can already peak near 0 dB; tame boosted peaks.
+      const limiter = context.createDynamicsCompressor();
+      limiter.threshold.value = -3;
+      limiter.knee.value = 0;
+      limiter.ratio.value = 20;
+      limiter.attack.value = 0;
+      limiter.release.value = 0.1;
+      trackGain.connect(limiter);
+      limiter.connect(getChannelNode(context, channel));
+    } else {
+      trackGain.connect(getChannelNode(context, channel));
+    }
     audioRoutes.set(element, { source, channel });
     // Once routed, leave the element at unity gain. Category gain is handled
     // by Web Audio, not HTMLMediaElement.volume.

@@ -1,3 +1,4 @@
+import { DetectiveNarration } from './DetectiveNarration';
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, RotateCcw, Trophy, Sparkles } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -130,6 +131,8 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
               DETETIVE · CASO RESOLVIDO 🥂
             </div>
           </div>
+
+          <DetectiveNarration src={`${BASE_URL}assets/audio/victory.mp3`} />
 
           <div className="flex flex-col gap-2.5 pt-1">
             <button

@@ -87,7 +87,7 @@ const AppContent: React.FC = () => {
     if (!audio) {
       audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/ganhou_jogo.wav`);
       audio.preload = 'auto';
-      audio.loop = false;
+      audio.loop = true;
       victoryAudioRef.current = audio;
     }
 
@@ -106,7 +106,7 @@ const AppContent: React.FC = () => {
     if (!audio) {
       audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/game_over.wav`);
       audio.preload = 'auto';
-      audio.loop = false;
+      audio.loop = true;
       gameOverAudioRef.current = audio;
     }
 
@@ -181,14 +181,14 @@ const AppContent: React.FC = () => {
     if (!gameOverAudioRef.current) {
       const audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/game_over.wav`);
       audio.preload = 'auto';
-      audio.loop = false;
+      audio.loop = true;
       audio.load();
       gameOverAudioRef.current = audio;
     }
     if (!victoryAudioRef.current) {
       const audio = new Audio(`${import.meta.env.BASE_URL}assets/aistudio/ganhou_jogo.wav`);
       audio.preload = 'auto';
-      audio.loop = false;
+      audio.loop = true;
       audio.load();
       victoryAudioRef.current = audio;
     }
@@ -505,10 +505,10 @@ const AppContent: React.FC = () => {
       />
 
       {/* Detective Briefing Modal on Game Start */}
-      <DetectiveBriefingModal
+      {isBriefingOpen && <DetectiveBriefingModal
         isOpen={isBriefingOpen}
         onClose={handleFinishBriefing}
-      />
+      />}
 
       {/* Main App Layout */}
       {!isHomeOpen && (

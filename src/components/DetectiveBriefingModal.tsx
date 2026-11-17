@@ -1,3 +1,4 @@
+import { DetectiveNarration } from './DetectiveNarration';
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, FastForward, Search, ShieldAlert, Sparkles } from 'lucide-react';
 
@@ -197,6 +198,8 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
               DETETIVE RESPONSÁVEL · DEPOIMENTO #{currentSlideIndex + 1}
             </div>
           </div>
+
+          <DetectiveNarration key={currentSlideIndex} src={`${BASE_URL}assets/audio/briefing-${currentSlideIndex + 1}.mp3`} />
 
           {/* Controls Bar */}
           <div className="flex items-center justify-between gap-3 pt-1">
