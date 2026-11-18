@@ -34,7 +34,7 @@ import { DetectiveDefeatModal } from './components/DetectiveDefeatModal';
 import { DetectiveVictoryModal } from './components/DetectiveVictoryModal';
 import { RetroBootScreen } from './components/RetroBootScreen';
 import { AudioSettingsProvider } from './contexts/AudioSettingsContext';
-import { connectAudioElement, resumeAudioOutput } from './audio/audioBus';
+import { connectAudioElement, resumeAudioOutput, playSequenceInsertSound } from './audio/audioBus';
 
 const AppContent: React.FC = () => {
   // Game state
@@ -307,14 +307,13 @@ const AppContent: React.FC = () => {
   };
 
   const handleAddToSeq = (evId: string) => {
-    setSequence(prev => {
-      if (prev.includes(evId)) return prev;
-      const animCycle: TimelineAnimationType[] = ['vhs', 'claquete', 'revolver', 'ampulheta', 'lupa'];
-      const nextType = animCycle[prev.length % animCycle.length];
-      setTimelineAnimType(nextType);
-      setTimelineAnimTrigger(t => t + 1);
-      return [...prev, evId];
-    });
+    if (sequence.includes(evId)) return;
+    // Play inside the tap/click, outside React's state updater.
+    playSequenceInsertSound();
+    const animCycle: TimelineAnimationType[] = ['vhs', 'claquete', 'revolver', 'ampulheta', 'lupa'];
+    setTimelineAnimType(animCycle[sequence.length % animCycle.length]);
+    setTimelineAnimTrigger(t => t + 1);
+    setSequence(prev => prev.includes(evId) ? prev : [...prev, evId]);
   };
 
   const handleRemoveFromSeq = (evId: string) => {

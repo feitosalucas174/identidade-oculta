@@ -7,11 +7,17 @@ class FakeContext {
   destination = {};
   gains: any[] = [];
   compressors: any[] = [];
+  oscillators: any[] = [];
+  createOscillator() {
+    const oscillator = { type: '', frequency: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() }, connect: vi.fn(), disconnect: vi.fn(), start: vi.fn(), stop: vi.fn() };
+    this.oscillators.push(oscillator);
+    return oscillator;
+  }
   createMediaElementSource = vi.fn(() => ({ connect: vi.fn() }));
   resume = vi.fn(async () => { this.state = 'running'; });
   constructor() { contexts.push(this); }
   createGain() {
-    const node = { gain: { value: 1, setValueAtTime: vi.fn(), cancelScheduledValues: vi.fn() }, connect: vi.fn() };
+    const node = { gain: { value: 1, setValueAtTime: vi.fn(), cancelScheduledValues: vi.fn(), exponentialRampToValueAtTime: vi.fn() }, connect: vi.fn(), disconnect: vi.fn() };
     this.gains.push(node);
     return node;
   }
@@ -52,4 +58,18 @@ it('applies reduced music volume, restores it, and clamps invalid levels', async
   expect(gain.setValueAtTime).toHaveBeenLastCalledWith(0.24, 0);
   setAudioChannelVolume('music', -1);
   expect(gain.setValueAtTime).toHaveBeenLastCalledWith(0, 0);
+});
+
+it('routes the cassette click through the muted effects channel and stops both pulses', async () => {
+  const { playSequenceInsertSound, setAudioChannelVolume } = await import('./audioBus');
+  setAudioChannelVolume('effects', 0);
+  playSequenceInsertSound();
+  const context = contexts[0];
+  expect(context.gains[0].gain.setValueAtTime).toHaveBeenCalledWith(0, 0);
+  expect(context.oscillators).toHaveLength(2);
+  expect(context.oscillators[0].stop).toHaveBeenCalledWith(0.08);
+  expect(context.oscillators[1].stop).toHaveBeenCalledWith(0.155);
+  expect(context.gains[1].connect).toHaveBeenCalledWith(context.gains[0]);
+  context.oscillators[0].onended();
+  expect(context.gains[1].disconnect).toHaveBeenCalledOnce();
 });

@@ -115,7 +115,7 @@ export const DetectiveVictoryModal: React.FC<DetectiveVictoryModalProps> = ({
               Investigação<br />Solucionada!
             </h2>
             <p className="font-mono-retro text-[12px] sm:text-[13px] text-[#c2cfcd] leading-[1.7] italic max-w-[460px]">
-              "Um brinde à verdade! Todas as evidências foram conectadas com precisão pericial e a linha do tempo do Rancho Esperança foi completamente desvendada. O mistério acabou."
+              "Um brinde à verdade! Todas as evidências foram conectadas com precisão pericial e a linha do tempo do Rancho Esperança foi completamente desvendada. O mistério acabou. Obrigado, detetive!"
             </p>
           </div>
 

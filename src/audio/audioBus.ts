@@ -125,3 +125,30 @@ export function resumeAudioOutput(): Promise<void> {
     console.warn('O navegador não permitiu reativar o áudio.', error);
   });
 }
+
+/** Short cassette-insertion click, controlled by the effects volume/mute. */
+export function playSequenceInsertSound(): void {
+  const context = getContext();
+  if (!context) return;
+  void resumeAudioOutput();
+  const channel = getChannelNode(context, 'effects');
+  const now = context.currentTime;
+  for (const delay of [0, 0.075]) {
+    const oscillator = context.createOscillator();
+    const envelope = context.createGain();
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(delay === 0 ? 240 : 480, now + delay);
+    oscillator.frequency.exponentialRampToValueAtTime(65, now + delay + 0.06);
+    envelope.gain.setValueAtTime(0, now);
+    envelope.gain.setValueAtTime(0.22, now + delay);
+    envelope.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.07);
+    oscillator.connect(envelope);
+    envelope.connect(channel);
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      envelope.disconnect();
+    };
+    oscillator.start(now + delay);
+    oscillator.stop(now + delay + 0.08);
+  }
+}

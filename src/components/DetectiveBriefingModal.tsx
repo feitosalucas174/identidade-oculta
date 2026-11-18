@@ -19,7 +19,7 @@ const BRIEFING_SLIDES: BriefingSlide[] = [
   {
     badge: 'EVIDÊNCIAS COLETADAS',
     title: 'As 20 Evidências e Achados',
-    text: 'Encontramos 20 evidências naquela noite e gravamos fitas para auxiliar na investigação. Cada fotografia de cena, documento e áudio gravado contém detalhes valiosos para reconstruir o que realmente aconteceu naquele rancho.',
+    text: 'Encontramos 20 evidências naquela noite e gravamos fitas para auxiliar na investigação. Cada fotografia de cena, documento e áudio gravado contém detalhes valiosos para construir o que realmente aconteceu naquele rancho.',
     frames: [4, 5, 6, 7],
   },
   {
