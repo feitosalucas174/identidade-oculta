@@ -78,7 +78,7 @@ export const EV: Evidence[] = [
   {
     id: 'E-03',
     tipo: 'Foto de Cena',
-    desc: "Uma marca de mão ensanguentada impressa no vidro da janela do quarto - dedos espalhados como quem se apoiou na janela. Bob passou a tarde toda no quarto. Perto da janela, respingos de sangue e objetos danificados - vestígios de luta corporal. A bolsa com o gravador e o boom estavam na sala. Nenhum indício de uso de lâmina nesse local."
+    desc: "Uma marca de mão ensanguentada impressa no vidro da janela do quarto - dedos espalhados como quem se apoiou na janela. Perto da janela, respingos de sangue e objetos danificados - vestígios de luta corporal. A bolsa com o gravador e o boom estavam na sala. Nenhum indício de uso de lâmina nesse local."
   },
   {
     id: 'E-04',
@@ -133,7 +133,7 @@ export const EV: Evidence[] = [
   {
     id: 'E-14',
     tipo: 'Foto de Cena',
-    desc: "Óculos caídos no matagal — com marcas de sangue na armação. Pertenciam a Marcos. As poças de sangue no local indicam ferimentos profundos e as marcas no corpo parecem ter sido feitas com lâmina larga e curva - provavelmente uma foice foi usada neste local. Perto dos galhos quebrados, rastros de sangue ligam o ponto de ataque de Marcos ao matagal denso. Mônica estava em uma área próxima e seu corpo estava mais frio."
+    desc: "Óculos caídos no matagal — com marcas de sangue na armação. Pertenciam a Marcos. As poças de sangue no local indicam ferimentos profundos e as marcas no corpo parecem ter sido feitas com lâmina larga e curva - provavelmente uma foice. Mônica estava em uma área próxima e seu corpo estava mais frio."
   },
   {
     id: 'E-15',
@@ -148,7 +148,7 @@ export const EV: Evidence[] = [
   {
     id: 'E-17',
     tipo: 'Bastidor',
-    desc: "No quarto, estão os equipamentos de áudio de Bob, mas não todos. O cabo de microfone boom está jogado no chão com manchas de sangue ao longo de toda sua extensão. Alguém retirou a bolsa do gravador e o boom do local."
+    desc: "No quarto, estão os equipamentos de áudio de Bob, mas não todos. O cabo de microfone boom está jogado no chão com manchas de sangue ao longo de toda sua extensão. Alguém retirou a bolsa do gravador e do microfone boom do local."
   },
   {
     id: 'E-18',
