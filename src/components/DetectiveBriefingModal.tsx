@@ -199,7 +199,7 @@ export const DetectiveBriefingModal: React.FC<DetectiveBriefingModalProps> = ({
             </div>
           </div>
 
-          <DetectiveNarration key={currentSlideIndex} src={`${BASE_URL}assets/audio/briefing-${currentSlideIndex + 1}.mp3`} />
+          <DetectiveNarration key={currentSlideIndex} src={`${BASE_URL}assets/audio/briefing-${currentSlideIndex + 1}.mp3${currentSlideIndex === 1 ? '?v=3' : ''}`} />
 
           {/* Controls Bar */}
           <div className="flex items-center justify-between gap-3 pt-1">

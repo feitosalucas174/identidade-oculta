@@ -11,7 +11,8 @@ import { connectAudioElement, resumeAudioOutput } from '../audio/audioBus';
 const EVIDENCE_AUDIO: Record<string, string> = Object.fromEntries(
   Array.from({ length: 20 }, (_, index) => {
     const number = String(index + 1).padStart(2, '0');
-    return [`E-${number}`, `${import.meta.env.BASE_URL}assets/audio/evidence-${number}.mp3`];
+    const revision = [2, 6, 9, 12, 13, 16, 18, 19].includes(index + 1) ? '?v=3' : '';
+    return [`E-${number}`, `${import.meta.env.BASE_URL}assets/audio/evidence-${number}.mp3${revision}`];
   }),
 );
 
