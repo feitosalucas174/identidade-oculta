@@ -12,10 +12,7 @@ import {
   getOptionLabel,
   HINTS,
   match,
-  MOCK_FICHAS,
-  MOCK_FICHAS_WRONG,
   MOCK_SEQ,
-  MOCK_SEQ_WRONG,
   PERS,
   shuffle,
 } from './data/evidence';
@@ -477,16 +474,6 @@ const AppContent: React.FC = () => {
     setIsHomeOpen(false);
   };
 
-  const handleMockSuccess = () => {
-    setAnswers(MOCK_FICHAS);
-    setSequence(MOCK_SEQ.filter(id => EV.some(e => e.id === id)));
-  };
-
-  const handleMockError = () => {
-    setAnswers(MOCK_FICHAS_WRONG);
-    setSequence(MOCK_SEQ_WRONG.filter(id => EV.some(e => e.id === id)));
-  };
-
   const currentExamEv = examIdx !== null ? deck[examIdx] : null;
 
   if (isBooting) {
@@ -627,27 +614,6 @@ const AppContent: React.FC = () => {
             <div className="sprite-lupa" />
           </div>
 
-          {/* Dev / Test Mock Buttons */}
-          <aside className="fixed bottom-[calc(var(--nav-h)+10px)] right-[10px] z-[140] flex gap-[5px]">
-            <button
-              type="button"
-              id="btn-mock"
-              onClick={handleMockSuccess}
-              title="Preencher com respostas e sequência corretas"
-              className="bg-[#222222] border border-[#303030] text-[#9A9590] font-mono-retro text-[9px] px-[8px] py-[5px] cursor-pointer rounded-[4px] hover:border-[#9A9590] hover:text-[#F2EAE0] transition-all tracking-[0.06em]"
-            >
-              Mock ⚡
-            </button>
-            <button
-              type="button"
-              id="btn-mock-err"
-              onClick={handleMockError}
-              title="Preencher com respostas e sequência incorretas"
-              className="bg-[#3A1010] border border-[#D94040] text-[#D94040] font-mono-retro text-[9px] px-[8px] py-[5px] cursor-pointer rounded-[4px] hover:border-[#ff6060] hover:text-[#ff8080] transition-all tracking-[0.06em]"
-            >
-              Erro ✗
-            </button>
-          </aside>
         </>
       )}
     </div>
